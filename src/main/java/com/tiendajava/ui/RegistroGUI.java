@@ -22,7 +22,7 @@ import com.tiendajava.repository.UserRepository;
 
 public class RegistroGUI extends JFrame {
     private final JTextField nameField, lastnameField, emailField, TypeDocumentField, numDocumentField, adressField, phoneField;
-    private final JPasswordField passwordField;
+    private final JPasswordField passwordField, passwordFieldCon;
     private final UserRepository userRepository = new UserRepository();
 
     public RegistroGUI() {
@@ -53,10 +53,11 @@ public class RegistroGUI extends JFrame {
         lastnameField = createInputField(panel, gbc, "Lastname:", 1);
         emailField = createInputField(panel, gbc, "Email:", 2);
         passwordField = createPasswordField(panel, gbc, "Password:", 3);
-        TypeDocumentField = createInputField(panel, gbc, "Document Type:", 4);
-        numDocumentField = createInputField(panel, gbc, "N° Document:", 5);
-        adressField = createInputField(panel, gbc, "Address:", 6);
-        phoneField = createInputField(panel, gbc, "Phone:", 7);
+        passwordFieldCon = createPasswordField(panel, gbc, "Confirm Password:", 4);
+        TypeDocumentField = createInputField(panel, gbc, "Document Type:", 5);
+        numDocumentField = createInputField(panel, gbc, "N° Document:", 6);
+        adressField = createInputField(panel, gbc, "Address:", 7);
+        phoneField = createInputField(panel, gbc, "Phone:", 8);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.setBackground(new Color(45, 45, 45)); 
@@ -113,8 +114,16 @@ public class RegistroGUI extends JFrame {
         String adress = adressField.getText().trim();
         String phone = phoneField.getText().trim();
 
-        if(name.isEmpty() || lastname.isEmpty() || email.isEmpty() || password.isEmpty() || TypeDocument.isEmpty() || numDocument.isEmpty() || adress.isEmpty() || phone.isEmpty()) {
+        if(name.isEmpty() || lastname.isEmpty() || email.isEmpty() || password.isEmpty() || new String(passwordFieldCon.getPassword()).trim().isEmpty() || TypeDocument.isEmpty() || numDocument.isEmpty() || adress.isEmpty() || phone.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Complete all fields", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if(!password.equals(new String(passwordFieldCon.getPassword()).trim())) {
+            UIManager.put("OptionPane.background", new Color(45, 45, 45));
+            UIManager.put("Panel.background", new Color(45, 45, 45));
+            UIManager.put("OptionPane.messageForeground", Color.WHITE);
+            JOptionPane.showMessageDialog(this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -128,10 +137,12 @@ public class RegistroGUI extends JFrame {
         user.setAddress(adress);
         user.setPhone(phone);
 
+        System.out.println("User: " + user.toString());
+
         try {    
             userRepository.createUser(user);
             dispose();
-            new MainGUI(user.getName(), user.getLastName()).setVisible(true);
+            new MainGUI(user.getName(), lastname).setVisible(true);
         } catch (IllegalArgumentException | IllegalStateException ex) {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }

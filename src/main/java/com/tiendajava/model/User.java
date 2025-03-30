@@ -18,7 +18,7 @@ privadas y con sus respectivos métodos getters y setters:
 
   private int id;
   private String name;
-  private String lastName;
+  private String lastname;
   private String email;
   private String typeDocument;
   private String numDocument; 
@@ -37,7 +37,7 @@ privadas y con sus respectivos métodos getters y setters:
   }
 
   public String getLastName() {
-    return lastName;
+    return lastname;
   }
 
   public String getEmail() {
@@ -79,8 +79,8 @@ privadas y con sus respectivos métodos getters y setters:
     this.name = name;
   }
 
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
+  public void setLastName(String lastname) {
+    this.lastname = lastname;
   }
 
   public void setEmail(String email) {
@@ -109,5 +109,10 @@ privadas y con sus respectivos métodos getters y setters:
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  @Override
+  public String toString() {
+    return "User [id=" + id + ", name=" + name + ", lastName=" + lastname + ", email=" + email + ", typeDocument=" + typeDocument + ", numDocument=" + numDocument + ", address=" + address + ", phone=" + phone + ", status=" + status + ", password=" + password + "]";
   }
 }

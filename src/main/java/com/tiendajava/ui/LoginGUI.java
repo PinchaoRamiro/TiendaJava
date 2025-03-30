@@ -40,6 +40,9 @@ public class LoginGUI extends JFrame {
         UIManager.put("TextField.foreground", Color.WHITE);
         UIManager.put("PasswordField.background", new Color(60, 63, 65));
         UIManager.put("PasswordField.foreground", Color.WHITE);
+        UIManager.put("PasswordField.selectionBackground", new Color(100, 100, 100));
+        UIManager.put("PasswordField.selectionForeground", Color.WHITE);
+        
 
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -95,6 +98,9 @@ public class LoginGUI extends JFrame {
             boolean response = userService.login(email, password);
 
             if(!response) {
+                UIManager.put("OptionPane.background", new Color(45, 45, 45));
+                UIManager.put("Panel.background", new Color(45, 45, 45));
+                UIManager.put("OptionPane.messageForeground", Color.WHITE);
                 JOptionPane.showMessageDialog(this, "Incorrect email or password", "Error", JOptionPane.ERROR_MESSAGE);
             }else{
 
