@@ -1,8 +1,6 @@
-com\tiendajava\ui\LoginGUI.class
-com\tiendajava\ui\MainGUI.class
 com\tiendajava\repository\UserRepository$1.class
 com\tiendajava\repository\UserRepository.class
-com\tiendajava\ui\RegistroGUI.class
 com\tiendajava\model\User.class
+com\tiendajava\ui\utils\UIUtils.class
 com\tiendajava\Main.class
 com\tiendajava\service\UserService.class

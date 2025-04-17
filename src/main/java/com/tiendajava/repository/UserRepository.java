@@ -21,9 +21,7 @@ public class UserRepository {
   private final HttpClient client = HttpClient.newHttpClient();
 
 
-  public User createUser(User user) {
-    System.out.println("User: " + user.toString());
-    String json = "{ \"name\": \"" + user.getName() + "\", \"lastname\": \"" + user.getLastName() + "\", \"email\": \"" + user.getEmail() + "\", \"password\": \"" + user.getPassword() + "\", \"typeDocument\": \"" + user.getTypeDocument() + "\", \"numDocument\": \"" + user.getNumDocument() + "\", \"adress\": \"" + user.getAddress() + "\", \"phone\": \"" + user.getPhone() + "\" }";
+  public User createUser(String json) {
     try {
       HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(urlBasic +  "auth/register"))
@@ -52,11 +50,32 @@ public class UserRepository {
 
   }
 
-  public String updateUser(User user) {
-    String json = "{ \"name\": \"" + user.getName() + "\", \"lastname\": \"" + user.getLastName() + "\", \"email\": \"" + user.getEmail() + "\", \"password\": \"" + user.getPassword() + "\", \"typeDocument\": \"" + user.getTypeDocument() + "\", \"numDocument\": \"" + user.getNumDocument() + "\", \"adress\": \"" + user.getAddress() + "\", \"phone\": \"" + user.getPhone() + "\" }";
+  public boolean login(String json) {
+    try {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(urlBasic + "auth/login"))
+                .header("Content-Type", "application/json")
+                .POST(BodyPublishers.ofString(json))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return response.statusCode() == 200;
+    } catch (java.net.http.HttpTimeoutException e) {
+        System.err.println("Timeout error: " + e.getMessage());
+        return false;
+    } catch (java.io.IOException e) {
+        System.err.println("IO error: " + e.getMessage());
+        return false;
+    } catch (InterruptedException e) {
+        System.err.println("Interrupted error: " + e.getMessage());
+        return false;
+    }
+}
+
+  public User updateUser(String json, int id) {
     try {
       HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(urlBasic + "user/update/:" + user.getId()))
+        .uri(URI.create(urlBasic + "user/update/:" + id))
         .header("Content-Type", "application/json")
         .PUT(BodyPublishers.ofString(json))
         .build();
@@ -64,16 +83,17 @@ public class UserRepository {
       HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
       if(response.body().contains("\"error\"")) {
-        return "Error: " + response.body();
+        System.err.println(response.body());
+        return null;
       }
       else{
         User userResponse = gson.fromJson(response.body(), User.class);
-        return userResponse.toString();
+        return userResponse;
       }
       
     } catch (Exception e) {
       System.err.println("Error: " + e.getMessage());
-      return "Error: " + e.getMessage();
+      return null;
     }
   }
 
@@ -122,8 +142,7 @@ public class UserRepository {
     }
   }
 
-  public boolean setStatusUser(int id, boolean status) {
-    String json = "{ \"status\": " + status + " }";
+  public boolean setStatusUser(String json, int id) {
     try {
       HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(urlBasic + "user/status/:" + id))
@@ -140,5 +159,4 @@ public class UserRepository {
       return false;
     }
   }
-
 }

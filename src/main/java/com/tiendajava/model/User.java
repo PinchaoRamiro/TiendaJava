@@ -1,20 +1,6 @@
 package com.tiendajava.model;
 
 public class User {
-  /*
-   * Crear una clase llamada Usuario con los siguientes atributos o propiedades
-privadas y con sus respectivos métodos getters y setters:
-• id de tipo numérico
-• nombre de tipo cadena
-• apellido de tipo cadena
-• email de tipo cadena
-• tipo de documento de identificación de tipo cadena
-• número de documento de identificación de tipo cadena
-• dirección de tipo cadena
-• teléfono de tipo cadena
-• estado activo o inactivo de tipo boolean.
-• password de tipo cadena
-   */
 
   private int id;
   private String name;
@@ -27,7 +13,6 @@ privadas y con sus respectivos métodos getters y setters:
   private boolean status;
   private String password;
 
-  // Getters
   public int getId() {
     return id;
   }
@@ -68,9 +53,6 @@ privadas y con sus respectivos métodos getters y setters:
     return password;
   }
 
-
-
-  // Setters
   public void setId(int id) {
     this.id = id;
   }

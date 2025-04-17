@@ -8,42 +8,35 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
 
 import com.tiendajava.model.User;
-import com.tiendajava.repository.UserRepository;
+import com.tiendajava.service.UserService;
+import com.tiendajava.ui.utils.UIUtils;
+;
+
 
 public class RegistroGUI extends JFrame {
     private final JTextField nameField, lastnameField, emailField, TypeDocumentField, numDocumentField, adressField, phoneField;
     private final JPasswordField passwordField, passwordFieldCon;
-    private final UserRepository userRepository = new UserRepository();
+    private UserService userService = new UserService();
 
     public RegistroGUI() {
         setTitle("User Registration");
-        setSize(400, 500); 
+        setSize(400, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Aplicar tema oscuro
-        UIManager.put("Panel.background", new Color(45, 45, 45));
-        UIManager.put("Label.foreground", Color.WHITE);
-        UIManager.put("Button.background", new Color(70, 130, 180));
-        UIManager.put("Button.foreground", Color.WHITE);
-        UIManager.put("TextField.background", new Color(60, 60, 60));
-        UIManager.put("TextField.foreground", Color.WHITE);
-        UIManager.put("PasswordField.background", new Color(60, 60, 60));
-        UIManager.put("PasswordField.foreground", Color.WHITE);
+        UIUtils.applyDarkTheme();
 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); 
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panel.setBackground(new Color(45, 45, 45));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -59,19 +52,13 @@ public class RegistroGUI extends JFrame {
         adressField = createInputField(panel, gbc, "Address:", 7);
         phoneField = createInputField(panel, gbc, "Phone:", 8);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        buttonPanel.setBackground(new Color(45, 45, 45)); 
+        JPanel buttonPanel = UIUtils.createBasePanel(new FlowLayout());
 
-        JButton registerButton = new JButton("Register");
-        registerButton.addActionListener(e -> registrarUsuario());
-        buttonPanel.add(registerButton);
-
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> {
+        buttonPanel.add(UIUtils.createButton("Register", this::registrarUsuario));
+        buttonPanel.add(UIUtils.createButton("Back", () -> {
             new LoginGUI().setVisible(true);
             dispose();
-        });
-        buttonPanel.add(backButton);
+        }));
 
         add(panel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
@@ -82,48 +69,45 @@ public class RegistroGUI extends JFrame {
     private JTextField createInputField(JPanel panel, GridBagConstraints gbc, String labelText, int yPos) {
         gbc.gridx = 0;
         gbc.gridy = yPos;
-        JLabel label = new JLabel(labelText);
-        panel.add(label, gbc);
+        panel.add(new JLabel(labelText), gbc);
 
         gbc.gridx = 1;
-        JTextField textField = new JTextField(15);
-        panel.add(textField, gbc);
+        JTextField field = UIUtils.createTextField();
+        panel.add(field, gbc);
 
-        return textField;
+        return field;
     }
 
     private JPasswordField createPasswordField(JPanel panel, GridBagConstraints gbc, String labelText, int yPos) {
         gbc.gridx = 0;
         gbc.gridy = yPos;
-        JLabel label = new JLabel(labelText);
-        panel.add(label, gbc);
+        panel.add(new JLabel(labelText), gbc);
 
         gbc.gridx = 1;
-        JPasswordField passwordsField = new JPasswordField(15);
-        panel.add(passwordsField, gbc);
+        JPasswordField field = UIUtils.createPasswordField();
+        panel.add(field, gbc);
 
-        return passwordsField;
+        return field;
     }
+
     private void registrarUsuario() {
         String name = nameField.getText().trim();
         String lastname = lastnameField.getText().trim();
         String email = emailField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
-        String TypeDocument = TypeDocumentField.getText().trim();
+        String passwordCon = new String(passwordFieldCon.getPassword()).trim();
+        String typeDocument = TypeDocumentField.getText().trim();
         String numDocument = numDocumentField.getText().trim();
-        String adress = adressField.getText().trim();
+        String address = adressField.getText().trim();
         String phone = phoneField.getText().trim();
 
-        if(name.isEmpty() || lastname.isEmpty() || email.isEmpty() || password.isEmpty() || new String(passwordFieldCon.getPassword()).trim().isEmpty() || TypeDocument.isEmpty() || numDocument.isEmpty() || adress.isEmpty() || phone.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Complete all fields", "Error", JOptionPane.ERROR_MESSAGE);
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || passwordCon.isEmpty()) {
+            UIUtils.showError(this, "Complete all fields");
             return;
         }
 
-        if(!password.equals(new String(passwordFieldCon.getPassword()).trim())) {
-            UIManager.put("OptionPane.background", new Color(45, 45, 45));
-            UIManager.put("Panel.background", new Color(45, 45, 45));
-            UIManager.put("OptionPane.messageForeground", Color.WHITE);
-            JOptionPane.showMessageDialog(this, "Passwords do not match", "Error", JOptionPane.ERROR_MESSAGE);
+        if (!password.equals(passwordCon)) {
+            UIUtils.showError(this, "Passwords do not match");
             return;
         }
 
@@ -132,19 +116,22 @@ public class RegistroGUI extends JFrame {
         user.setLastName(lastname);
         user.setEmail(email);
         user.setPassword(password);
-        user.setTypeDocument(TypeDocument);
+        user.setTypeDocument(typeDocument);
         user.setNumDocument(numDocument);
-        user.setAddress(adress);
+        user.setAddress(address);
         user.setPhone(phone);
 
-        System.out.println("User: " + user.toString());
-
-        try {    
-            userRepository.createUser(user);
+        try {
+            User userReg = userService.Register(user);
+            if(userReg == null){
+                UIUtils.showError(this, "Error to register user" );
+                return;
+            }
+            
             dispose();
-            new MainGUI(user.getName(), lastname).setVisible(true);
+            new MainWindow(user.getName(), lastname).setVisible(true);
         } catch (IllegalArgumentException | IllegalStateException ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            UIUtils.showError(this, "Error: " + ex.getMessage());
         }
     }
 }
