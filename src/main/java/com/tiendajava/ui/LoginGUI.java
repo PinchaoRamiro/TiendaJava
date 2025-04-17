@@ -89,7 +89,7 @@ public class LoginGUI extends JFrame {
                 new MainWindow(user.getName(), user.getLastName()).setVisible(true);
                 dispose();
             } else {
-                UIUtils.showError(this, "User not found");
+                UIUtils.showError(this, "Error of server");
             }
         }
     }

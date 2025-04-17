@@ -23,7 +23,7 @@ cd TiendaJava
 ## 2. ejecutar el proyecto
 
 ```sh
-mvn clean compile
+mvn compile
 mvn exec:java
 
 ```
