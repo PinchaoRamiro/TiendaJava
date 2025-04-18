@@ -22,6 +22,7 @@ public class LoginGUI extends JFrame {
     private final JTextField emailField;
     private final JPasswordField passwordField;
     private final UserService userService = new UserService();
+    // final Session session = Session.getInstance();
 
     public LoginGUI() {
         setTitle("Login");
@@ -73,24 +74,22 @@ public class LoginGUI extends JFrame {
     private void login() {
         String email = emailField.getText().trim();
         String password = new String(passwordField.getPassword()).trim();
-
+    
         if (email.isEmpty() || password.isEmpty()) {
             UIUtils.showError(this, "Complete all fields");
             return;
         }
+    
+        boolean success = userService.login(email, password);
+    
+        if (success) {
 
-        boolean response = userService.login(email, password);
-
-        if (!response) {
-            UIUtils.showError(this, "Incorrect email or password");
-        } else {
             User user = userService.findUserByEmail(email);
-            if (user != null) {
-                new MainWindow(user.getName(), user.getLastName()).setVisible(true);
-                dispose();
-            } else {
-                UIUtils.showError(this, "Error of server");
-            }
+    
+            new MainWindow(user.getName(), user.getLastName()).setVisible(true);
+            dispose();
+        } else {
+            UIUtils.showError(this, "Incorrect email or password");
         }
     }
 

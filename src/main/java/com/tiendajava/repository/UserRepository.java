@@ -11,6 +11,8 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.tiendajava.model.LoginResponse;
+import com.tiendajava.model.Session;
 import com.tiendajava.model.User;
 
 public class UserRepository {
@@ -31,8 +33,13 @@ public class UserRepository {
 
       HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-      if(response.statusCode() == 201) {        
-        User userResponse = gson.fromJson(response.body(), User.class);
+      if(response.statusCode() == 201) { 
+        LoginResponse loginResponse = gson.fromJson(response.body(), LoginResponse.class);
+        User userResponse = loginResponse.getUser();
+
+        Session.getInstance().setToken(loginResponse.getToken());
+        Session.getInstance().setUserEmail(loginResponse.getUser().getEmail());
+        Session.getInstance().setRole(loginResponse.getUser().getRole());
         return userResponse;
       }
 
@@ -50,33 +57,41 @@ public class UserRepository {
 
   }
 
-  public boolean login(String json) {
-    try {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(urlBasic + "auth/login"))
-                .header("Content-Type", "application/json")
-                .POST(BodyPublishers.ofString(json))
-                .build();
+  public boolean  login(String json) {
+      try {
+          HttpRequest request = HttpRequest.newBuilder()
+                  .uri(URI.create(urlBasic + "auth/login"))
+                  .header("Content-Type", "application/json")
+                  .POST(BodyPublishers.ofString(json))
+                  .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.statusCode() == 200;
-    } catch (java.net.http.HttpTimeoutException e) {
-        System.err.println("Timeout error: " + e.getMessage());
-        return false;
-    } catch (java.io.IOException e) {
-        System.err.println("IO error: " + e.getMessage());
-        return false;
-    } catch (InterruptedException e) {
-        System.err.println("Interrupted error: " + e.getMessage());
-        return false;
-    }
-}
+          HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+          System.out.println(response);
+
+          if (response.statusCode() == 200) {
+              LoginResponse loginResponse = gson.fromJson(response.body(), LoginResponse.class);
+
+              Session.getInstance().setToken(loginResponse.getToken());
+              Session.getInstance().setUserEmail(loginResponse.getUser().getEmail());
+              Session.getInstance().setRole(loginResponse.getUser().getRole());
+
+              return true;
+          } else {
+              return false;
+          }
+      } catch (Exception e) {
+          System.err.println("Login error: " + e.getMessage());
+          return false;
+      }
+  }
 
   public User updateUser(String json, int id) {
     try {
       HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(urlBasic + "user/update/:" + id))
+        .uri(URI.create(urlBasic + "user/update/" + id))
         .header("Content-Type", "application/json")
+        .header("Authorization", "Bearer " + Session.getInstance().getToken())
         .PUT(BodyPublishers.ofString(json))
         .build();
 
@@ -99,14 +114,16 @@ public class UserRepository {
 
   public User getUserByEmail(String email) {
     HttpRequest request = HttpRequest.newBuilder()
-      .uri(URI.create(urlBasic + "user/" + email))
+      .uri(URI.create(urlBasic + "user/by-email/" + email))
       .header("Content-Type", "application/json")
+      .header("Authorization", "Bearer " + Session.getInstance().getToken()) // ✅ token aquí
       .GET()
       .build();
 
     try {
       HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+      System.out.println(response);
       if(response.statusCode() == 200) {
         User userResponse = gson.fromJson(response.body(), User.class);
         return userResponse;
@@ -124,6 +141,7 @@ public class UserRepository {
     HttpRequest request = HttpRequest.newBuilder()
       .uri(URI.create(urlBasic + "users"))
       .header("Content-Type", "application/json")
+      .header("Authorization", "Bearer " + Session.getInstance().getToken())
       .GET()
       .build();
 
@@ -147,6 +165,7 @@ public class UserRepository {
       HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(urlBasic + "user/status/:" + id))
         .header("Content-Type", "application/json")
+        .header("Authorization", "Bearer " + Session.getInstance().getToken())
         .PUT(BodyPublishers.ofString(json))
         .build();
 

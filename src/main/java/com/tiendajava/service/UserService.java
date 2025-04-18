@@ -17,7 +17,7 @@ public class UserService {
         return userRepository.createUser(json);
     }
 
-    public boolean login(String email, String password) {
+    public boolean  login(String email, String password) {
         String json = "{ \"email\": \"" + email + "\", \"password\": \"" + password + "\" }";
         return userRepository.login(json);
     }

@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.tiendajava.model.Session;
 import com.tiendajava.ui.utils.UIUtils;
 
 public class MainWindow extends JFrame {
@@ -38,6 +39,7 @@ public class MainWindow extends JFrame {
         welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton logoutButton = UIUtils.createButton("Logout", () -> {
+            Session.getInstance().clearSession();
             new LoginGUI().setVisible(true);
             dispose();
         });

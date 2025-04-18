@@ -23,7 +23,7 @@ import com.tiendajava.ui.utils.UIUtils;
 public class RegistroGUI extends JFrame {
     private final JTextField nameField, lastnameField, emailField, TypeDocumentField, numDocumentField, adressField, phoneField;
     private final JPasswordField passwordField, passwordFieldCon;
-    private UserService userService = new UserService();
+    private final UserService userService = new UserService();
 
     public RegistroGUI() {
         setTitle("User Registration");
