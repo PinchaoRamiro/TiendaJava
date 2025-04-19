@@ -1,5 +1,6 @@
 package com.tiendajava.repository;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.tiendajava.model.LoginResponse;
 import com.tiendajava.model.Session;
@@ -80,10 +82,26 @@ public class UserRepository {
           } else {
               return false;
           }
-      } catch (Exception e) {
+      } catch (JsonSyntaxException | IOException | InterruptedException e) {
           System.err.println("Login error: " + e.getMessage());
           return false;
       }
+  }
+
+  public void logout() {
+    try {
+      HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(urlBasic + "auth/logout"))
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Bearer " + Session.getInstance().getToken())
+        .POST(BodyPublishers.noBody())
+        .build();
+
+      client.send(request, HttpResponse.BodyHandlers.ofString());
+      Session.getInstance().clearSession();
+    } catch (IOException | InterruptedException e) {
+      System.err.println("Logout error: " + e.getMessage());
+    }
   }
 
   public User updateUser(String json, int id) {
@@ -106,7 +124,7 @@ public class UserRepository {
         return userResponse;
       }
       
-    } catch (Exception e) {
+    } catch (JsonSyntaxException | IOException | InterruptedException e) {
       System.err.println("Error: " + e.getMessage());
       return null;
     }
@@ -116,7 +134,7 @@ public class UserRepository {
     HttpRequest request = HttpRequest.newBuilder()
       .uri(URI.create(urlBasic + "user/by-email/" + email))
       .header("Content-Type", "application/json")
-      .header("Authorization", "Bearer " + Session.getInstance().getToken()) // ✅ token aquí
+      .header("Authorization", "Bearer " + Session.getInstance().getToken()) 
       .GET()
       .build();
 
@@ -131,7 +149,7 @@ public class UserRepository {
         return null;
       }
 
-    } catch (Exception e) {
+    } catch (JsonSyntaxException | IOException | InterruptedException e) {
       System.err.println("Error: " + e.getMessage());
       return null;
     }
@@ -155,7 +173,7 @@ public class UserRepository {
       }else{
         return null;
       }
-    } catch (Exception e) {
+    } catch (JsonSyntaxException | IOException | InterruptedException e) {
       return null;
     }
   }
@@ -173,7 +191,7 @@ public class UserRepository {
 
       return response.body().contains("\"msg\"");
       
-    } catch (Exception e) {
+    } catch (IOException | InterruptedException e) {
       System.err.println("Error: " + e.getMessage());
       return false;
     }
