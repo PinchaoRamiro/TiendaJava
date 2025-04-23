@@ -3,6 +3,8 @@ package com.tiendajava.ui.utils;
 import java.awt.Font;
 
 public class Fonts {
+    public static final Font BOLD_NFONT = new Font("SansSerinf", Font.BOLD, 14);
+
     public static final Font TITLE_FONT = new Font("SansSerif", Font.BOLD, 22);
 
     public static final Font SUBTITLE_FONT = new Font("SansSerif", Font.BOLD, 16);
@@ -11,7 +13,7 @@ public class Fonts {
 
     public static final Font SMALL_FONT = new Font("SansSerif", Font.PLAIN, 12);
 
-    public static final Font BUTTON_FONT = new Font("SansSerif", Font.BOLD, 14);
+    public static final Font BUTTON_FONT = new Font("SansSerif", Font.BOLD, 16);
 
     public static final Font ERROR_FONT = new Font("SansSerif", Font.ITALIC, 14);
 

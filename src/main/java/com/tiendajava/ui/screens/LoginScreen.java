@@ -6,8 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -15,54 +15,50 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import com.tiendajava.model.User;
 import com.tiendajava.service.UserService;
-import com.tiendajava.ui.MainFrame;
+import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.utils.ErrorHandler;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UIUtils;
 
-public class LoginScreen extends JFrame {
+public class LoginScreen extends JPanel {
+    private final MainUI parent;
     private final JTextField emailField;
     private final JPasswordField passwordField;
     private final UserService userService = new UserService();
 
-    public LoginScreen() {
-        setTitle("Login - TiendaJava");
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    public LoginScreen(MainUI mainFrame) {
+        this.parent = mainFrame;
         setLayout(new BorderLayout());
 
-        UIUtils.applyDarkTheme();
-
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 30, 30));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 10, 15, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel title = new JLabel("Login", SwingConstants.CENTER);
+        ImageIcon userIcon = new ImageIcon(getClass().getResource("/icons/user-check.png"));
+        JLabel title = new JLabel("Login", userIcon, SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         gbc.gridwidth = 2;
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         panel.add(title, gbc);
 
         gbc.gridwidth = 1;
         gbc.gridy++;
         gbc.gridx = 0;
-        panel.add(new JLabel("Email:"), gbc);
+        panel.add(UIUtils.createTextLabel("Email", Fonts.BOLD_NFONT), gbc);
 
         gbc.gridx = 1;
-        emailField = UIUtils.createTextField();
+        emailField = UIUtils.createTextField(Fonts.NORMAL_FONT);
         panel.add(emailField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
-        panel.add(new JLabel("Password:"), gbc);
+        panel.add(UIUtils.createTextLabel("Password", Fonts.BOLD_NFONT), gbc);
 
         gbc.gridx = 1;
         passwordField = UIUtils.createPasswordField();
@@ -72,17 +68,18 @@ public class LoginScreen extends JFrame {
         gbc.gridy++;
         gbc.gridwidth = 2;
 
-        JButton loginBtn = ButtonFactory.createPrimaryButton("Login", this::login);
+        ImageIcon loginIcon = new ImageIcon(getClass().getResource("/icons/user-check.png"));
+        ImageIcon registerIcon = new ImageIcon(getClass().getResource("/icons/enter.png"));
+
+        JButton loginBtn = ButtonFactory.createPrimaryButton("Login", loginIcon, this::login);
         panel.add(loginBtn, gbc);
 
         gbc.gridy++;
-        JButton regisBtn = ButtonFactory.createSecondaryButton("Register", () -> {
-            SwingUtilities.invokeLater(() -> {
-                RegisterScreen.start();
-                dispose();
-            });
+        JButton regisBtn = ButtonFactory.createSecondaryButton("Register", registerIcon, () -> {
+            SwingUtilities.invokeLater(() -> parent.showScreen("register"));
         });
         panel.add(regisBtn, gbc);
+
         add(panel, BorderLayout.CENTER);
     }
 
@@ -97,17 +94,9 @@ public class LoginScreen extends JFrame {
 
         boolean success = userService.login(email, password);
         if (success) {
-            User user = userService.findUserByEmail(email);
-            SwingUtilities.invokeLater(() -> {
-                new MainFrame(user.getName(), user.getLastName()).setVisible(true);
-                dispose();
-            });
+            parent.showScreen("dashboard");
         } else {
             ErrorHandler.showErrorMessage(this, "Error", "Incorrect credentials");
         }
-    }
-
-    public static void start() {
-        SwingUtilities.invokeLater(() -> new LoginScreen().setVisible(true));
     }
 }

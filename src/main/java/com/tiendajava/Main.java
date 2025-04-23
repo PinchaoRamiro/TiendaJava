@@ -1,10 +1,9 @@
 package com.tiendajava;
 
-import com.tiendajava.ui.screens.LoginScreen;
+import com.tiendajava.ui.MainUI;
 
 public class Main {
     public static void main(String[] args) {
-        // Arranca el login en el hilo de Swing
-        LoginScreen.start();
+        MainUI.start();
     }
 }

@@ -2,9 +2,9 @@ package com.tiendajava.model;
 
 public class Session {
     private static Session instance;
-    private String token;
-    private String userEmail;
-    private String role;
+    private String token = null;
+    private User user = null;
+    private String role = null;
 
     private Session() {}
 
@@ -13,6 +13,10 @@ public class Session {
             instance = new Session();
         }
         return instance;
+    }
+
+    public boolean isLogged(){
+        return token != null;
     }
 
     public void setToken(String token) {
@@ -25,16 +29,8 @@ public class Session {
 
     public void clearSession() {
         token = null;
-        userEmail = null;
+        user = null;
         role = null;
-    }
-
-    public void setUserEmail(String email) {
-        this.userEmail = email;
-    }
-
-    public String getUserEmail() {
-        return userEmail;
     }
 
     public void setRole(String role) {
@@ -43,5 +39,13 @@ public class Session {
     
     public String getRole() {
         return role;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

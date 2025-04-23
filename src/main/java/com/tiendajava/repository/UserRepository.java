@@ -40,7 +40,7 @@ public class UserRepository {
         User userResponse = loginResponse.getUser();
 
         Session.getInstance().setToken(loginResponse.getToken());
-        Session.getInstance().setUserEmail(loginResponse.getUser().getEmail());
+        Session.getInstance().setUser(loginResponse.getUser());
         Session.getInstance().setRole(loginResponse.getUser().getRole());
         return userResponse;
       }
@@ -75,7 +75,7 @@ public class UserRepository {
               LoginResponse loginResponse = gson.fromJson(response.body(), LoginResponse.class);
 
               Session.getInstance().setToken(loginResponse.getToken());
-              Session.getInstance().setUserEmail(loginResponse.getUser().getEmail());
+              Session.getInstance().setUser(loginResponse.getUser());
               Session.getInstance().setRole(loginResponse.getUser().getRole());
 
               return true;
@@ -96,9 +96,12 @@ public class UserRepository {
         .header("Authorization", "Bearer " + Session.getInstance().getToken())
         .POST(BodyPublishers.noBody())
         .build();
-
-      client.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println("Logout");
+      HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
       Session.getInstance().clearSession();
+
+      System.out.println(response);
+
     } catch (IOException | InterruptedException e) {
       System.err.println("Logout error: " + e.getMessage());
     }

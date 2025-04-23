@@ -6,9 +6,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -18,36 +18,33 @@ import javax.swing.SwingUtilities;
 
 import com.tiendajava.model.User;
 import com.tiendajava.service.UserService;
-import com.tiendajava.ui.MainFrame;
+import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.utils.ErrorHandler;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UIUtils;
 
-public class RegisterScreen extends JFrame {
+public class RegisterScreen extends JPanel {
 
-    private final JTextField nameField = UIUtils.createTextField();
-    private final JTextField lastNameField = UIUtils.createTextField();
-    private final JTextField emailField = UIUtils.createTextField();
+    private final MainUI parent;
+
+    private final JTextField nameField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+    private final JTextField lastNameField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+    private final JTextField emailField = UIUtils.createTextField(Fonts.NORMAL_FONT);
     private final JPasswordField passwordField = UIUtils.createPasswordField();
     private final JPasswordField passwordConfirmField = UIUtils.createPasswordField();
-    private final JTextField typeDocumentField = UIUtils.createTextField();
-    private final JTextField numDocumentField = UIUtils.createTextField();
-    private final JTextField addressField = UIUtils.createTextField();
-    private final JTextField phoneField = UIUtils.createTextField();
+    private final JTextField typeDocumentField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+    private final JTextField numDocumentField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+    private final JTextField addressField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+    private final JTextField phoneField = UIUtils.createTextField(Fonts.NORMAL_FONT);
     private final UserService userService = new UserService();
 
-    public RegisterScreen() {
-        setTitle("Register - TiendaJava");
-        setSize(1000, 600);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    public RegisterScreen(MainUI mainFrame) {
+        this.parent = mainFrame;
         setLayout(new BorderLayout());
     
-        UIUtils.applyDarkTheme();
-    
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 30, 30));
     
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -55,11 +52,13 @@ public class RegisterScreen extends JFrame {
     
         int y = 0;
         gbc.gridx = 0; gbc.gridy = y; gbc.gridwidth = 4;
-        JLabel title = new JLabel("Create Account", SwingConstants.CENTER);
+
+        ImageIcon userIcon = new ImageIcon(getClass().getResource("/icons/user-add.png"));
+        JLabel title = new JLabel("Create Account", userIcon, SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         panel.add(title, gbc);
 
-        y = 1;
+        y = 2;
     
         gbc.gridwidth = 1;
         addField(panel, gbc, ++y, 0, "Name:", nameField);
@@ -73,28 +72,19 @@ public class RegisterScreen extends JFrame {
     
         addField(panel, gbc, ++y, 0, "Type of Document:", typeDocumentField);
         addField(panel, gbc, y, 2, "N° Document:", numDocumentField);
-        gbc.gridx = 0;
-        gbc.gridy = y;
-        gbc.gridwidth = 1;
         addField(panel, gbc, ++y, 0, "Address:", addressField);
-        gbc.gridx = 1;
-        gbc.gridwidth = 1;
-        panel.add(addressField, gbc);
 
-        gbc.gridwidth = 1;
-
+        ImageIcon backIcon =  new ImageIcon(getClass().getResource("/icons/back.png"));
+        ImageIcon registerIcon =  new ImageIcon(getClass().getResource("/icons/user-check.png"));
 
         gbc.gridx = 1;
         gbc.gridy = y + 2;
-        JButton registerBtn = ButtonFactory.createPrimaryButton("Register", this::register);
+        JButton registerBtn = ButtonFactory.createPrimaryButton("Register", registerIcon, this::register);
         panel.add(registerBtn, gbc);
     
         gbc.gridx = 2;
-        JButton backBtn = ButtonFactory.createSecondaryButton("Back", () -> {
-            SwingUtilities.invokeLater(() -> {
-                LoginScreen.start();
-                dispose();
-            });
+        JButton backBtn = ButtonFactory.createSecondaryButton("Back", backIcon, () -> {
+            SwingUtilities.invokeLater(() -> parent.showScreen("login"));
         });
         panel.add(backBtn, gbc);
     
@@ -104,7 +94,7 @@ public class RegisterScreen extends JFrame {
     private void addField(JPanel panel, GridBagConstraints gbc, int y, int x, String label, JComponent field) {
         gbc.gridx = x;
         gbc.gridy = y;
-        panel.add(new JLabel(label), gbc);
+        panel.add(UIUtils.createTextLabel(label, Fonts.BOLD_NFONT), gbc);
         gbc.gridx = x + 1;
         panel.add(field, gbc);
     }
@@ -145,16 +135,9 @@ public class RegisterScreen extends JFrame {
         boolean success = userR != null;
         if (success) {
             ErrorHandler.showSuccessMessage(this, "User created", "Successfully registered user");
-            SwingUtilities.invokeLater(() -> {
-                new MainFrame(user.getName(), user.getLastName()).setVisible(true);
-                dispose();
-            });
+            SwingUtilities.invokeLater(() -> parent.showScreen("dashboard"));
         } else {
             ErrorHandler.showErrorMessage(this, "Error", "Error registering user");
         }
-    }
-
-    public static void start() {
-        SwingUtilities.invokeLater(() -> new RegisterScreen().setVisible(true));
     }
 }

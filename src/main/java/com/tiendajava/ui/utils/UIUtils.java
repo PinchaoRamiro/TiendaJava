@@ -1,6 +1,9 @@
 package com.tiendajava.ui.utils;
 
+import java.awt.Font;
+
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
@@ -19,9 +22,16 @@ public class UIUtils {
         UIManager.put("PasswordField.border", BorderFactory.createLineBorder(UITheme.getBorderColor()));
     }
 
-    public static JTextField createTextField() {
+    public static JTextField createTextField(Font font) {
         JTextField field = new JTextField(15);
+        field.setFont(font);
         return field;
+    }
+
+    public static JLabel createTextLabel(String text, Font font){
+        JLabel textLabel = new JLabel(text);
+        textLabel.setFont(font);
+        return textLabel;
     }
 
     public static JPasswordField createPasswordField() {
