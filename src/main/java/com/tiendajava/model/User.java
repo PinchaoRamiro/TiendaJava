@@ -58,9 +58,6 @@ public class User {
     return status;
   }
 
-  public String getPassword() {
-    return password;
-  }
 
   public void setId(int id) {
     this.id = id;
@@ -104,6 +101,10 @@ public class User {
 
   @Override
   public String toString() {
-    return "User [id=" + id + ", name=" + name + ", lastName=" + lastname + ", email=" + email + ", typeDocument=" + typeDocument + ", numDocument=" + numDocument + ", address=" + address + ", phone=" + phone + ", status=" + status + ", password=" + password + "]";
+    return "User [id=" + id + ", name=" + name + ", lastName=" + lastname + ", email=" + email + ", typeDocument=" + typeDocument + ", numDocument=" + numDocument + ", address=" + address + ", phone=" + phone + ", status=" + status + "]";
   }
+
+    public String getPassword() {
+        return password;
+    }
 }

@@ -2,6 +2,7 @@ package com.tiendajava.ui.components;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.MediaTracker;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -9,15 +10,14 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
-import com.tiendajava.service.UserService;
+import com.tiendajava.model.Session;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.utils.UITheme;
 
 public class SidebarPanel extends JPanel {
 
-    private final UserService userservise = new UserService();
+    // private final UserService userService = new UserService();
 
     public SidebarPanel(MainUI frame) {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -25,26 +25,43 @@ public class SidebarPanel extends JPanel {
         setPreferredSize(new Dimension(200, getHeight()));
         setBorder(BorderFactory.createMatteBorder(0, 1, 1, 0, UITheme.getTertiaryColor()));
 
-        ImageIcon dashboardIcon = new ImageIcon(getClass().getResource("/icons/store.png"));
-        ImageIcon logoutIcon =  new ImageIcon(getClass().getResource("/icons/exit.png")); 
+        add(Box.createVerticalStrut(40)); // spacing
 
-        JButton dashboardBtn = ButtonFactory.createSecondaryButton("Dashboard", dashboardIcon, () -> frame.showScreen("dashboard"));
-        dashboardBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        dashboardBtn.setMaximumSize(new Dimension(160, 40));
+        String role = Session.getInstance().getRole();
 
-        JButton logoutBtn = ButtonFactory.createDangerButton("Logout", logoutIcon, () -> {
-            SwingUtilities.invokeLater(() -> {           
-                userservise.Logout();
-                frame.showScreen("login");
-            });
-        });
-        logoutBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        logoutBtn.setMaximumSize(new Dimension(160, 40));
+        if ("admin".equalsIgnoreCase(role)) {
+            addSidebarButton("Admin Dashboard", "/icons/user.png", () -> frame.showScreen("admin-dashboard"));
+            addSidebarButton("Users", "/icons/users.png", () -> frame.showScreen("manage-users"));
+            addSidebarButton("Inventory", "/icons/box.png", () -> frame.showScreen("manage-inventory"));
+        } else {
+            addSidebarButton("Dashboard", "/icons/store.png", () -> frame.showScreen("dashboard"));
+            addSidebarButton("Products", "/icons/selling.png", () -> frame.showScreen("products"));
+            addSidebarButton("Cart", "/icons/Cart.png", () -> frame.showScreen("orders"));
+        }
 
-        add(Box.createVerticalStrut(40));
-        add(dashboardBtn);
-        add(Box.createVerticalStrut(20));
-        add(logoutBtn);
         add(Box.createVerticalGlue());
+    }
+
+    private void addSidebarButton(String label, String iconPath, Runnable action) {
+        ImageIcon icon = loadIcon(iconPath);
+        JButton button = ButtonFactory.createSecondaryButton(label, icon, action);
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setMaximumSize(new Dimension(160, 40));
+        add(Box.createVerticalStrut(10));
+        add(button);
+    }
+
+    private ImageIcon loadIcon(String resourcePath) {
+        try {
+            ImageIcon icon = new ImageIcon(getClass().getResource(resourcePath));
+            if (icon.getImageLoadStatus() == MediaTracker.ERRORED) {
+                System.err.println("Error loading icon: " + resourcePath);
+                return null;
+            }
+            return icon;
+        } catch (Exception e) {
+            System.err.println("Error loading icon: " + resourcePath);
+            return null;
+        }
     }
 }
