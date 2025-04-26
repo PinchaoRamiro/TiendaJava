@@ -35,7 +35,7 @@ public class SidebarPanel extends JPanel {
             addSidebarButton("Inventory", "/icons/box.png", () -> frame.showScreen("manage-inventory"));
         } else {
             addSidebarButton("Dashboard", "/icons/store.png", () -> frame.showScreen("dashboard"));
-            addSidebarButton("Products", "/icons/selling.png", () -> frame.showScreen("products"));
+            addSidebarButton("Products", "/icons/selling.png", () -> frame.showScreen("products-user"));
             addSidebarButton("Cart", "/icons/Cart.png", () -> frame.showScreen("orders"));
         }
 

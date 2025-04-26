@@ -15,6 +15,7 @@ import com.tiendajava.ui.components.SidebarPanel;
 import com.tiendajava.ui.screens.DashboardScreen;
 import com.tiendajava.ui.screens.LoginScreen;
 import com.tiendajava.ui.screens.RegisterScreen;
+import com.tiendajava.ui.screens.user.ProductsUserScreen;
 import com.tiendajava.ui.utils.UIUtils;
 
 public final class MainUI extends JFrame {
@@ -57,7 +58,7 @@ public final class MainUI extends JFrame {
         if (getScreen(name) == null) {
             switch (name) {
                 case "dashboard" -> contentPanel.add(new DashboardScreen(this), "dashboard");
-                // case "products" -> contentPanel.add(new ProductsScreen(this), "products");
+                case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
                 // case "orders" -> contentPanel.add(new OrdersScreen(this), "orders");
                 // case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
                 // case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
@@ -73,7 +74,7 @@ public final class MainUI extends JFrame {
 
     private boolean nameRequiresAuth(String name) {
         return switch (name) {
-            case "dashboard", "products", "orders", "admin-dashboard", "manage-users", "manage-inventory" -> true;
+            case "dashboard", "products-user", "orders", "admin-dashboard", "manage-users", "manage-inventory" -> true;
             default -> false;
         };
     }

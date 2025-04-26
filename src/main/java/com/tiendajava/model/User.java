@@ -1,5 +1,7 @@
 package com.tiendajava.model;
 
+import java.util.List;
+
 public class User {
 
   private int id;
@@ -13,6 +15,8 @@ public class User {
   private boolean status;
   private String password;
   private String role;
+
+  private List<Order> orders; // Assuming a user can have multiple orders
 
   public String getRole() {
     return role;
@@ -106,5 +110,13 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 }

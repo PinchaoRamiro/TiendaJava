@@ -13,7 +13,7 @@ import com.tiendajava.model.LoginResponse;
 import com.tiendajava.model.Session;
 import com.tiendajava.model.User;
 
-public class UserRepository implements IRepository {
+public class UserRepository extends BaseRepository {
 
   public ApiResponse<User> createUser(String json) {
     try {
