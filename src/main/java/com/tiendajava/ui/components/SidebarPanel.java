@@ -32,7 +32,8 @@ public class SidebarPanel extends JPanel {
         if ("admin".equalsIgnoreCase(role)) {
             addSidebarButton("Admin Dashboard", "/icons/user.png", () -> frame.showScreen("admin-dashboard"));
             addSidebarButton("Users", "/icons/users.png", () -> frame.showScreen("manage-users"));
-            addSidebarButton("Inventory", "/icons/box.png", () -> frame.showScreen("manage-inventory"));
+            addSidebarButton("Admins", "/icons/admin-alt.png", () -> frame.showScreen("manage-admins"));
+            addSidebarButton("Products", "/icons/box.png", () -> frame.showScreen("manage-products"));
         } else {
             addSidebarButton("Dashboard", "/icons/store.png", () -> frame.showScreen("dashboard"));
             addSidebarButton("Products", "/icons/selling.png", () -> frame.showScreen("products-user"));

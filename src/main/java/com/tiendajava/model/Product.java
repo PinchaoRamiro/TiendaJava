@@ -11,6 +11,7 @@ public class Product {
     private int stock;
     private int category_id;
     private String createdAt;
+    private String imageURL;
 
     public Product() {
     }
@@ -81,5 +82,13 @@ public class Product {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 }

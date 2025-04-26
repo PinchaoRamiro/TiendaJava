@@ -10,16 +10,24 @@ import com.google.gson.Gson;
 import com.tiendajava.model.ApiResponse;
 
 public abstract class BaseRepository {
-  protected static final String URL_BASE = "http://localhost:5000/api/";
-  protected final HttpClient client = HttpClient.newHttpClient();
-  protected final Gson gson = new Gson();
+    protected static final String URL_BASE = "http://localhost:5000/api/";
+    protected final HttpClient client = HttpClient.newHttpClient();
+    protected final Gson gson = new Gson();
 
-  protected <T> ApiResponse<T> sendRequest(HttpRequest request, Type responseType) {
-    try {
-      HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-      return gson.fromJson(response.body(), responseType);
-    } catch (IOException | InterruptedException e) {
-      return new ApiResponse<>(false, null, "Server error: " + e.getMessage());
+    protected <T> ApiResponse<T> sendRequest(HttpRequest request, Type responseType) {
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            ApiResponse<T> apiResponse = gson.fromJson(response.body(), responseType);
+
+            if (apiResponse == null) {
+                return new ApiResponse<>(false, null, "Empty response from server");
+            }
+
+            return apiResponse;
+        } catch (IOException | InterruptedException e) {
+            return new ApiResponse<>(false, null, "Server error");
+        }
     }
-  }
 }
+

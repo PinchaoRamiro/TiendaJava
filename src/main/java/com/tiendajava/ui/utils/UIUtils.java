@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 
 public class UIUtils {
     public static void applyDarkTheme() {
@@ -37,5 +38,18 @@ public class UIUtils {
     public static JPasswordField createPasswordField() {
         JPasswordField field = new JPasswordField(15);
         return field;
+    }
+
+        // === Misc ===
+    public static Border getDefaultPadding() {
+        return BorderFactory.createEmptyBorder(10, 10, 10, 10); // Espaciado por defecto
+    }
+
+    public static Border getDefaultPadding(int top, int left, int bottom, int right) {
+        return BorderFactory.createEmptyBorder(top, left, bottom, right); // Espaciado personalizado
+    }
+
+    public static Border getRoundedBorder() {
+        return BorderFactory.createEmptyBorder( ); // Bordes redondeados
     }
 }

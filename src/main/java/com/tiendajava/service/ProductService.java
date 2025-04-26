@@ -37,10 +37,10 @@ public class ProductService {
     /**
      * Actualizar un producto existente
      */
-    public ApiResponse<Product> updateProduct(int id, Product product) {
+    public ApiResponse<Product> updateProduct(Product product) {
         String json = gson.toJson(product);
-        return productRepository.updateProduct(id, json);
-    }
+        return productRepository.updateProduct(json, product.getProduct_id());
+    }    
 
     /**
      * Eliminar un producto por su ID

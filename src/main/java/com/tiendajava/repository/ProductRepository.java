@@ -49,33 +49,48 @@ public class ProductRepository extends BaseRepository {
         .POST(HttpRequest.BodyPublishers.ofString(json))
         .build();
 
-    return sendRequest(request, Product.class);
+    Type type = new TypeToken<ApiResponse<Product>>() {}.getType();
+    return sendRequest(request, type);
   }
 
   /**
    * Actualiza un producto existente por ID (requiere token de administrador).
    */
-  public ApiResponse<Product> updateProduct(int id, String json) {
-    HttpRequest request = HttpRequest.newBuilder()
+  public ApiResponse<Product> updateProduct(String json, int id) {
+    try {
+        HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(URL_BASE + "product/update/" + id))
         .header("Content-Type", "application/json")
         .header("Authorization", "Bearer " + Session.getInstance().getToken())
         .PUT(HttpRequest.BodyPublishers.ofString(json))
         .build();
 
-    return sendRequest(request, Product.class);
+        Type type = new TypeToken<ApiResponse<Product>>() {}.getType();
+        return sendRequest(request, type);        
+
+    } catch (Exception e) {
+        return new ApiResponse<>(false, null, "Error updating product: ");
+    }
   }
 
   /**
    * Elimina un producto por ID (requiere token de administrador).
    */
   public ApiResponse<String> deleteProduct(int id) {
-    HttpRequest request = HttpRequest.newBuilder()
+    try{
+        HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(URL_BASE + "product/delete/" + id))
+        .header("Content-Type", "application/json")
         .header("Authorization", "Bearer " + Session.getInstance().getToken())
         .DELETE()
         .build();
 
-    return sendRequest(request, String.class);
+        Type type = new TypeToken<ApiResponse<String>>() {}.getType();
+        return sendRequest(request, type);        
+
+    } catch (Exception e) {
+        return new ApiResponse<>(false, null, "Error deleting product: ");
+    }
+
   }
 }
