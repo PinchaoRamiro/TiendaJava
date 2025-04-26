@@ -1,0 +1,67 @@
+package com.tiendajava.repository;
+
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.util.List;
+
+import com.google.gson.reflect.TypeToken;
+import com.tiendajava.model.ApiResponse;
+import com.tiendajava.model.OrderItem;
+import com.tiendajava.model.Session;
+
+public class OrderItemRepository extends BaseRepository {
+
+  private final String BASE_PATH = URL_BASE + "order-items/";
+
+  public ApiResponse<OrderItem> createOrderItem(String json) {
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(BASE_PATH + "create"))
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Bearer " + Session.getInstance().getToken())
+        .POST(BodyPublishers.ofString(json))
+        .build();
+
+    Type type = new TypeToken<ApiResponse<OrderItem>>() {
+    }.getType();
+    return sendRequest(request, type);
+  }
+
+  public ApiResponse<List<OrderItem>> getOrderItems(int orderId) {
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(BASE_PATH + "get/" + orderId))
+        .header("Authorization", "Bearer " + Session.getInstance().getToken())
+        .GET()
+        .build();
+
+    Type type = new TypeToken<ApiResponse<List<OrderItem>>>() {
+    }.getType();
+    return sendRequest(request, type);
+  }
+
+  public ApiResponse<OrderItem> updateOrderItem(String json, int orderItemId) {
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(BASE_PATH + "update/" + orderItemId))
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Bearer " + Session.getInstance().getToken())
+        .PUT(BodyPublishers.ofString(json))
+        .build();
+
+    Type type = new TypeToken<ApiResponse<OrderItem>>() {
+    }.getType();
+    return sendRequest(request, type);
+  }
+
+  public ApiResponse<String> deleteOrderItem(int orderItemId) {
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(BASE_PATH + "delete/" + orderItemId))
+        .header("Authorization", "Bearer " + Session.getInstance().getToken())
+        .DELETE()
+        .build();
+
+    Type type = new TypeToken<ApiResponse<String>>() {
+    }.getType();
+    return sendRequest(request, type);
+  }
+}

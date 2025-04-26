@@ -1,5 +1,7 @@
 package com.tiendajava.model;
 
+import java.util.List;
+
 public class User {
 
   private int id;
@@ -12,6 +14,17 @@ public class User {
   private String phone;
   private boolean status;
   private String password;
+  private String role;
+
+  private List<Order> orders; // Assuming a user can have multiple orders
+
+  public String getRole() {
+    return role;
+  }
+
+  public void setRole(String role) {
+    this.role = role;
+  }
 
   public int getId() {
     return id;
@@ -49,9 +62,6 @@ public class User {
     return status;
   }
 
-  public String getPassword() {
-    return password;
-  }
 
   public void setId(int id) {
     this.id = id;
@@ -95,6 +105,18 @@ public class User {
 
   @Override
   public String toString() {
-    return "User [id=" + id + ", name=" + name + ", lastName=" + lastname + ", email=" + email + ", typeDocument=" + typeDocument + ", numDocument=" + numDocument + ", address=" + address + ", phone=" + phone + ", status=" + status + ", password=" + password + "]";
+    return "User [id=" + id + ", name=" + name + ", lastName=" + lastname + ", email=" + email + ", typeDocument=" + typeDocument + ", numDocument=" + numDocument + ", address=" + address + ", phone=" + phone + ", status=" + status + "]";
   }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
 }
