@@ -38,7 +38,7 @@ public class DeleteConfirmDialog extends JDialog {
         panel.setBorder(UIUtils.getDefaultPadding());
 
         JLabel confirmLabel = new JLabel(
-            "<html><center>Are you sure you want to delete<br><b>" + entityName + "</b>?</center></html>",
+            "Are you sure you want to delete" + entityName + "?",
             JLabel.CENTER
         );
         confirmLabel.setFont(Fonts.SUBTITLE_FONT);
@@ -49,7 +49,7 @@ public class DeleteConfirmDialog extends JDialog {
         buttonPanel.setBackground(UITheme.getPrimaryColor());
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 10, 5, 10);
+        gbc.insets = new Insets(6, 12, 6, 12);
 
         JButton yesBtn = ButtonFactory.createDangerButton("Delete", null, this::confirm);
         JButton noBtn = ButtonFactory.createSecondaryButton("Cancel", null, this::cancel);

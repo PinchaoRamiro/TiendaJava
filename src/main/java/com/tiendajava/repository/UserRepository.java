@@ -40,40 +40,38 @@ public class UserRepository extends BaseRepository {
         return new ApiResponse<>(false, null, msg);
       }
     } catch (JsonSyntaxException | IOException | InterruptedException e) {
-      return new ApiResponse<>(false, null, "Error de conexión: " + e.getMessage());
+      return new ApiResponse<>(false, null, "Conexion error");
     }
   }
   
+  public ApiResponse<User> login(String json) {
+    try {
+      HttpRequest request = HttpRequest.newBuilder()
+          .uri(URI.create(URL_BASE + "auth/login"))
+          .header("Content-Type", "application/json")
+          .POST(BodyPublishers.ofString(json))
+          .build();
 
-public ApiResponse<User> login(String json) {
-  try {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(URL_BASE + "auth/login"))
-        .header("Content-Type", "application/json")
-        .POST(BodyPublishers.ofString(json))
-        .build();
+      HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      if (response.statusCode() == 200) {
+        LoginResponse loginResponse = gson.fromJson(response.body(), LoginResponse.class);
+        User user = loginResponse.getUser();
+        String token = loginResponse.getToken();
 
-    if (response.statusCode() == 200) {
-      LoginResponse loginResponse = gson.fromJson(response.body(), LoginResponse.class);
-      User user = loginResponse.getUser();
-      String token = loginResponse.getToken();
+        Session.getInstance().setToken(token);
+        Session.getInstance().setUser(user);
+        Session.getInstance().setRole(user.getRole());
 
-      Session.getInstance().setToken(token);
-      Session.getInstance().setUser(user);
-      Session.getInstance().setRole(user.getRole());
-
-      return new ApiResponse<>(true, user, loginResponse.getMsg());
-    } else {
-      String msg = gson.fromJson(response.body(), JsonObject.class).get("msg").getAsString();
-      return new ApiResponse<>(false, null, msg);
+        return new ApiResponse<>(true, user, loginResponse.getMsg());
+      } else {
+        String msg = gson.fromJson(response.body(), JsonObject.class).get("msg").getAsString();
+        return new ApiResponse<>(false, null, msg);
+      }
+    } catch (JsonSyntaxException | IOException | InterruptedException e) {
+      return new ApiResponse<>(false, null, "Connection error");
     }
-  } catch (JsonSyntaxException | IOException | InterruptedException e) {
-    return new ApiResponse<>(false, null, "Error de conexión: " + e.getMessage());
   }
-}
-
 
   public void logout() {
     try {
@@ -91,6 +89,7 @@ public ApiResponse<User> login(String json) {
 
     } catch (IOException | InterruptedException e) {
       System.err.println("Logout error: " + e.getMessage());
+
     }
   }
 
@@ -107,16 +106,41 @@ public ApiResponse<User> login(String json) {
   
       if (response.statusCode() == 200) {
         User userResponse = gson.fromJson(response.body(), User.class);
-        return new ApiResponse<>(true, userResponse, "Usuario actualizado correctamente");
+        return new ApiResponse<>(true, userResponse, "Successfully updated user");
       } else {
         String msg = gson.fromJson(response.body(), JsonObject.class).get("msg").getAsString();
         return new ApiResponse<>(false, null, msg);
       }
     } catch (JsonSyntaxException | IOException | InterruptedException e) {
-      return new ApiResponse<>(false, null, "Error al actualizar usuario: " + e.getMessage());
+      return new ApiResponse<>(false, null, "Error to update user");
     }
   }
   
+  //router.put('/password/:id', verifyToken, userController.updatePassword);
+
+  public ApiResponse<User> updatePassword(String json, int id) {
+    try {
+      HttpRequest request = HttpRequest.newBuilder()
+          .uri(URI.create(URL_BASE + "user/password/" + id))
+          .header("Content-Type", "application/json")
+          .header("Authorization", "Bearer " + Session.getInstance().getToken())
+          .PUT(BodyPublishers.ofString(json))
+          .build();
+  
+      HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+  
+      if (response.statusCode() == 200) {
+        User userResponse = gson.fromJson(response.body(), User.class);
+        return new ApiResponse<>(true, userResponse, "Successfully updated password");
+      } else {
+        String msg = gson.fromJson(response.body(), JsonObject.class).get("msg").getAsString();
+        return new ApiResponse<>(false, null, msg);
+      }
+    } catch (JsonSyntaxException | IOException | InterruptedException e) {
+      return new ApiResponse<>(false, null, "Error to update password");
+    }
+  }
+
 
   public ApiResponse<User> getUserByEmail(String email) {
     HttpRequest request = HttpRequest.newBuilder()
@@ -131,13 +155,13 @@ public ApiResponse<User> login(String json) {
   
       if (response.statusCode() == 200) {
         User userResponse = gson.fromJson(response.body(), User.class);
-        return new ApiResponse<>(true, userResponse, "Usuario encontrado");
+        return new ApiResponse<>(true, userResponse, "User found");
       } else {
         String msg = gson.fromJson(response.body(), JsonObject.class).get("msg").getAsString();
         return new ApiResponse<>(false, null, msg);
       }
     } catch (JsonSyntaxException | IOException | InterruptedException e) {
-      return new ApiResponse<>(false, null, "Error al obtener usuario: " + e.getMessage());
+      return new ApiResponse<>(false, null, "Error to get user by email");
     }
   }
   
@@ -160,7 +184,7 @@ public ApiResponse<User> login(String json) {
         return new ApiResponse<>(false, false, msg);
       }
     } catch (JsonSyntaxException | IOException | InterruptedException e) {
-      return new ApiResponse<>(false, false, "Error al cambiar estado: " + e.getMessage());
+      return new ApiResponse<>(false, false, "Error al cambiar estado");
     }
   }
   

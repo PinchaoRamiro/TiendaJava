@@ -4,13 +4,16 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.io.File;
 import java.math.BigDecimal;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
@@ -29,8 +32,14 @@ public class CreateProductDialog extends JDialog {
     private final JTextField categoryField = new JTextField(20);
     private final JTextField descriptionField = new JTextField(20);
 
+    private File imageFile;
+    private final JTextField imageField = new JTextField(20);
+
+
     private final ProductService productService = new ProductService();
     private final Runnable onProductCreated;
+
+    private final JButton selectImageBtn = ButtonFactory.createSecondaryButton("Choose Image", null, this::chooseImage);
 
     public CreateProductDialog(Runnable onProductCreated) {
         this.onProductCreated = onProductCreated;
@@ -60,6 +69,9 @@ public class CreateProductDialog extends JDialog {
         addLabelAndField(panel, gbc, row++, "Stock", stockField);
         addLabelAndField(panel, gbc, row++, "Category ID", categoryField);
         addLabelAndField(panel, gbc, row++, "Description", descriptionField);
+        addLabelAndField(panel, gbc, row++, "Image:", imageField);
+        gbc.gridx = 1; gbc.gridy = row++;
+        panel.add(selectImageBtn, gbc);
 
         gbc.gridy++;
         gbc.gridwidth = 2;
@@ -110,19 +122,30 @@ public class CreateProductDialog extends JDialog {
             product.setStock(stock);
             product.setCategory_id(categoryId);
             product.setDescription(description);
-
-            ApiResponse<Product> response = productService.createProduct(product);
-
-            if (response.isSuccess()) {
-                NotificationHandler.success("Product created successfully!");
+        
+            // ahora delegamos en el service
+            ApiResponse<Product> resp = productService.createProductWithImage(product, imageFile);
+            if (resp.isSuccess()) {
+                NotificationHandler.success("Producto creado"); 
                 dispose();
                 onProductCreated.run();
             } else {
-                NotificationHandler.error("Failed to create product: " + response.getMessage());
+                NotificationHandler.error("Error: " + resp.getMessage());
             }
 
         } catch (NumberFormatException e) {
             NotificationHandler.error("Invalid number format. Check price, stock, and category ID.");
         }
     }
+
+    private void chooseImage() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("images", "jpg","png","jpeg","gif"));
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            imageFile = chooser.getSelectedFile();
+            imageField.setText(imageFile.getName());
+        }
+    }
+
+    
 }

@@ -16,52 +16,70 @@ public class OrderItemRepository extends BaseRepository {
   private final String BASE_PATH = URL_BASE + "order-items/";
 
   public ApiResponse<OrderItem> createOrderItem(String json) {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(BASE_PATH + "create"))
-        .header("Content-Type", "application/json")
-        .header("Authorization", "Bearer " + Session.getInstance().getToken())
-        .POST(BodyPublishers.ofString(json))
-        .build();
+    try {
+      HttpRequest request = HttpRequest.newBuilder()
+          .uri(URI.create(BASE_PATH + "create/"))
+          .header("Content-Type", "application/json")
+          .header("Authorization", "Bearer " + Session.getInstance().getToken())
+          .POST(BodyPublishers.ofString(json))
+          .build();
 
-    Type type = new TypeToken<ApiResponse<OrderItem>>() {
-    }.getType();
-    return sendRequest(request, type);
+      Type type = new TypeToken<ApiResponse<OrderItem>>() {
+      }.getType();
+      return sendRequest(request, type);
+    } catch (Exception e) {
+      return new ApiResponse<>(false, null, "Error to create order item: " + e.getMessage());
+    }
   }
 
   public ApiResponse<List<OrderItem>> getOrderItems(int orderId) {
-    HttpRequest request = HttpRequest.newBuilder()
+    try {
+        
+      HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(BASE_PATH + "get/" + orderId))
         .header("Authorization", "Bearer " + Session.getInstance().getToken())
         .GET()
         .build();
 
-    Type type = new TypeToken<ApiResponse<List<OrderItem>>>() {
-    }.getType();
-    return sendRequest(request, type);
+      Type type = new TypeToken<ApiResponse<List<OrderItem>>>() {
+      }.getType();
+      return sendRequest(request, type);
+    } catch (Exception e) {
+      return new ApiResponse<>(false, null, "Error to get order items");
+    }
   }
 
   public ApiResponse<OrderItem> updateOrderItem(String json, int orderItemId) {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(BASE_PATH + "update/" + orderItemId))
-        .header("Content-Type", "application/json")
-        .header("Authorization", "Bearer " + Session.getInstance().getToken())
-        .PUT(BodyPublishers.ofString(json))
-        .build();
+    try {
+      HttpRequest request = HttpRequest.newBuilder()
+          .uri(URI.create(BASE_PATH + "update/" + orderItemId))
+          .header("Content-Type", "application/json")
+          .header("Authorization", "Bearer " + Session.getInstance().getToken())
+          .PUT(BodyPublishers.ofString(json))
+          .build();
 
-    Type type = new TypeToken<ApiResponse<OrderItem>>() {
-    }.getType();
-    return sendRequest(request, type);
+      Type type = new TypeToken<ApiResponse<OrderItem>>() {
+      }.getType();
+      return sendRequest(request, type);
+    } catch (Exception e) {
+      return new ApiResponse<>(false, null, "Error to update order item");
+    }
   }
 
   public ApiResponse<String> deleteOrderItem(int orderItemId) {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(BASE_PATH + "delete/" + orderItemId))
-        .header("Authorization", "Bearer " + Session.getInstance().getToken())
-        .DELETE()
-        .build();
+    try {
+      HttpRequest request = HttpRequest.newBuilder()
+          .uri(URI.create(BASE_PATH + "delete/" + orderItemId))
+          .header("Content-Type", "application/json")
+          .header("Authorization", "Bearer " + Session.getInstance().getToken())
+          .DELETE()
+          .build();
 
-    Type type = new TypeToken<ApiResponse<String>>() {
-    }.getType();
-    return sendRequest(request, type);
+      Type type = new TypeToken<ApiResponse<String>>() {
+      }.getType();
+      return sendRequest(request, type);
+    } catch (Exception e) {
+      return new ApiResponse<>(false, null, "Error to delete order item");
+    }
   }
 }

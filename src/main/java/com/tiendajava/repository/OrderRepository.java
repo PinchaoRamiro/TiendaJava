@@ -14,59 +14,79 @@ import com.tiendajava.model.Session;
 public class OrderRepository extends BaseRepository {
 
     public ApiResponse<Order> createOrder(String json) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(URL_BASE + "orders"))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + Session.getInstance().getToken())
-                .POST(BodyPublishers.ofString(json))
-                .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(URL_BASE + "orders"))
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer " + Session.getInstance().getToken())
+            .POST(BodyPublishers.ofString(json))
+            .build();
 
-        Type type = new TypeToken<ApiResponse<Order>>() {}.getType();
-        return sendRequest(request, type);
+            Type type = new TypeToken<ApiResponse<Order>>() {}.getType();
+            return sendRequest(request, type);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to create order");
+        }
     }
 
     public ApiResponse<List<Order>> getMyOrders() {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(URL_BASE + "orders"))
-                .header("Authorization", "Bearer " + Session.getInstance().getToken())
-                .GET()
-                .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(URL_BASE + "orders"))
+            .header("Authorization", "Bearer " + Session.getInstance().getToken())
+            .GET()
+            .build();
 
-        Type type = new TypeToken<ApiResponse<List<Order>>>() {}.getType();
-        return sendRequest(request, type);
+            Type type = new TypeToken<ApiResponse<List<Order>>>() {}.getType();
+            return sendRequest(request, type);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to get my orders");
+        }
     }
 
     public ApiResponse<List<Order>> getAllOrders() {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(URL_BASE + "orders/all"))
-                .header("Authorization", "Bearer " + Session.getInstance().getToken())
-                .GET()
-                .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(URL_BASE + "orders/all"))
+            .header("Authorization", "Bearer " + Session.getInstance().getToken())
+            .GET()
+            .build();
 
-        Type type = new TypeToken<ApiResponse<List<Order>>>() {}.getType();
-        return sendRequest(request, type);
+            Type type = new TypeToken<ApiResponse<List<Order>>>() {}.getType();
+            return sendRequest(request, type);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to get all orders");
+        }
     }
 
     public ApiResponse<Order> getOrderById(int id) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(URL_BASE + "orders/" + id))
-                .header("Authorization", "Bearer " + Session.getInstance().getToken())
-                .GET()
-                .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(URL_BASE + "orders/" + id))
+            .header("Authorization", "Bearer " + Session.getInstance().getToken())
+            .GET()
+            .build();   
 
-        Type type = new TypeToken<ApiResponse<Order>>() {}.getType();
-        return sendRequest(request, type);
+            Type type = new TypeToken<ApiResponse<Order>>() {}.getType();
+            return sendRequest(request, type);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to get order by id");
+        }
     }
 
     public ApiResponse<Order> updateOrderStatus(int id, String json) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(URL_BASE + "orders/" + id + "/status"))
-                .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + Session.getInstance().getToken())
-                .method("PATCH", BodyPublishers.ofString(json))
-                .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(URL_BASE + "orders/" + id))
+            .header("Content-Type", "application/json")
+            .header("Authorization", "Bearer " + Session.getInstance().getToken())
+            .PUT(BodyPublishers.ofString(json))
+            .build();
 
-        Type type = new TypeToken<ApiResponse<Order>>() {}.getType();
-        return sendRequest(request, type);
+            Type type = new TypeToken<ApiResponse<Order>>() {}.getType();
+            return sendRequest(request, type);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to update order status");
+        }
     }
 }

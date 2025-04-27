@@ -13,67 +13,98 @@ import com.tiendajava.model.User;
 public class AdminRepository extends BaseRepository {
 
     public ApiResponse<User> registerAdmin(String json) {
-        HttpRequest request = HttpRequest.newBuilder()
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(URL_BASE + "admin/register-admin"))
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .POST(HttpRequest.BodyPublishers.ofString(json))
             .build();
 
-        return sendRequest(request, User.class);
+            Type type = new TypeToken<ApiResponse<User>>() {}.getType();
+            return sendRequest(request, type);        
+            
+        } catch ( Exception e) {
+            return new ApiResponse<>(false, null, "Error to register admin: " );
+        }
+
     }
 
     public ApiResponse<String> logoutAdmin() {
-        HttpRequest request = HttpRequest.newBuilder()
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(URL_BASE + "admin/logout"))
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .POST(HttpRequest.BodyPublishers.noBody())
             .build();
 
-        return sendRequest(request, String.class);
+            Type type = new TypeToken<ApiResponse<String>>() {}.getType();
+            return sendRequest(request, type);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to logout admin");
+        }
     }
 
     public ApiResponse<List<User>> getAllUsers() {
-        HttpRequest request = HttpRequest.newBuilder()
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(URL_BASE + "admin/users"))
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .GET()
             .build();
 
-        Type listType = new TypeToken<ApiResponse<List<User>>>(){}.getType();
-        return sendRequest(request, listType);
+            Type listType = new TypeToken<ApiResponse<List<User>>>(){}.getType();
+            return sendRequest(request, listType);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to get all users");
+        }
     }
 
     public ApiResponse<List<User>> getAllAdmins() {
-        HttpRequest request = HttpRequest.newBuilder()
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(URL_BASE + "admin/admins"))
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .GET()
             .build();
 
-        Type listType = new TypeToken<ApiResponse<List<User>>>(){}.getType();
-        return sendRequest(request, listType);
+            Type listType = new TypeToken<ApiResponse<List<User>>>(){}.getType();
+            return sendRequest(request, listType);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to get all admins");
+        }
     }
 
     public ApiResponse<User> updateUserRole(String json, int userId) {
-        HttpRequest request = HttpRequest.newBuilder()
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(URL_BASE + "admin/user-role/" + userId))
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .method("PATCH", HttpRequest.BodyPublishers.ofString(json))
             .build();
 
-        return sendRequest(request, User.class);
+            Type type = new TypeToken<ApiResponse<User>>() {}.getType();
+            return sendRequest(request, type);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to update user role");
+        }
     }
 
     public ApiResponse<String> deleteUser(int userId) {
-        HttpRequest request = HttpRequest.newBuilder()
+
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create(URL_BASE + "admin/user/" + userId))
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .DELETE()
             .build();
 
-        return sendRequest(request, String.class);
+            Type type = new TypeToken<ApiResponse<String>>() {}.getType();
+            return sendRequest(request, type);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to delete user");
+        }
     }
 }

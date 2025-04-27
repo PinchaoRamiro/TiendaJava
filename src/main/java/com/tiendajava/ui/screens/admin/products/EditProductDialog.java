@@ -16,6 +16,7 @@ import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
 import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.components.ButtonFactory;
+import com.tiendajava.ui.components.dialogs.ConfirmationDialog;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
@@ -95,7 +96,7 @@ public class EditProductDialog extends JDialog {
         descriptionField.setText(productToEdit.getDescription());
     }
 
-    private void saveProductChanges() {
+    private void saveProductChanges(){
         String name = nameField.getText().trim();
         String priceText = priceField.getText().trim();
         String stockText = stockField.getText().trim();
@@ -106,30 +107,32 @@ public class EditProductDialog extends JDialog {
             NotificationHandler.warning("Please fill in all required fields.");
             return;
         }
-
-        try {
-            BigDecimal price = new BigDecimal(priceText);
-            int stock = Integer.parseInt(stockText);
-            int categoryId = Integer.parseInt(categoryIdText);
-
-            productToEdit.setName(name);
-            productToEdit.setPrice(price);
-            productToEdit.setStock(stock);
-            productToEdit.setCategory_id(categoryId);
-            productToEdit.setDescription(description);
-
-            ApiResponse<Product> response = productService.updateProduct(productToEdit);
-
-            if (response.isSuccess()) {
-                NotificationHandler.success("Product updated successfully!");
-                dispose();
-                onProductUpdated.run();
-            } else {
-                NotificationHandler.error("Failed to update product: " + response.getMessage());
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog("Confirmation", "Are you sure you want to update the product: " + productToEdit.getName() + "?", () -> {
+            try {
+                BigDecimal price = new BigDecimal(priceText);
+                int stock = Integer.parseInt(stockText);
+                int categoryId = Integer.parseInt(categoryIdText);
+    
+                productToEdit.setName(name);
+                productToEdit.setPrice(price);
+                productToEdit.setStock(stock);
+                productToEdit.setCategory_id(categoryId);
+                productToEdit.setDescription(description);
+    
+                ApiResponse<Product> response = productService.updateProduct(productToEdit);
+    
+                if (response.isSuccess()) {
+                    NotificationHandler.success("Product updated successfully!");
+                    dispose();
+                    onProductUpdated.run();
+                } else {
+                    NotificationHandler.error("Failed to update product: " + response.getMessage());
+                }
+    
+            } catch (NumberFormatException e) {
+                NotificationHandler.error("Invalid number format. Check price, stock, and category ID.");
             }
-
-        } catch (NumberFormatException e) {
-            NotificationHandler.error("Invalid number format. Check price, stock, and category ID.");
-        }
+        });
+        confirmationDialog.setVisible(true);
     }
 }

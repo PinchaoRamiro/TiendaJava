@@ -40,6 +40,11 @@ public class UserService {
 		return userRepository.updateUser(json, user.getId());
 	}
 
+	public ApiResponse<User> changePassword(User user, String currentPassword,  String newPassword) {
+		String json = "{ \"currentPassword\": \"" + currentPassword + "\", \"newPassword\": \"" + newPassword + "\" }";
+		return userRepository.updatePassword(json, user.getId());
+	}
+
 	public ApiResponse<Boolean>  setStatusUser(User user, boolean status) {
 		String json = "{ \"status\": " + status + " }";
 		return userRepository.setStatusUser(json, user.getId());

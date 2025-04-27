@@ -40,11 +40,14 @@ public class AdminService {
 
     // Clase interna para representar la carga útil del cambio de rol
     private static class RolePayload {
-        @SuppressWarnings("unused")
         private final String role;
 
         public RolePayload(String role) {
             this.role = role;
+        }
+
+        public String getRole() {
+            return role;
         }
     }
 }

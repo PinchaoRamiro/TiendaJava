@@ -1,9 +1,11 @@
-package com.tiendajava.ui.screens.admin;
+package com.tiendajava.ui.screens.admin.products;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -16,8 +18,7 @@ import com.tiendajava.model.Product;
 import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
-import com.tiendajava.ui.screens.admin.products.CreateProductDialog;
-import com.tiendajava.ui.screens.admin.products.EditProductDialog;
+import com.tiendajava.ui.components.dialogs.DeleteConfirmDialog;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
@@ -27,14 +28,15 @@ public class ProductsAdminScreen extends JPanel {
 
     private final MainUI parent;
     private final ProductService productService = new ProductService();
-    private final JPanel productsPanel = new JPanel(new GridLayout(0, 1, 10, 10)); // Panel dinámico
+    private final JPanel productsPanel = new JPanel(new GridLayout(0, 2, 15, 15)); 
 
     public ProductsAdminScreen(MainUI parent) {
         this.parent = parent;
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
+        productsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Título
+
         JLabel title = new JLabel("Manage Products", new ImageIcon(getClass().getResource("/icons/box.png")), SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
@@ -42,7 +44,6 @@ public class ProductsAdminScreen extends JPanel {
 
         add(title, BorderLayout.NORTH);
 
-        // Botón de "Crear Producto"
         JButton createProductBtn = ButtonFactory.createPrimaryButton("Add Product", new ImageIcon(getClass().getResource("/icons/user-add.png")), this::createProduct);
         JPanel topPanel = new JPanel();
         topPanel.setBackground(UITheme.getPrimaryColor());
@@ -50,10 +51,12 @@ public class ProductsAdminScreen extends JPanel {
 
         add(topPanel, BorderLayout.PAGE_START);
 
-        // Scroll de productos
         JScrollPane scrollPane = new JScrollPane(productsPanel);
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
+
+        scrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar());
+        scrollPane.getHorizontalScrollBar().setUI(UIUtils.createDarkScrollBar());
 
         add(scrollPane, BorderLayout.CENTER);
 
@@ -82,18 +85,20 @@ public class ProductsAdminScreen extends JPanel {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(UITheme.getSecondaryColor());
         card.setBorder(UIUtils.getRoundedBorder());
+        card.setPreferredSize(new Dimension(300, 150));
 
         JLabel nameLabel = new JLabel(product.getName() + " - $" + product.getPrice());
         nameLabel.setFont(Fonts.SUBTITLE_FONT);
         nameLabel.setForeground(UITheme.getTextColor());
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         card.add(nameLabel, BorderLayout.NORTH);
 
-        // Botones de editar / eliminar
         JPanel actionsPanel = new JPanel();
         actionsPanel.setBackground(UITheme.getSecondaryColor());
 
         JButton editBtn = ButtonFactory.createSecondaryButton("Edit", null, () -> editProduct(product));
-        JButton deleteBtn = ButtonFactory.createDangerButton("Delete", null, () -> deleteProduct(product.getProduct_id()));
+        JButton deleteBtn = ButtonFactory.createDangerButton("Delete", null, () -> deleteProduct(product.getProduct_id(), product.getName()));
 
         actionsPanel.add(editBtn);
         actionsPanel.add(deleteBtn);
@@ -102,7 +107,7 @@ public class ProductsAdminScreen extends JPanel {
 
         return card;
     }
-    
+
     private void createProduct() {
         CreateProductDialog dialog = new CreateProductDialog(this::loadProducts);
         dialog.setVisible(true);
@@ -113,14 +118,21 @@ public class ProductsAdminScreen extends JPanel {
         dialog.setVisible(true);
     }
 
-
-    private void deleteProduct(int productId) {
-        ApiResponse<String> response = productService.deleteProduct(productId);
-        if (response.isSuccess()) {
-            NotificationHandler.success("Product deleted successfully!");
-            loadProducts();
-        } else {
-            NotificationHandler.error("Failed to delete product: " + response.getMessage());
-        }
+    private void deleteProduct(int productId, String productName) {
+        new DeleteConfirmDialog(productName, () -> {
+            ApiResponse<String> response = productService.deleteProduct(productId);
+            if (response.isSuccess()) {
+                NotificationHandler.success("Product deleted successfully!");
+                loadProducts();
+            } else {
+                NotificationHandler.error("Failed to delete product: " + response.getMessage());
+            }
+            loadProducts(); 
+        }).setVisible(true);
     }
+
+    // @Override
+    // public MainUI getParent() {
+    //     return parent;
+    // }
 }

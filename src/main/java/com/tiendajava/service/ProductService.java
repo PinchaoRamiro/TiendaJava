@@ -1,5 +1,7 @@
 package com.tiendajava.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -29,10 +31,14 @@ public class ProductService {
     /**
      * Crear un nuevo producto
      */
-    public ApiResponse<Product> createProduct(Product product) {
-        String json = gson.toJson(product);
-        return productRepository.createProduct(json);
+    public ApiResponse<Product> createProductWithImage(Product p, File image) {
+        try {
+            return productRepository.createProductWithImage(p, image);
+        } catch (IOException | InterruptedException e) {
+            return new ApiResponse<>(false, null, "Error al subir imagen: " + e.getMessage());
+        }
     }
+
 
     /**
      * Actualizar un producto existente

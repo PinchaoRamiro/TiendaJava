@@ -11,7 +11,7 @@ public class Product {
     private int stock;
     private int category_id;
     private String createdAt;
-    private String imageURL;
+    private String image;
 
     public Product() {
     }
@@ -84,11 +84,11 @@ public class Product {
         this.createdAt = createdAt;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public String getImage() {
+        return image;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
+    public void setImage(String image) {
+        this.image = image;
     }
 }

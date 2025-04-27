@@ -16,6 +16,8 @@ public class User {
   private String password;
   private String role;
 
+  
+
   private List<Order> orders; // Assuming a user can have multiple orders
 
   public String getRole() {

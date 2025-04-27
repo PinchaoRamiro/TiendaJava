@@ -1,13 +1,19 @@
 package com.tiendajava.ui.utils;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 
 public class UIUtils {
     public static void applyDarkTheme() {
@@ -50,6 +56,57 @@ public class UIUtils {
     }
 
     public static Border getRoundedBorder() {
-        return BorderFactory.createEmptyBorder( ); // Bordes redondeados
+        return BorderFactory.createLineBorder(UITheme.getTertiaryColor(), 1, true);
     }
+
+    public static BasicScrollBarUI createDarkScrollBar() {
+        return new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = UITheme.getTertiaryColor();
+                this.trackColor = UITheme.getPrimaryColor();
+                this.thumbHighlightColor = UITheme.getTertiaryColor();
+                this.thumbDarkShadowColor = UITheme.getTertiaryColor();
+                this.thumbLightShadowColor = UITheme.getTertiaryColor();
+            }
+        };
+    }
+
+    // Padding alrededor del scroll
+    public static Border getScrollPaneBorder() {
+        return BorderFactory.createEmptyBorder(10, 10, 10, 10); // Espaciado alrededor del scroll
+    }
+
+    // create Style form field beautiful
+
+    public static void styleFormFields(JPanel panel) {
+        for (Component component : panel.getComponents()) {
+            if (component instanceof JTextField textField) {
+                textField.setBackground(UITheme.getTertiaryColor());
+                textField.setForeground(UITheme.getTextColor());
+                textField.setBorder(BorderFactory.createLineBorder(UITheme.getBorderColor()));
+            } else if (component instanceof JPasswordField passwordField) {
+                passwordField.setBackground(UITheme.getTertiaryColor());
+                passwordField.setForeground(UITheme.getTextColor());
+                passwordField.setBorder(BorderFactory.createLineBorder(UITheme.getBorderColor()));
+            }
+        }
+    }
+
+    // create form field with label and text field
+    public static JPanel createFormField(String labelText, JComponent inputField) {
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBackground(UITheme.getPrimaryColor());
+
+        JLabel label = new JLabel(labelText);
+        label.setFont(Fonts.NORMAL_FONT);
+        label.setForeground(UITheme.getTextColor());
+
+        panel.add(label, BorderLayout.WEST);
+        panel.add(inputField, BorderLayout.CENTER);
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
+
+        return panel;
+    }
+
 }

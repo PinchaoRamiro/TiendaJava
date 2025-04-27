@@ -12,10 +12,15 @@ import com.tiendajava.model.Session;
 import com.tiendajava.ui.components.FooterPanel;
 import com.tiendajava.ui.components.HeaderPanel;
 import com.tiendajava.ui.components.SidebarPanel;
-import com.tiendajava.ui.screens.DashboardScreen;
+import com.tiendajava.ui.screens.AccountSettingsScreen;
+import com.tiendajava.ui.screens.ChangePasswordScreen;
 import com.tiendajava.ui.screens.LoginScreen;
 import com.tiendajava.ui.screens.RegisterScreen;
-import com.tiendajava.ui.screens.admin.ProductsAdminScreen;
+import com.tiendajava.ui.screens.admin.AdminDashboardScreen;
+import com.tiendajava.ui.screens.admin.manageAdmins.ManageAdminsScreen;
+import com.tiendajava.ui.screens.admin.products.ProductsAdminScreen;
+import com.tiendajava.ui.screens.admin.users.ManageUsersScreen;
+import com.tiendajava.ui.screens.user.DashboardScreen;
 import com.tiendajava.ui.screens.user.ProductsUserScreen;
 import com.tiendajava.ui.utils.UIUtils;
 
@@ -61,10 +66,12 @@ public final class MainUI extends JFrame {
                 case "dashboard" -> contentPanel.add(new DashboardScreen(this), "dashboard");
                 case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
                 // case "orders" -> contentPanel.add(new OrdersScreen(this), "orders");
-                // case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
-                // case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
-                // case "manage-admins" -> contentPanel.add(new ManageAdminsScreen(this), "manage-admins");
+                case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
+                case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
+                case "manage-admins" -> contentPanel.add(new ManageAdminsScreen(this), "manage-admins");
                 case "manage-products" -> contentPanel.add(new ProductsAdminScreen(this), "manage-products");
+                case "change-password" -> contentPanel.add(new ChangePasswordScreen(this), "change-password");
+                case "account-settings" -> contentPanel.add(new AccountSettingsScreen(this), "account-settings");
             }
         }
 
@@ -76,7 +83,8 @@ public final class MainUI extends JFrame {
 
     private boolean nameRequiresAuth(String name) {
         return switch (name) {
-            case "dashboard", "products-user", "orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products" -> true;
+            case "dashboard", "products-user", "orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products"
+            , "account-settings", "change-password"  -> true;
             default -> false;
         };
     }

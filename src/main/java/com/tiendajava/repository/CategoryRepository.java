@@ -14,57 +14,79 @@ import com.tiendajava.model.Session;
 public class CategoryRepository extends BaseRepository {
 
     public ApiResponse<List<Category>> getAllCategories() {
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "category/get/"))
-            .GET()
-            .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(URL_BASE + "category/get/"))
+                .GET()
+                .build();
 
-        Type responseType = new TypeToken<ApiResponse<List<Category>>>() {}.getType();
-        return sendRequest(request, responseType);
+            Type responseType = new TypeToken<ApiResponse<List<Category>>>() {}.getType();
+            return sendRequest(request, responseType);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to get all categories");
+        }
     }
 
     public ApiResponse<Category> getCategoryById(int id) {
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "category/get/" + id))
-            .GET()
-            .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(URL_BASE + "category/get/" + id))
+                .GET()
+                .build();
 
-        Type responseType = new TypeToken<ApiResponse<Category>>() {}.getType();
-        return sendRequest(request, responseType);
+            Type responseType = new TypeToken<ApiResponse<Category>>() {}.getType();
+            return sendRequest(request, responseType);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to get category by id");
+        }
     }
 
     public ApiResponse<Category> createCategory(String json) {
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "category/create/"))
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer " + Session.getInstance().getToken())
-            .POST(BodyPublishers.ofString(json))
-            .build();
 
-        Type responseType = new TypeToken<ApiResponse<Category>>() {}.getType();
-        return sendRequest(request, responseType);
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(URL_BASE + "category/create/"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + Session.getInstance().getToken())
+                .POST(BodyPublishers.ofString(json))
+                .build();
+
+            Type responseType = new TypeToken<ApiResponse<Category>>() {}.getType();
+            return sendRequest(request, responseType);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to create category" );
+        }
     }
 
     public ApiResponse<Category> updateCategory(int id, String json) {
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "category/update/" + id))
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer " + Session.getInstance().getToken())
-            .PUT(BodyPublishers.ofString(json))
-            .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(URL_BASE + "category/update/" + id))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + Session.getInstance().getToken())
+                .PUT(BodyPublishers.ofString(json))
+                .build();
 
-        Type responseType = new TypeToken<ApiResponse<Category>>() {}.getType();
-        return sendRequest(request, responseType);
+            Type responseType = new TypeToken<ApiResponse<Category>>() {}.getType();
+            return sendRequest(request, responseType);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to update category" );
+        }
     }
 
     public ApiResponse<String> deleteCategory(int id) {
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "category/delete/" + id))
-            .header("Authorization", "Bearer " + Session.getInstance().getToken())
-            .DELETE()
-            .build();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(URL_BASE + "category/delete/" + id))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + Session.getInstance().getToken())
+                .DELETE()
+                .build();
 
-        Type responseType = new TypeToken<ApiResponse<String>>() {}.getType();
-        return sendRequest(request, responseType);
+            Type responseType = new TypeToken<ApiResponse<String>>() {}.getType();
+            return sendRequest(request, responseType);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to delete category" );
+        }
     }
 }

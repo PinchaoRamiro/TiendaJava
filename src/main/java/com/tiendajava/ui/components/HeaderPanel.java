@@ -17,6 +17,7 @@ import javax.swing.SwingConstants;
 import com.tiendajava.model.Session;
 import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
+import com.tiendajava.ui.components.dialogs.ConfirmationDialog;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 
@@ -86,22 +87,24 @@ public class HeaderPanel extends JPanel {
     }
 
     private void buildSettingsMenu() {
-        settingsMenu.removeAll(); // limpiar si ya existía
+        settingsMenu.removeAll(); 
 
         settingsMenu.setFont(Fonts.NORMAL_FONT);
         settingsMenu.setBackground(UITheme.getSecondaryColor());
 
         JMenuItem accountItem = createMenuItem("Account", "/icons/user.png", () -> {
-            System.out.println("Open account settings");
+            parent.showScreen("account-settings");
         });
 
         JMenuItem passwordItem = createMenuItem("Change Password", "/icons/door-key.png", () -> {
-            System.out.println("Open password change");
+            parent.showScreen("change-password");
         });
 
         JMenuItem logoutItem = createMenuItem("Logout", "/icons/exit.png", () -> {
-            userService.Logout();
-            parent.showScreen("login");
+            new ConfirmationDialog( "Logout Confirmation", "Are you sure you want to logout?", () -> {
+                userService.Logout();
+                parent.showScreen("login");
+            }).setVisible(true);
         });
         logoutItem.setBackground(UITheme.getDangerColor());
 
