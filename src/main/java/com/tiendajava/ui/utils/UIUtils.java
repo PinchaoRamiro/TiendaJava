@@ -1,11 +1,20 @@
 package com.tiendajava.ui.utils;
 
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,6 +36,20 @@ public class UIUtils {
         UIManager.put("PasswordField.foreground", UITheme.getTextColor());
         UIManager.put("PasswordField.caretForeground", UITheme.getTextColor());
         UIManager.put("PasswordField.border", BorderFactory.createLineBorder(UITheme.getBorderColor()));
+    }
+
+    public static ImageIcon LoadIcon(String resourcePath) {
+        try {
+            ImageIcon icon = new ImageIcon(UIUtils.class.getResource(resourcePath));
+            if (icon.getImageLoadStatus() == MediaTracker.ERRORED) {
+                System.err.println("Error loading icon: " + resourcePath);
+                return null;
+            }
+            return icon;
+        } catch (Exception e) {
+            System.err.println("Error loading icon: " + resourcePath);
+            return null;
+        }
     }
 
     public static JTextField createTextField(Font font) {
@@ -108,5 +131,44 @@ public class UIUtils {
 
         return panel;
     }
+
+    public static void styleComboBox(JComboBox<?> comboBox) {
+        comboBox.setBackground(UITheme.getSecondaryColor());    // Fondo oscuro
+        comboBox.setForeground(UITheme.getTextColor());         // Texto claro
+        comboBox.setFont(Fonts.NORMAL_FONT);                    // Fuente uniforme
+        comboBox.setBorder(javax.swing.BorderFactory.createLineBorder(UITheme.getTertiaryColor()));
+        comboBox.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); // Cambiar cursor
+        comboBox.setFocusable(false); // Desactivar el foco al hacer clic
+
+        // desplegable flecha clara
+        comboBox.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {
+            @Override
+            public void paint(Graphics g, JComponent c) {
+                super.paint(g, c);
+                g.setColor(UITheme.getTextColor());
+                g.fillPolygon(new int[]{c.getWidth() - 10, c.getWidth() - 5, c.getWidth() - 15}, new int[]{c.getHeight() / 2 - 5, c.getHeight() / 2 + 5, c.getHeight() / 2 + 5}, 3);
+            }
+        });
+    }
+
+    public static ImageIcon tintImage(ImageIcon originalIcon, Color color) {
+        Image image = originalIcon.getImage();
+        BufferedImage tintedImage = new BufferedImage(
+                image.getWidth(null),
+                image.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB
+        );
+    
+        Graphics2D g2d = tintedImage.createGraphics();
+        g2d.drawImage(image, 0, 0, null);
+    
+        g2d.setComposite(AlphaComposite.SrcAtop);
+        g2d.setColor(color);
+        g2d.fillRect(0, 0, tintedImage.getWidth(), tintedImage.getHeight());
+        g2d.dispose();
+    
+        return new ImageIcon(tintedImage);
+    }
+    
 
 }

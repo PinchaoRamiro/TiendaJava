@@ -1,44 +1,69 @@
 package com.tiendajava.ui.components;
 
-import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.LayoutManager;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.tiendajava.ui.utils.Fonts;
+import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
+import com.tiendajava.ui.utils.UIUtils;
 
 public class FooterPanel extends JPanel {
     public FooterPanel() {
-        setLayout((LayoutManager) new FlowLayout(FlowLayout.CENTER));
+        setLayout(new FlowLayout(FlowLayout.CENTER));
         setBackground(UITheme.getSecondaryColor());
-        setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, UITheme.getTertiaryColor()));
-        setPreferredSize(new Dimension(0, 40));
+        setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UITheme.getTertiaryColor()));
+        setPreferredSize(new Dimension(0, 60));
 
-        JLabel githubLink = new JLabel("<html><a href=''>GitHub</a></html>");
-        githubLink.setForeground(UITheme.getTextColor());
-        githubLink.setFont(Fonts.BOLD_NFONT);
-        githubLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        githubLink.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                try {
-                    Desktop.getDesktop().browse(new URI("https://github.com/PinchaoRamiro"));
-                } catch (URISyntaxException | IOException ex) {
-                }
+        // Crear un contenedor para los íconos y texto
+        JPanel footerContent = new JPanel();
+        footerContent.setLayout(new FlowLayout(FlowLayout.CENTER));
+        footerContent.setBackground(UITheme.getSecondaryColor());
+        
+        // Íconos de redes sociales
+        JLabel githubIcon = createLinkLabel("/icons/github.png", "https://github.com/PinchaoRamiro");
+
+        // separar un poco los iconos
+        githubIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 30));
+        JLabel linkedinIcon = createLinkLabel("/icons/linkedin.png", "https://www.linkedin.com/in/ramiro-pinchao-5038a931b/");
+        linkedinIcon.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 30));
+
+
+        // Texto de copyright
+        JLabel copyrightText = new JLabel("© 2025 Ramiro Pinchao. All rights reserved.");
+        copyrightText.setFont(Fonts.NORMAL_FONT);
+        copyrightText.setForeground(UITheme.getTextColor());
+        copyrightText.setBorder(BorderFactory.createEmptyBorder(0, 30, 0, 30));
+
+        // Añadir los íconos y texto al panel
+        footerContent.add(githubIcon, FlowLayout.LEFT);
+        footerContent.add(linkedinIcon, FlowLayout.LEFT);
+        footerContent.add(copyrightText, FlowLayout.LEFT);
+        footerContent.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); // Espaciado interno
+
+        // Añadir el panel principal al footer
+        add(footerContent);
+    }
+
+    private JLabel createLinkLabel(String iconPath, String url) {
+        // Crear íconos clickeables
+        ImageIcon icon = UIUtils.LoadIcon(iconPath);
+        JLabel label = ButtonFactory.createIconButton(icon, () -> {
+            try {
+                Desktop.getDesktop().browse(new URI(url));
+            } catch (IOException | URISyntaxException e) {
+                NotificationHandler.error( "Cannot open: " + url);
             }
         });
-
-        add(githubLink);
+        return label;
     }
 }

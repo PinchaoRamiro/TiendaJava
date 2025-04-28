@@ -109,8 +109,6 @@ public class ProductRepository extends BaseRepository {
 
       return HttpRequest.BodyPublishers.ofByteArrays(byteArrays);
   }
-
-
   /**
    * Actualiza un producto existente por ID (requiere token de administrador).
    */
@@ -167,30 +165,21 @@ public class ProductRepository extends BaseRepository {
    * Busca productos por nombre (requiere token de administrador).
    */
   public ApiResponse<List<Product>> searchProducts(String search) {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(URL_BASE + "product/get/search/" + search))
+    try {
+      HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(URL_BASE + "product/search?q=" + search))
         .header("Authorization", "Bearer " + Session.getInstance().getToken())
         .GET()
         .build();
 
-    Type responseType = new TypeToken<ApiResponse<List<Product>>>() {
-    }.getType();
-    return sendRequest(request, responseType);
+      Type responseType = new TypeToken<ApiResponse<List<Product>>>() {
+      }.getType();
+      return sendRequest(request, responseType);
+    } catch (Exception e) {
+      return new ApiResponse<>(false, null, "Error searching products: " + e.getMessage());
+    }
   }
-  /**
-   * Obtiene productos destacados (requiere token de administrador).
-   */
-  public ApiResponse<List<Product>> getFeaturedProducts() {
-    HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(URL_BASE + "product/get/featured"))
-        .header("Authorization", "Bearer " + Session.getInstance().getToken())
-        .GET()
-        .build();
-
-    Type responseType = new TypeToken<ApiResponse<List<Product>>>() {
-    }.getType();
-    return sendRequest(request, responseType);
-  }
+  
   /**
    * Obtiene productos por rango de precio (requiere token de administrador).
    */
@@ -205,4 +194,5 @@ public class ProductRepository extends BaseRepository {
     }.getType();
     return sendRequest(request, responseType);
   }
+
 }

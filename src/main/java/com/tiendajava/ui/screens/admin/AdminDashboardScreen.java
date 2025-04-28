@@ -1,6 +1,8 @@
 package com.tiendajava.ui.screens.admin;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.List;
 
@@ -17,83 +19,103 @@ import com.tiendajava.model.Product;
 import com.tiendajava.service.ReportService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.utils.Fonts;
+import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
+import com.tiendajava.ui.utils.UIUtils;
 
 public class AdminDashboardScreen extends JPanel {
 
-    private final MainUI parent;
     private final ReportService reportService = new ReportService();
+    private final JPanel cardsPanel = new JPanel(new GridLayout(0, 2, 20, 20));
 
     public AdminDashboardScreen(MainUI parent) {
-        this.parent = parent;
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
-        setForeground(UITheme.getTextColor());
-        initUI();
-    }
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-    private void initUI() {
-        JLabel title = new JLabel("Admin Dashboard", SwingConstants.CENTER);
+        // Título
+        JLabel title = new JLabel("Admin Dashboard", UIUtils.LoadIcon("/icons/home.png"), SwingConstants.LEFT);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
-        title.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        title.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         add(title, BorderLayout.NORTH);
 
-        JPanel content = new JPanel(new GridLayout(1, 2, 20, 20));
-        content.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        content.setBackground(UITheme.getPrimaryColor());
+        cardsPanel.setBackground(UITheme.getPrimaryColor());
 
-        // Panel de resumen
-        JPanel summaryPanel = new JPanel(new GridLayout(0, 1, 10, 10));
-        summaryPanel.setBackground(UITheme.getSecondaryColor());
-        summaryPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(UITheme.getTextColor()), "Summary", 0, 0, Fonts.NORMAL_FONT, UITheme.getTextColor()));
+        JScrollPane scrollPane = new JScrollPane(cardsPanel);
+        scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
+        scrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar());
+        scrollPane.getHorizontalScrollBar().setUI(UIUtils.createDarkScrollBar());
 
-        // Panel de pedidos por estado
-        JPanel ordersStatusPanel = new JPanel(new GridLayout(0, 1, 10, 10));
-        ordersStatusPanel.setBackground(UITheme.getSecondaryColor());
-        ordersStatusPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(UITheme.getTextColor()), "Orders by Status", 0, 0, Fonts.NORMAL_FONT, UITheme.getTextColor()));
+        add(scrollPane, BorderLayout.CENTER);
 
-        content.add(summaryPanel);
-        content.add(ordersStatusPanel);
+        // Cargar resumen
+        loadDashboardSummary();
+    }
 
-        add(new JScrollPane(content), BorderLayout.CENTER);
+    private void loadDashboardSummary() {
+        cardsPanel.removeAll();
 
         // Cargar datos
-        loadDashboardSummary(summaryPanel);
-        loadOrdersByStatus(ordersStatusPanel);
-    }
+        ApiResponse<DashboardSummary> dashboardResponse = reportService.getDashboardSummary();
+        ApiResponse<List<OrderStatusReport>> ordersStatusResponse = reportService.getOrdersByStatus();
+        ApiResponse<List<Product>> outOfStockResponse = reportService.getOutOfStockProducts();
 
-    private void loadDashboardSummary(JPanel panel) {
-        ApiResponse<DashboardSummary> response = reportService.getDashboardSummary();
-        DashboardSummary summary = response != null ? response.getData() : null;
-        ApiResponse<List<Product>> outOfStock = reportService.getOutOfStockProducts();
-        if (summary != null) {
-            panel.add(createLabel("Total of users: " + summary.getTotalUsers()));
-            panel.add(createLabel("Total Products: " + summary.getTotalProducts()));
-            panel.add(createLabel("Producto out of stock: " + outOfStock.getData().size()));
-            panel.add(createLabel("Total Orders: " + summary.getTotalOrders()));
-            panel.add(createLabel("Total Incomes: $" + summary.getTotalRevenue()));
-        } else {
-            panel.add(createLabel("Could not load the summary."));
+        if (!dashboardResponse.isSuccess() && !ordersStatusResponse.isSuccess() && !outOfStockResponse.isSuccess()) {
+            NotificationHandler.error("Failed to load dashboard data");
+            return;
         }
-    }
 
-    private void loadOrdersByStatus(JPanel panel) {
-        ApiResponse<List<OrderStatusReport>> response = reportService.getOrdersByStatus();
-        List<OrderStatusReport> reports = response != null ? response.getData() : null;
-        if (reports != null && !reports.isEmpty()) {
-            for (OrderStatusReport report : reports) {
-                panel.add(createLabel(report.getStatus() + ": " + report.getCount()));
+        DashboardSummary dashboard = dashboardResponse.getData();
+        List<OrderStatusReport> ordersStatus = ordersStatusResponse.getData();
+        List<Product> outOfStockProducts = outOfStockResponse.getData();
+
+        // 📦 Número total de productos
+        cardsPanel.add(createInfoCard("Total Products", dashboard.getTotalProducts() + "", "/icons/box.png", UITheme.getSuccessColor()));
+
+        // 👤 Número total de usuarios
+        cardsPanel.add(createInfoCard("Total Users", dashboard.getTotalUsers() + "", "/icons/users.png", UITheme.getInfoColor()));
+
+        // 🛒 Productos fuera de stock
+        cardsPanel.add(createInfoCard("Out of Stock", String.valueOf(outOfStockProducts != null ? outOfStockProducts.size() : 0), "/icons/config-product.png", UITheme.getWarningColor()));
+
+        // 🧾 Órdenes por estado
+        if (ordersStatus != null) {
+            for (OrderStatusReport status : ordersStatus) {
+                cardsPanel.add(createInfoCard(status.getStatus(), String.valueOf(status.getCount()), "/icons/Cart.png", UITheme.getInfoColor()));
             }
         } else {
-            panel.add(createLabel("Could not load the orders by status."));
+            cardsPanel.add(createInfoCard("Orders Status", "No data available", "/icons/edit.png", UITheme.getWarningColor()));
         }
+
+        cardsPanel.revalidate();
+        cardsPanel.repaint();
     }
 
-    private JLabel createLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setFont(Fonts.NORMAL_FONT);
-        label.setForeground(UITheme.getTextColor());
-        return label;
+    private JPanel createInfoCard(String title, String value, String iconPath, Color color) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(UITheme.getSecondaryColor());
+        card.setBorder(BorderFactory.createLineBorder(UITheme.getTertiaryColor(), 2));
+        card.setPreferredSize(new Dimension(250, 150));
+
+        JLabel iconLabel = new JLabel(UIUtils.LoadIcon(iconPath));
+        // set a margin top 
+        iconLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        card.add(iconLabel, BorderLayout.NORTH);
+
+        JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
+        titleLabel.setFont(Fonts.SUBTITLE_FONT);
+        titleLabel.setForeground(color);
+        card.add(titleLabel, BorderLayout.CENTER);
+
+        JLabel valueLabel = new JLabel(value, SwingConstants.CENTER);
+        // set a margin bottom
+        valueLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        valueLabel.setFont(Fonts.TITLE_FONT);
+        valueLabel.setForeground(UITheme.getTextColor());
+        card.add(valueLabel, BorderLayout.SOUTH);
+
+        return card;
     }
 }

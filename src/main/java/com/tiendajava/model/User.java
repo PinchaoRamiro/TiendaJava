@@ -107,7 +107,7 @@ public class User {
 
   @Override
   public String toString() {
-    return "User [id=" + id + ", name=" + name + ", lastName=" + lastname + ", email=" + email + ", typeDocument=" + typeDocument + ", numDocument=" + numDocument + ", address=" + address + ", phone=" + phone + ", status=" + status + "]";
+    return "User [id=" + id + ", name=" + name + ", lastname=" + lastname + ", email=" + email + ", typeDocument=" + typeDocument + ", numDocument=" + numDocument + ", address=" + address + ", phone=" + phone + ", status=" + status + "]";
   }
 
     public String getPassword() {

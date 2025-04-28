@@ -6,8 +6,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -16,7 +18,9 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.tiendajava.model.ApiResponse;
+import com.tiendajava.model.Category;
 import com.tiendajava.model.Product;
+import com.tiendajava.service.CategoryService;
 import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.utils.Fonts;
@@ -29,7 +33,7 @@ public class CreateProductDialog extends JDialog {
     private final JTextField nameField = new JTextField(20);
     private final JTextField priceField = new JTextField(20);
     private final JTextField stockField = new JTextField(20);
-    private final JTextField categoryField = new JTextField(20);
+    private final JComboBox<Category> categoryComboBox = new JComboBox<>();
     private final JTextField descriptionField = new JTextField(20);
 
     private File imageFile;
@@ -50,12 +54,16 @@ public class CreateProductDialog extends JDialog {
         getContentPane().setBackground(UITheme.getPrimaryColor());
 
         buildForm();
+        loadCategories();
     }
 
     private void buildForm() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(UITheme.getPrimaryColor());
         panel.setBorder(UIUtils.getDefaultPadding());
+
+        UIUtils.styleComboBox(categoryComboBox);
+
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -67,7 +75,7 @@ public class CreateProductDialog extends JDialog {
         addLabelAndField(panel, gbc, row++, "Name", nameField);
         addLabelAndField(panel, gbc, row++, "Price", priceField);
         addLabelAndField(panel, gbc, row++, "Stock", stockField);
-        addLabelAndField(panel, gbc, row++, "Category ID", categoryField);
+        addLabelAndField(panel, gbc, row++, "Category", categoryComboBox);
         addLabelAndField(panel, gbc, row++, "Description", descriptionField);
         addLabelAndField(panel, gbc, row++, "Image:", imageField);
         gbc.gridx = 1; gbc.gridy = row++;
@@ -95,14 +103,32 @@ public class CreateProductDialog extends JDialog {
         panel.add(field, gbc);
     }
 
+    private void addLabelAndField(JPanel panel, GridBagConstraints gbc, int row, String labelText, JComboBox<?> comboBox) {
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        JLabel label = new JLabel(labelText);
+        label.setForeground(UITheme.getTextColor());
+        label.setFont(Fonts.NORMAL_FONT);
+        panel.add(label, gbc);
+
+        gbc.gridx = 1;
+        panel.add(comboBox, gbc);
+    }
+
     private void createProduct() {
         String name = nameField.getText().trim();
         String priceText = priceField.getText().trim();
         String stockText = stockField.getText().trim();
-        String categoryIdText = categoryField.getText().trim();
         String description = descriptionField.getText().trim();
 
-        if (name.isEmpty() || priceText.isEmpty() || stockText.isEmpty() || categoryIdText.isEmpty()) {
+        Category selectedCategory = (Category) categoryComboBox.getSelectedItem();
+        if (selectedCategory == null) {
+            NotificationHandler.warning("Please select a category.");
+            return;
+        }
+
+
+        if (name.isEmpty() || priceText.isEmpty() || stockText.isEmpty()) {
             NotificationHandler.warning("Please fill in all required fields.");
             return;
         }
@@ -114,13 +140,13 @@ public class CreateProductDialog extends JDialog {
                 return;
             }
             int stock = Integer.parseInt(stockText);
-            int categoryId = Integer.parseInt(categoryIdText);
+            int category_id = selectedCategory.getCategory_id();
 
             Product product = new Product();
             product.setName(name);
             product.setPrice(price);
             product.setStock(stock);
-            product.setCategory_id(categoryId);
+            product.setCategory_id(category_id);
             product.setDescription(description);
         
             // ahora delegamos en el service
@@ -147,5 +173,16 @@ public class CreateProductDialog extends JDialog {
         }
     }
 
-    
+    private void loadCategories() {
+    CategoryService categoryService = new CategoryService();
+    ApiResponse<List<Category>> response = categoryService.getAllCategories();
+    if (response.isSuccess() && response.getData() != null) {
+        for (Category category : response.getData()) {
+            categoryComboBox.addItem(category); // Agrega cada categoría al combo
+        }
+    } else {
+        NotificationHandler.warning("Failed to load categories: " + response.getMessage());
+    }
+}
+
 }

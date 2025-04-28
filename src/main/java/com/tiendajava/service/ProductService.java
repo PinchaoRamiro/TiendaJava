@@ -54,4 +54,27 @@ public class ProductService {
     public ApiResponse<String> deleteProduct(int id) {
         return productRepository.deleteProduct(id);
     }
+
+
+    /**
+     * Obtener productos por nombre
+     */
+    public ApiResponse<List<Product>> getProductsByName(String name) {
+        return productRepository.searchProducts(name);
+    }
+
+    /**
+     * Obtener productos por categoria
+     */
+    public ApiResponse<List<Product>> getProductsByCategory(int categoryId) {
+        return productRepository.getProductsByCategory(categoryId);
+    }
+
+    /*
+     * obtener productos ente un rango de precios
+     */
+
+    public ApiResponse<List<Product>> getProductsByPriceRange(double minPrice, double maxPrice) {
+        return productRepository.getProductsByPriceRange(minPrice, maxPrice);
+    }
 }

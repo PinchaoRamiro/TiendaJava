@@ -11,7 +11,7 @@ public class Order {
     private BigDecimal total_amount;
     private String createdAt;
 
-    private List<OrderItem> orderItems; // Assuming an order can have multiple items
+    private List<OrderItem> orderItems; 
 
     public Order() {
     }
@@ -74,11 +74,6 @@ public class Order {
     }
 
     public enum OrderStatusEnum {
-
-      Pending,
-      Paid,
-      Shipped,
-      Delivered,
-      Canceled
+        Approved, Rejected, Pending
     }
 }

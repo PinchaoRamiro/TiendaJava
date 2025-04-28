@@ -70,8 +70,8 @@ public class LoginScreen extends JPanel {
     gbc.gridy++;
     gbc.gridwidth = 2;
 
-    ImageIcon loginIcon = new ImageIcon(getClass().getResource("/icons/user-check.png"));
-    ImageIcon registerIcon = new ImageIcon(getClass().getResource("/icons/enter.png"));
+    ImageIcon loginIcon = UIUtils.LoadIcon("/icons/user-check.png");
+    ImageIcon registerIcon = UIUtils.LoadIcon("/icons/user-add.png");
 
     JButton loginBtn = ButtonFactory.createPrimaryButton("Login", loginIcon, this::login);
     panel.add(loginBtn, gbc);
@@ -97,6 +97,7 @@ public class LoginScreen extends JPanel {
     ApiResponse<User> response = userService.login(email, password);
 
     if (response.isSuccess()) {
+      System.out.println("Login successful: " + response.getData().toString());
         NotificationHandler.success(
             this, response.getMessage() != null ? response.getMessage() : "Login successful"
         );

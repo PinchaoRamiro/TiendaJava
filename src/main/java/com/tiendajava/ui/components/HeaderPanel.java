@@ -3,10 +3,8 @@ package com.tiendajava.ui.components;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.MediaTracker;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -20,16 +18,17 @@ import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.dialogs.ConfirmationDialog;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
+import com.tiendajava.ui.utils.UIUtils;
 
 public class HeaderPanel extends JPanel {
     private JLabel welcomeLabel = new JLabel();;
     private final UserService userService = new UserService();
     private JButton settingsButton;
-    private final MainUI parent;
+    private final MainUI parent; // Initialized in the constructor
     private final JPopupMenu settingsMenu = new JPopupMenu();
 
     public HeaderPanel(MainUI parent) {
-        this.parent = parent;
+        this.parent = parent; // Assigning the constructor parameter to the final field
 
         setLayout(new BorderLayout());
         setBackground(UITheme.getSecondaryColor());
@@ -41,7 +40,7 @@ public class HeaderPanel extends JPanel {
     }
 
     private JLabel buildLogo() {
-        JLabel logoLabel = new JLabel(loadIcon("/icons/logo.png"));
+        JLabel logoLabel = new JLabel(UIUtils.LoadIcon("/icons/logo.png"));
         logoLabel.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 10));
         return logoLabel;
     }
@@ -77,7 +76,7 @@ public class HeaderPanel extends JPanel {
     }
 
     private void createSettingsButton() {
-        settingsButton = ButtonFactory.createSecondaryButton("Settings", loadIcon("/icons/settings.png"), () -> {
+        settingsButton = ButtonFactory.createSecondaryButton("Settings", UIUtils.LoadIcon("/icons/settings.png"), () -> {
             settingsMenu.show(settingsButton, 0, settingsButton.getHeight());
         });
 
@@ -116,25 +115,11 @@ public class HeaderPanel extends JPanel {
     }
 
     private JMenuItem createMenuItem(String text, String iconPath, Runnable action) {
-        JMenuItem item = new JMenuItem(text, loadIcon(iconPath));
+        JMenuItem item = new JMenuItem(text, UIUtils.LoadIcon(iconPath));
         item.setFont(Fonts.NORMAL_FONT);
-        item.setBackground(UITheme.getButtonColor());
+        item.setBackground(UITheme.getSecodaryButtonColor());
         item.setForeground(UITheme.getTextColor());
         item.addActionListener(e -> action.run());
         return item;
-    }
-
-    private ImageIcon loadIcon(String resourcePath) {
-        try {
-            ImageIcon icon = new ImageIcon(getClass().getResource(resourcePath));
-            if (icon.getImageLoadStatus() == MediaTracker.ERRORED) {
-                System.err.println("Error loading icon: " + resourcePath);
-                return null;
-            }
-            return icon;
-        } catch (Exception e) {
-            System.err.println("Error loading icon: " + resourcePath);
-            return null;
-        }
     }
 }

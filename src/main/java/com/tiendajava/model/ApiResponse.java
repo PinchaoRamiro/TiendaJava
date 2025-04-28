@@ -1,7 +1,7 @@
 package com.tiendajava.model;
 
 public class ApiResponse<T> {
-    private final boolean success;
+    private boolean success;
     private final T data;
     private final String message;
 
@@ -15,11 +15,24 @@ public class ApiResponse<T> {
         return success;
     }
 
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
     public T getData() {
         return data;
     }
 
     public String getMessage() {
         return message;
+    }
+
+    @Override
+    public String toString() {
+        return "ApiResponse{" +
+                "success=" + success +
+                ", data=" + data +
+                ", message='" + message + '\'' +
+                '}';
     }
 }

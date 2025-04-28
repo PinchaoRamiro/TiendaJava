@@ -13,6 +13,8 @@ public class Product {
     private String createdAt;
     private String image;
 
+    private Category Category;
+
     public Product() {
     }
 
@@ -90,5 +92,13 @@ public class Product {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public Category getCategory() {
+        return Category;
+    }
+
+    public void setCategory(Category category) {
+        this.Category = category;
     }
 }

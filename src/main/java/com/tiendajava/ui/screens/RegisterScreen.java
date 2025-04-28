@@ -56,7 +56,7 @@ public class RegisterScreen extends JPanel {
     gbc.gridy = y;
     gbc.gridwidth = 4;
 
-    ImageIcon userIcon = new ImageIcon(getClass().getResource("/icons/user-add.png"));
+    ImageIcon userIcon = UIUtils.LoadIcon("/icons/user.png");
     JLabel title = new JLabel("Create Account", userIcon, SwingConstants.CENTER);
     title.setFont(Fonts.TITLE_FONT);
     panel.add(title, gbc);

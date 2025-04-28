@@ -6,15 +6,20 @@ public class UITheme {
 
     // === Background & Layout ===
     public static Color getPrimaryColor() {
-        return new Color(28, 30, 34); // Fondo principal: gris azulado oscuro
+        return new Color(30, 30, 31); // Fondo principal: gris azulado oscuro
     }
 
     public static Color getSecondaryColor() {
-        return new Color(36, 38, 43); // Elementos secundarios (sidebar, cards)
+        return new Color(38, 39, 41); // Elementos secundarios (sidebar, cards)
     }
 
     public static Color getTertiaryColor() {
-        return new Color(48, 50, 58); // Detalles o separación visual
+        // mas claro que el secundario que resalte un poco mas claro
+        return new Color(50, 53, 60); // Elementos terciarios (divisiones, bordes)
+    }
+
+    public static Color getBorderCardsColor() {
+        return new Color(223, 240, 255); // Bordes de tarjetas y contenedores
     }
 
     public static Color getBackgroundContrast() {
@@ -40,7 +45,7 @@ public class UITheme {
     }
 
     public static Color getButtonColor() {
-        return new Color(72, 201, 176); // Verde menta amigable
+        return new Color(0, 123, 255); // Azul para botones de acción
     }
 
     public static Color getDangerColor() {

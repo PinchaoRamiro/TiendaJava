@@ -20,7 +20,7 @@ import com.tiendajava.ui.screens.admin.AdminDashboardScreen;
 import com.tiendajava.ui.screens.admin.manageAdmins.ManageAdminsScreen;
 import com.tiendajava.ui.screens.admin.products.ProductsAdminScreen;
 import com.tiendajava.ui.screens.admin.users.ManageUsersScreen;
-import com.tiendajava.ui.screens.user.DashboardScreen;
+import com.tiendajava.ui.screens.user.DashboardUserScreen;
 import com.tiendajava.ui.screens.user.ProductsUserScreen;
 import com.tiendajava.ui.utils.UIUtils;
 
@@ -33,7 +33,7 @@ public final class MainUI extends JFrame {
     public MainUI() {
         UIUtils.applyDarkTheme();
 
-        setTitle("TiendaJava");
+        setTitle("RP Store - Java");
         setSize(1000, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -63,7 +63,7 @@ public final class MainUI extends JFrame {
         // Carga la pantalla solo si no se ha creado aún
         if (getScreen(name) == null) {
             switch (name) {
-                case "dashboard" -> contentPanel.add(new DashboardScreen(this), "dashboard");
+                case "dashboard" -> contentPanel.add(new DashboardUserScreen(this), "dashboard");
                 case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
                 // case "orders" -> contentPanel.add(new OrdersScreen(this), "orders");
                 case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");

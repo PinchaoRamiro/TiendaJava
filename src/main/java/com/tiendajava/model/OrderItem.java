@@ -12,7 +12,6 @@ public class OrderItem {
     private BigDecimal price;
 
     private List<Product> products; // Assuming an order item is associated with a product
-    private Order order; // Assuming an order item is associated with an order
 
     public OrderItem() {
     }
@@ -73,13 +72,5 @@ public class OrderItem {
 
     public void setProducts(List<Product> products) {
         this.products = products;
-    }
-
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
     }
 }

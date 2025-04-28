@@ -1,6 +1,7 @@
 package com.tiendajava.repository;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
@@ -8,6 +9,7 @@ import java.net.http.HttpResponse;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.LoginResponse;
 import com.tiendajava.model.Session;
@@ -101,22 +103,16 @@ public class UserRepository extends BaseRepository {
           .header("Authorization", "Bearer " + Session.getInstance().getToken())
           .PUT(BodyPublishers.ofString(json))
           .build();
-  
-      HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-  
-      if (response.statusCode() == 200) {
-        User userResponse = gson.fromJson(response.body(), User.class);
-        return new ApiResponse<>(true, userResponse, "Successfully updated user");
-      } else {
-        String msg = gson.fromJson(response.body(), JsonObject.class).get("msg").getAsString();
-        return new ApiResponse<>(false, null, msg);
-      }
-    } catch (JsonSyntaxException | IOException | InterruptedException e) {
+
+      Type responseType = new TypeToken<ApiResponse<User>>() {}.getType();
+
+      ApiResponse<User> response =  sendRequest(request, responseType);
+      response.setSuccess(true);
+      return response;
+    } catch (JsonSyntaxException  e) {
       return new ApiResponse<>(false, null, "Error to update user");
     }
   }
-  
-  //router.put('/password/:id', verifyToken, userController.updatePassword);
 
   public ApiResponse<User> updatePassword(String json, int id) {
     try {
@@ -140,7 +136,6 @@ public class UserRepository extends BaseRepository {
       return new ApiResponse<>(false, null, "Error to update password");
     }
   }
-
 
   public ApiResponse<User> getUserByEmail(String email) {
     HttpRequest request = HttpRequest.newBuilder()
@@ -174,16 +169,18 @@ public class UserRepository extends BaseRepository {
           .PUT(BodyPublishers.ofString(json))
           .build();
   
-      HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+      Type responseType = new TypeToken<ApiResponse<User>>() {}.getType();
+
+      ApiResponse<User> response = sendRequest(request, responseType);
+      response.setSuccess(true);
+
   
-      if (response.statusCode() == 200) {
-        String msg = gson.fromJson(response.body(), JsonObject.class).get("msg").getAsString();
-        return new ApiResponse<>(true, true, msg);
+      if (response.isSuccess()) {
+        return new ApiResponse<>(true, true, "User status changed successfully");
       } else {
-        String msg = gson.fromJson(response.body(), JsonObject.class).get("msg").getAsString();
-        return new ApiResponse<>(false, false, msg);
+        return new ApiResponse<>(false, false, response.getMessage());
       }
-    } catch (JsonSyntaxException | IOException | InterruptedException e) {
+    } catch (JsonSyntaxException e) {
       return new ApiResponse<>(false, false, "Error al cambiar estado");
     }
   }

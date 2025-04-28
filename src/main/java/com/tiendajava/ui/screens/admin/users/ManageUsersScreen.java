@@ -2,11 +2,12 @@ package com.tiendajava.ui.screens.admin.users;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -15,10 +16,12 @@ import javax.swing.SwingConstants;
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
 import com.tiendajava.service.AdminService;
+import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.dialogs.ConfirmationDialog;
 import com.tiendajava.ui.components.dialogs.DeleteConfirmDialog;
+import com.tiendajava.ui.components.dialogs.ShowInfoDialog;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
@@ -28,6 +31,7 @@ public class ManageUsersScreen extends JPanel {
 
     private final MainUI parent;
     private final AdminService adminService = new AdminService();
+    private final UserService userService = new UserService();
     private final JPanel usersPanel = new JPanel(new GridLayout(0, 2, 15, 15));
 
     public ManageUsersScreen(MainUI parent) {
@@ -37,7 +41,7 @@ public class ManageUsersScreen extends JPanel {
         usersPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Título
-        JLabel title = new JLabel("Manage Users", new ImageIcon(getClass().getResource("/icons/users.png")), SwingConstants.CENTER);
+        JLabel title = new JLabel("Manage Users", UIUtils.LoadIcon("/icons/users.png"), SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
         title.setBorder(UIUtils.getDefaultPadding());
@@ -82,8 +86,11 @@ public class ManageUsersScreen extends JPanel {
         card.setBorder(UIUtils.getRoundedBorder());
         card.setPreferredSize(new java.awt.Dimension(250, 120));
 
-        JLabel userInfo = new JLabel("<html><strong>" + user.getName() + " " + user.getLastName() + "</strong><br/>" +
-                "Email: " + user.getEmail() + "<br/>Role: " + user.getRole() + "</html>");
+        JLabel userInfo = new JLabel("<html><div style='text-align: left; margin-left: 20px'>" +
+                "<strong>" + user.getName() + " " + user.getLastName()+ " </strong><br>" + user.getEmail() + "</small><br>" +
+                "Role: " + user.getRole() + 
+                "</div><br>" +
+       " </html>");
         userInfo.setFont(Fonts.NORMAL_FONT);
         userInfo.setForeground(UITheme.getTextColor());
         card.add(userInfo, BorderLayout.CENTER);
@@ -92,11 +99,25 @@ public class ManageUsersScreen extends JPanel {
         JPanel actionsPanel = new JPanel();
         actionsPanel.setBackground(UITheme.getSecondaryColor());
 
-        JButton editRoleBtn = ButtonFactory.createSecondaryButton("Change Role", null, () -> changeRole(user));
-        JButton deleteBtn = ButtonFactory.createDangerButton("Delete", null, () -> deleteUser(user.getId()));
+        JLabel editRoleBtn = ButtonFactory.createIconButton(UIUtils.LoadIcon("/icons/admin-alt.png"), () -> changeRole(user));
+        //separación entre botones
+        editRoleBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
+        ImageIcon deleteIcon = UIUtils.LoadIcon("/icons/trash.png");
+        ImageIcon iconDanger = UIUtils.tintImage(deleteIcon, UITheme.getDangerColor());
+        JLabel deleteBtn = ButtonFactory.createIconButton(iconDanger, () -> deleteUser(user.getId()));
+        deleteBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
-        actionsPanel.add(editRoleBtn);
-        actionsPanel.add(deleteBtn);
+        JLabel infoBtn = ButtonFactory.createIconButton(UIUtils.LoadIcon("/icons/user.png"), () -> infoComplete(user));
+        infoBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
+
+        JLabel statusBtn = ButtonFactory.createIconButton(UIUtils.LoadIcon("/icons/defuse.png"), () -> changeUserStatus(user));
+        statusBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
+
+        actionsPanel.add(editRoleBtn, BorderLayout.WEST);
+        actionsPanel.add(infoBtn, BorderLayout.WEST);
+        actionsPanel.add(statusBtn, BorderLayout.WEST);
+        actionsPanel.add(deleteBtn, BorderLayout.WEST);
+
 
         card.add(actionsPanel, BorderLayout.SOUTH);
 
@@ -124,6 +145,35 @@ public class ManageUsersScreen extends JPanel {
                 loadUsers();
             } else {
                 NotificationHandler.error("Failed to delete user: " + response.getMessage());
+            }
+        }).setVisible(true);
+    }
+
+    private void infoComplete(User user) {
+        Map<String, String> userInfo = new LinkedHashMap<>();
+        userInfo.put("Name", user.getName());
+        userInfo.put("Last Name", user.getLastName());
+        userInfo.put("Email", user.getEmail());
+        userInfo.put("Document", user.getTypeDocument());
+        userInfo.put("Number of Document", user.getNumDocument());
+        userInfo.put("Phone", user.getPhone());
+        userInfo.put("Address", user.getAddress());
+        userInfo.put("Status", user.getStatus()? "Active" : "Inactive");
+        userInfo.put("Role", user.getRole());
+
+        ShowInfoDialog dialog = new ShowInfoDialog("User Details", userInfo);
+        dialog.setVisible(true);
+    }
+
+    private void changeUserStatus(User user) {
+        new ConfirmationDialog("Change Status", "Are you sure you want to change the status of " + user.getName() + "?", () -> {
+            // Logic to change user status
+            ApiResponse<Boolean> response = userService.setStatusUser(user, !user.getStatus());
+            if (response.isSuccess()) {
+                NotificationHandler.success("User status changed successfully for " + user.getName());
+                loadUsers();
+            } else {
+                NotificationHandler.error("Failed to change user status: " + response.getMessage());
             }
         }).setVisible(true);
     }

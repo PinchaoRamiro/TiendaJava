@@ -41,6 +41,7 @@ public class ChangePasswordScreen extends JPanel {
 
         JPanel formPanel = new JPanel();
         formPanel.setBackground(UITheme.getPrimaryColor());
+        formPanel.setFont(Fonts.NORMAL_FONT);
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
         formPanel.setBorder(UIUtils.getDefaultPadding());
 

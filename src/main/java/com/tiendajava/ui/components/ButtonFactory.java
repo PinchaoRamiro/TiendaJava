@@ -8,7 +8,9 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
@@ -49,11 +51,41 @@ public class ButtonFactory {
             @Override
             public void mouseEntered(MouseEvent e) {
                 button.setBackground(bgColor.darker());
+                button.setFont(Fonts.BUTTON_FONT.deriveFont(Fonts.BUTTON_FONT.getSize() + 2f));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 button.setBackground(bgColor);
+                button.setFont(Fonts.BUTTON_FONT);
+            }
+        });
+
+        return button;
+    }
+
+    // create a button with icon only
+    public static JLabel createIconButton(ImageIcon icon, Runnable onClick) {
+        JLabel button = new JLabel(icon);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                onClick.run();
+            }
+        });
+
+        // Hover effect
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // Change icon size or color if needed
+                button.setIcon(new ImageIcon(icon.getImage().getScaledInstance(28, 28, java.awt.Image.SCALE_SMOOTH)));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setIcon(icon);
             }
         });
 

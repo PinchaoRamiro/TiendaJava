@@ -1,21 +1,20 @@
 package com.tiendajava.service;
 
+import com.google.gson.Gson;
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
 import com.tiendajava.repository.UserRepository;
 
 public class UserService {
 	private final UserRepository userRepository;
+	private final Gson gson = new Gson();
 
 	public UserService() {
 		this.userRepository = new UserRepository();
 	}
 
 	public ApiResponse<User>  Register(User user) {
-		String json = "{ \"name\": \"" + user.getName() + "\", \"lastname\": \"" + user.getLastName() + "\", \"email\": \""
-				+ user.getEmail() + "\", \"password\": \"" + user.getPassword() + "\", \"typeDocument\": \""
-				+ user.getTypeDocument() + "\", \"numDocument\": \"" + user.getNumDocument() + "\", \"adress\": \""
-				+ user.getAddress() + "\", \"phone\": \"" + user.getPhone() + "\" }";
+		String json = gson.toJson(user);
 		return userRepository.createUser(json);
 	}
 
@@ -33,10 +32,7 @@ public class UserService {
 	}
 
 	public ApiResponse<User>  UpdateUser(User user) {
-		String json = "{ \"name\": \"" + user.getName() + "\", \"lastname\": \"" + user.getLastName() + "\", \"email\": \""
-				+ user.getEmail() + "\", \"password\": \"" + user.getPassword() + "\", \"typeDocument\": \""
-				+ user.getTypeDocument() + "\", \"numDocument\": \"" + user.getNumDocument() + "\", \"adress\": \""
-				+ user.getAddress() + "\", \"phone\": \"" + user.getPhone() + "\" }";
+		String json = gson.toJson(user);
 		return userRepository.updateUser(json, user.getId());
 	}
 
@@ -46,7 +42,7 @@ public class UserService {
 	}
 
 	public ApiResponse<Boolean>  setStatusUser(User user, boolean status) {
-		String json = "{ \"status\": " + status + " }";
+		String json = gson.toJson(user);
 		return userRepository.setStatusUser(json, user.getId());
 	}
 }

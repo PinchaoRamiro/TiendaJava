@@ -5,7 +5,6 @@ import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,17 +32,17 @@ public class ManageAdminsScreen extends JPanel {
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
         setBackground(UITheme.getPrimaryColor());
-        adminsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        adminsPanel.setBorder(BorderFactory.createEmptyBorder(25, 20, 20, 20));
 
         // Título
-        JLabel title = new JLabel("Manage Admins", new ImageIcon(getClass().getResource("/icons/admin-alt.png")), SwingConstants.CENTER);
+        JLabel title = new JLabel("Manage Admins", UIUtils.LoadIcon("/icons/admin-alt.png"), SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
         title.setBorder(UIUtils.getDefaultPadding());
         add(title, BorderLayout.NORTH);
 
         // Botón para agregar admin
-        JButton createAdminBtn = ButtonFactory.createPrimaryButton("Add Admin", new ImageIcon(getClass().getResource("/icons/user-add.png")), this::registerAdmin);
+        JButton createAdminBtn = ButtonFactory.createPrimaryButton("Add Admin", UIUtils.LoadIcon("/icons/user-add.png"), this::registerAdmin);
         createAdminBtn.setPreferredSize(new java.awt.Dimension(150, 40));
 
         JPanel topPanel = new JPanel();
@@ -106,8 +105,21 @@ public class ManageAdminsScreen extends JPanel {
         JPanel actionsPanel = new JPanel();
         actionsPanel.setBackground(UITheme.getSecondaryColor());
 
-        JButton demoteBtn = ButtonFactory.createDangerButton("Demote to User", null, () -> demoteAdmin(admin));
+        JButton demoteBtn = ButtonFactory.createDangerButton("Demote to User", UIUtils.LoadIcon("/icons/user.png"), () -> demoteAdmin(admin));
         actionsPanel.add(demoteBtn);
+
+        // Botón para eliminar admin
+        
+        JButton deleteBtn = ButtonFactory.createDangerButton("Delete Admin", UIUtils.LoadIcon("/icons/trash.png"), () -> {
+            ApiResponse<String> response = adminService.deleteUser(admin.getId());
+            if (response.isSuccess()) {
+                NotificationHandler.success("Admin " + admin.getName() + " deleted successfully.");
+                loadAdmins();
+            } else {
+                NotificationHandler.error("Failed to delete: " + response.getMessage());
+            }
+        });
+        actionsPanel.add(deleteBtn);
 
         card.add(actionsPanel, BorderLayout.SOUTH);
 

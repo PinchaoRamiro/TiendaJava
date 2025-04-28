@@ -36,11 +36,9 @@ public class Category {
 
     @Override
     public String toString() {
-        return "Category{" +
-               "category_id=" + category_id +
-               ", category_name='" + category_name + '\'' +
-               '}';
+        return category_name;  
     }
+    
 
     public List<Product> getProducts() {
         return products;

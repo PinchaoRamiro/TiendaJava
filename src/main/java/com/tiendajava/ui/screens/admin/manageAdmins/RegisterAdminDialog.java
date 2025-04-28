@@ -3,7 +3,6 @@ package com.tiendajava.ui.screens.admin.manageAdmins;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -43,7 +42,7 @@ public class RegisterAdminDialog extends JDialog {
     }
 
     private void initUI() {
-        JLabel titleLabel = new JLabel("Create Admin", new ImageIcon(getClass().getResource("/icons/admin-alt.png")), SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Create Admin", UIUtils.LoadIcon("/icons/admin-alt.png"), SwingConstants.CENTER);
         titleLabel.setFont(Fonts.TITLE_FONT);
         titleLabel.setForeground(UITheme.getTextColor());
         titleLabel.setBorder(UIUtils.getDefaultPadding());
