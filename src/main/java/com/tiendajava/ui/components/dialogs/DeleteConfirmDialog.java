@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
@@ -25,7 +24,7 @@ public class DeleteConfirmDialog extends JDialog {
 
         setTitle("Confirm Deletion");
         setModal(true);
-        setSize(350, 200);
+        setSize(400, 200);
         setLocationRelativeTo(null);
         getContentPane().setBackground(UITheme.getPrimaryColor());
 
@@ -42,14 +41,14 @@ public class DeleteConfirmDialog extends JDialog {
             JLabel.CENTER
         );
         confirmLabel.setFont(Fonts.SUBTITLE_FONT);
-        confirmLabel.setForeground(UITheme.getErrorColor());
+        confirmLabel.setForeground(UITheme.getTextColor());
         panel.add(confirmLabel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         buttonPanel.setBackground(UITheme.getPrimaryColor());
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 12, 6, 12);
+        gbc.insets = new Insets(5, 10, 5, 10);
 
         JButton yesBtn = ButtonFactory.createDangerButton("Delete", null, this::confirm);
         JButton noBtn = ButtonFactory.createSecondaryButton("Cancel", null, this::cancel);
@@ -67,7 +66,6 @@ public class DeleteConfirmDialog extends JDialog {
 
     private void confirm() {
         onConfirm.run();
-        NotificationHandler.success("Deleted successfully!");
         dispose();
     }
 

@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
@@ -49,18 +50,31 @@ public class ProductRepository extends BaseRepository {
    * Crea un nuevo producto (requiere token de administrador).
    */
   public ApiResponse<Product> createProductWithImage(Product prod, File imageFile) throws IOException, InterruptedException {
-      String boundary = "----TiendajavaBoundary" + System.currentTimeMillis();
-      var body = buildMultipartBody(prod, imageFile, boundary);
-
-      HttpRequest request = HttpRequest.newBuilder()
+    // if image is null, not required to upload
+    HttpRequest request;
+    if (imageFile == null) {
+      request = HttpRequest.newBuilder()
           .uri(URI.create(URL_BASE + "product/create"))
           .header("Authorization", "Bearer " + Session.getInstance().getToken())
-          .header("Content-Type", "multipart/form-data; boundary=" + boundary)
-          .POST(body)
+          .header("Content-Type", "application/json")
+          .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(prod)))
           .build();
 
-      Type type = new TypeToken<ApiResponse<Product>>(){}.getType();
-      return sendRequest(request, type);
+    }else{
+    // otherwise, upload image and create product
+    String boundary = "----TiendajavaBoundary" + System.currentTimeMillis();
+    var body = buildMultipartBody(prod, imageFile, boundary);
+
+    request = HttpRequest.newBuilder()
+        .uri(URI.create(URL_BASE + "product/create"))
+        .header("Authorization", "Bearer " + Session.getInstance().getToken())
+        .header("Content-Type", "multipart/form-data; boundary=" + boundary)
+        .POST(body)
+        .build();
+    }
+
+    Type type = new TypeToken<ApiResponse<Product>>(){}.getType();
+    return sendRequest(request, type);
   }
 
   private HttpRequest.BodyPublisher buildMultipartBody(Product p, File img, String boundary) throws IOException {

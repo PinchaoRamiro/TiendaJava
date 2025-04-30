@@ -6,13 +6,9 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -20,44 +16,30 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Category;
 import com.tiendajava.model.Product;
-import com.tiendajava.service.CategoryService;
-import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.components.ButtonFactory;
-import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
-public class CreateProductDialog extends JDialog {
-
-    private final JTextField nameField = new JTextField(20);
-    private final JTextField priceField = new JTextField(20);
-    private final JTextField stockField = new JTextField(20);
-    private final JComboBox<Category> categoryComboBox = new JComboBox<>();
-    private final JTextField descriptionField = new JTextField(20);
+public class CreateProductDialog extends IProductDialog {
 
     private File imageFile;
     private final JTextField imageField = new JTextField(20);
 
-
-    private final ProductService productService = new ProductService();
-    private final Runnable onProductCreated;
-
     private final JButton selectImageBtn = ButtonFactory.createSecondaryButton("Choose Image", null, this::chooseImage);
 
     public CreateProductDialog(Runnable onProductCreated) {
-        this.onProductCreated = onProductCreated;
+        super(null, onProductCreated);
         setTitle("Create New Product");
         setModal(true);
         setSize(400, 400);
         setLocationRelativeTo(null);
         getContentPane().setBackground(UITheme.getPrimaryColor());
-
         buildForm();
-        loadCategories();
     }
 
     private void buildForm() {
+        setTitle("Create New Product");
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(UITheme.getPrimaryColor());
         panel.setBorder(UIUtils.getDefaultPadding());
@@ -91,30 +73,6 @@ public class CreateProductDialog extends JDialog {
         add(panel, BorderLayout.CENTER);
     }
 
-    private void addLabelAndField(JPanel panel, GridBagConstraints gbc, int row, String labelText, JTextField field) {
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        JLabel label = new JLabel(labelText);
-        label.setForeground(UITheme.getTextColor());
-        label.setFont(Fonts.NORMAL_FONT);
-        panel.add(label, gbc);
-
-        gbc.gridx = 1;
-        panel.add(field, gbc);
-    }
-
-    private void addLabelAndField(JPanel panel, GridBagConstraints gbc, int row, String labelText, JComboBox<?> comboBox) {
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        JLabel label = new JLabel(labelText);
-        label.setForeground(UITheme.getTextColor());
-        label.setFont(Fonts.NORMAL_FONT);
-        panel.add(label, gbc);
-
-        gbc.gridx = 1;
-        panel.add(comboBox, gbc);
-    }
-
     private void createProduct() {
         String name = nameField.getText().trim();
         String priceText = priceField.getText().trim();
@@ -126,13 +84,10 @@ public class CreateProductDialog extends JDialog {
             NotificationHandler.warning("Please select a category.");
             return;
         }
-
-
         if (name.isEmpty() || priceText.isEmpty() || stockText.isEmpty()) {
             NotificationHandler.warning("Please fill in all required fields.");
             return;
         }
-
         try {
             BigDecimal price = new BigDecimal(priceText);
             if (price.compareTo(BigDecimal.ZERO) <= 0) {
@@ -141,20 +96,18 @@ public class CreateProductDialog extends JDialog {
             }
             int stock = Integer.parseInt(stockText);
             int category_id = selectedCategory.getCategory_id();
-
-            Product product = new Product();
+            
             product.setName(name);
             product.setPrice(price);
             product.setStock(stock);
             product.setCategory_id(category_id);
             product.setDescription(description);
-        
-            // ahora delegamos en el service
+
             ApiResponse<Product> resp = productService.createProductWithImage(product, imageFile);
             if (resp.isSuccess()) {
                 NotificationHandler.success("Producto creado"); 
                 dispose();
-                onProductCreated.run();
+                onRunnable.run();
             } else {
                 NotificationHandler.error("Error: " + resp.getMessage());
             }
@@ -172,17 +125,5 @@ public class CreateProductDialog extends JDialog {
             imageField.setText(imageFile.getName());
         }
     }
-
-    private void loadCategories() {
-    CategoryService categoryService = new CategoryService();
-    ApiResponse<List<Category>> response = categoryService.getAllCategories();
-    if (response.isSuccess() && response.getData() != null) {
-        for (Category category : response.getData()) {
-            categoryComboBox.addItem(category); // Agrega cada categoría al combo
-        }
-    } else {
-        NotificationHandler.warning("Failed to load categories: " + response.getMessage());
-    }
-}
 
 }
