@@ -15,8 +15,9 @@ import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
 import com.tiendajava.service.AdminService;
 import com.tiendajava.ui.components.ButtonFactory;
+import com.tiendajava.ui.components.NotificationHandler;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
@@ -42,7 +43,7 @@ public class RegisterAdminDialog extends JDialog {
     }
 
     private void initUI() {
-        JLabel titleLabel = new JLabel("Create Admin", UIUtils.LoadIcon("/icons/admin-alt.png"), SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Create Admin", AppIcons.ADMIN_ICON, SwingConstants.CENTER);
         titleLabel.setFont(Fonts.TITLE_FONT);
         titleLabel.setForeground(UITheme.getTextColor());
         titleLabel.setBorder(UIUtils.getDefaultPadding());

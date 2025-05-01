@@ -14,8 +14,8 @@ import com.tiendajava.model.Category;
 import com.tiendajava.model.Product;
 import com.tiendajava.service.CategoryService;
 import com.tiendajava.service.ProductService;
+import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 
 abstract class IProductDialog extends JDialog {

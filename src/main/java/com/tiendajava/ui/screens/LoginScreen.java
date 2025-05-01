@@ -20,8 +20,9 @@ import com.tiendajava.model.User;
 import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
+import com.tiendajava.ui.components.NotificationHandler;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UIUtils;
 
 public class LoginScreen extends JPanel {
@@ -41,7 +42,7 @@ public class LoginScreen extends JPanel {
     gbc.insets = new Insets(15, 10, 15, 10);
     gbc.fill = GridBagConstraints.HORIZONTAL;
 
-    ImageIcon userIcon = new ImageIcon(getClass().getResource("/icons/user-check.png"));
+    ImageIcon userIcon = AppIcons.USER_CHECK_ICON;
     JLabel title = new JLabel("Login", userIcon, SwingConstants.CENTER);
     title.setFont(Fonts.TITLE_FONT);
     gbc.gridwidth = 2;
@@ -70,8 +71,8 @@ public class LoginScreen extends JPanel {
     gbc.gridy++;
     gbc.gridwidth = 2;
 
-    ImageIcon loginIcon = UIUtils.LoadIcon("/icons/user-check.png");
-    ImageIcon registerIcon = UIUtils.LoadIcon("/icons/user-add.png");
+    ImageIcon loginIcon = AppIcons.USER_CHECK_ICON;
+    ImageIcon registerIcon = AppIcons.USER_PLUS_ICON;
 
     JButton loginBtn = ButtonFactory.createPrimaryButton("Login", loginIcon, this::login);
     panel.add(loginBtn, gbc);
@@ -81,6 +82,8 @@ public class LoginScreen extends JPanel {
       SwingUtilities.invokeLater(() -> parent.showScreen("register"));
     });
     panel.add(regisBtn, gbc);
+
+    UIUtils.styleFormFields(panel);
 
     add(panel, BorderLayout.CENTER);
   }

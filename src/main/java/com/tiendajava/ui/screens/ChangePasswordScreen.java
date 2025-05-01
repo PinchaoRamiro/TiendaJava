@@ -16,8 +16,8 @@ import com.tiendajava.model.Session;
 import com.tiendajava.model.User;
 import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
+import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 

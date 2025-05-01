@@ -15,10 +15,11 @@ import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
 import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.MainUI;
+import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.components.ProductItemCard;
 import com.tiendajava.ui.components.SearchBar;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
@@ -37,7 +38,7 @@ public class ProductsUserScreen extends JPanel {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         topPanel.setBackground(UITheme.getPrimaryColor());
         
-        JLabel title = new JLabel("Our Products", UIUtils.LoadIcon("/icons/selling.png"), SwingConstants.LEFT);
+        JLabel title = new JLabel("Our Products", AppIcons.SETTINGS_ICON, SwingConstants.LEFT);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
 

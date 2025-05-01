@@ -21,8 +21,9 @@ import com.tiendajava.model.User;
 import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
+import com.tiendajava.ui.components.NotificationHandler;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UIUtils;
 
 public class RegisterScreen extends JPanel {
@@ -56,7 +57,7 @@ public class RegisterScreen extends JPanel {
     gbc.gridy = y;
     gbc.gridwidth = 4;
 
-    ImageIcon userIcon = UIUtils.LoadIcon("/icons/user.png");
+    ImageIcon userIcon = AppIcons.USER_PLUS_ICON;
     JLabel title = new JLabel("Create Account", userIcon, SwingConstants.CENTER);
     title.setFont(Fonts.TITLE_FONT);
     panel.add(title, gbc);
@@ -77,8 +78,8 @@ public class RegisterScreen extends JPanel {
     addField(panel, gbc, y, 2, "N° Document:", numDocumentField);
     addField(panel, gbc, ++y, 0, "Address:", addressField);
 
-    ImageIcon backIcon = new ImageIcon(getClass().getResource("/icons/back.png"));
-    ImageIcon registerIcon = new ImageIcon(getClass().getResource("/icons/user-check.png"));
+    ImageIcon backIcon = AppIcons.BACK_ICON;
+    ImageIcon registerIcon = AppIcons.USER_CHECK_ICON;
 
     gbc.gridx = 1;
     gbc.gridy = y + 2;

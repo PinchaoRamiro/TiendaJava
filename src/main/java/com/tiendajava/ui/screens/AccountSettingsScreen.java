@@ -17,12 +17,16 @@ import com.tiendajava.model.User;
 import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
+import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
 public class AccountSettingsScreen extends JPanel {
+
+    public MainUI getParentACC() {
+        return parent;
+    }
 
     private final JTextField nameField = new JTextField(20);
     private final JTextField lastNameField = new JTextField(20);

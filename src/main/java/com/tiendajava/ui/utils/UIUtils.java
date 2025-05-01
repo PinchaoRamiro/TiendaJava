@@ -9,7 +9,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.MediaTracker;
 import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
@@ -37,21 +36,7 @@ public class UIUtils {
         UIManager.put("PasswordField.caretForeground", UITheme.getTextColor());
         UIManager.put("PasswordField.border", BorderFactory.createLineBorder(UITheme.getBorderColor()));
     }
-
-    public static ImageIcon LoadIcon(String resourcePath) {
-        try {
-            ImageIcon icon = new ImageIcon(UIUtils.class.getResource(resourcePath));
-            if (icon.getImageLoadStatus() == MediaTracker.ERRORED) {
-                System.err.println("Error loading icon: " + resourcePath);
-                return null;
-            }
-            return icon;
-        } catch (Exception e) {
-            System.err.println("Error loading icon: " + resourcePath);
-            return null;
-        }
-    }
-
+    
     public static JTextField createTextField(Font font) {
         JTextField field = new JTextField(15);
         field.setFont(font);
@@ -133,12 +118,12 @@ public class UIUtils {
     }
 
     public static void styleComboBox(JComboBox<?> comboBox) {
-        comboBox.setBackground(UITheme.getSecondaryColor());    // Fondo oscuro
-        comboBox.setForeground(UITheme.getTextColor());         // Texto claro
-        comboBox.setFont(Fonts.NORMAL_FONT);                    // Fuente uniforme
+        comboBox.setBackground(UITheme.getSecondaryColor()); 
+        comboBox.setForeground(UITheme.getTextColor());      
+        comboBox.setFont(Fonts.NORMAL_FONT);                  
         comboBox.setBorder(javax.swing.BorderFactory.createLineBorder(UITheme.getTertiaryColor()));
-        comboBox.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); // Cambiar cursor
-        comboBox.setFocusable(false); // Desactivar el foco al hacer clic
+        comboBox.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        comboBox.setFocusable(false); 
 
         // desplegable flecha clara
         comboBox.setUI(new javax.swing.plaf.basic.BasicComboBoxUI() {

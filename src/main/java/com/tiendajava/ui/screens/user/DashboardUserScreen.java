@@ -11,6 +11,7 @@ import javax.swing.SwingConstants;
 
 import com.tiendajava.model.Session;
 import com.tiendajava.ui.MainUI;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
@@ -21,7 +22,7 @@ public class DashboardUserScreen extends JPanel {
     public DashboardUserScreen(MainUI parent) {
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
-        JLabel title = new JLabel("RP STORE", UIUtils.LoadIcon("/icons/home.png"), SwingConstants.CENTER);
+        JLabel title = new JLabel("RP STORE", AppIcons.HOME_ICON, SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
         title.setBorder(UIUtils.getDefaultPadding(40, 20, 0, 20));

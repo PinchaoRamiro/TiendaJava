@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -18,8 +19,9 @@ import com.tiendajava.model.OrderStatusReport;
 import com.tiendajava.model.Product;
 import com.tiendajava.service.ReportService;
 import com.tiendajava.ui.MainUI;
+import com.tiendajava.ui.components.NotificationHandler;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
@@ -34,7 +36,7 @@ public class AdminDashboardScreen extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Título
-        JLabel title = new JLabel("Admin Dashboard", UIUtils.LoadIcon("/icons/home.png"), SwingConstants.LEFT);
+        JLabel title = new JLabel("Admin Dashboard", AppIcons.HOME_ICON, SwingConstants.LEFT);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
         title.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
@@ -71,34 +73,34 @@ public class AdminDashboardScreen extends JPanel {
         List<Product> outOfStockProducts = outOfStockResponse.getData();
 
         // 📦 Número total de productos
-        cardsPanel.add(createInfoCard("Total Products", dashboard.getTotalProducts() + "", "/icons/box.png", UITheme.getSuccessColor()));
+        cardsPanel.add(createInfoCard("Total Products", dashboard.getTotalProducts() + "", AppIcons.PRODUCTS_ICON, UITheme.getSuccessColor()));
 
         // 👤 Número total de usuarios
-        cardsPanel.add(createInfoCard("Total Users", dashboard.getTotalUsers() + "", "/icons/users.png", UITheme.getInfoColor()));
+        cardsPanel.add(createInfoCard("Total Users", dashboard.getTotalUsers() + "", AppIcons.USERS_ICON, UITheme.getInfoColor()));
 
         // 🛒 Productos fuera de stock
-        cardsPanel.add(createInfoCard("Out of Stock", String.valueOf(outOfStockProducts != null ? outOfStockProducts.size() : 0), "/icons/config-product.png", UITheme.getWarningColor()));
+        cardsPanel.add(createInfoCard("Out of Stock", String.valueOf(outOfStockProducts != null ? outOfStockProducts.size() : 0), AppIcons.PRODUCT_CONFIG_ICON, UITheme.getWarningColor()));
 
         // 🧾 Órdenes por estado
         if (ordersStatus != null) {
             for (OrderStatusReport status : ordersStatus) {
-                cardsPanel.add(createInfoCard(status.getStatus(), String.valueOf(status.getCount()), "/icons/Cart.png", UITheme.getInfoColor()));
+                cardsPanel.add(createInfoCard(status.getStatus(), String.valueOf(status.getCount()), AppIcons.CART_ICON, UITheme.getInfoColor()));
             }
         } else {
-            cardsPanel.add(createInfoCard("Orders Status", "No data available", "/icons/edit.png", UITheme.getWarningColor()));
+            cardsPanel.add(createInfoCard("Orders Status", "No data available", AppIcons.EDIT_ICON, UITheme.getWarningColor()));
         }
 
         cardsPanel.revalidate();
         cardsPanel.repaint();
     }
 
-    private JPanel createInfoCard(String title, String value, String iconPath, Color color) {
+    private JPanel createInfoCard(String title, String value, ImageIcon icon, Color color) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(UITheme.getSecondaryColor());
         card.setBorder(BorderFactory.createLineBorder(UITheme.getTertiaryColor(), 2));
         card.setPreferredSize(new Dimension(250, 150));
 
-        JLabel iconLabel = new JLabel(UIUtils.LoadIcon(iconPath));
+        JLabel iconLabel = new JLabel(icon);
         // set a margin top 
         iconLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         iconLabel.setHorizontalAlignment(SwingConstants.CENTER);

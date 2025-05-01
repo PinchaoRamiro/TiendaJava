@@ -1,4 +1,4 @@
-package com.tiendajava.ui.components;
+package com.tiendajava.ui.utils.animations;
 
 import java.awt.Color;
 import java.awt.Component;

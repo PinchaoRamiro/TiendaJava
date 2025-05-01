@@ -71,6 +71,19 @@ mvn clean compile exec:java
 
 Asegúrate de tener configurado el backend en http://localhost:5000/ o la URL que uses en BaseRepository.java.
 
+Crear .jar
+
+  ~~~bash
+  mvn clean compile assembly:single
+  ~~~ 
+  Y obtendrás un archivo como:
+
+  ~~~pgsql
+  target/tiendajava-1.0-SNAPSHOT-jar-with-dependencies.jar
+  ~~~
+
+
+
 ## 🔐 Autenticación
 El sistema usa JWT Tokens:
 

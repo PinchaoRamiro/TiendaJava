@@ -12,10 +12,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
-import com.tiendajava.ui.utils.UIUtils;
 
 public class FooterPanel extends JPanel {
     public FooterPanel() {
@@ -56,7 +55,7 @@ public class FooterPanel extends JPanel {
 
     private JLabel createLinkLabel(String iconPath, String url) {
         // Crear íconos clickeables
-        ImageIcon icon = UIUtils.LoadIcon(iconPath);
+        ImageIcon icon = AppIcons.getIcon(iconPath);
         JLabel label = ButtonFactory.createIconButton(icon, () -> {
             try {
                 Desktop.getDesktop().browse(new URI(url));

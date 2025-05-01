@@ -19,11 +19,12 @@ import com.tiendajava.service.AdminService;
 import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
+import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.components.dialogs.ConfirmationDialog;
 import com.tiendajava.ui.components.dialogs.DeleteConfirmDialog;
 import com.tiendajava.ui.components.dialogs.ShowInfoDialog;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
@@ -41,7 +42,7 @@ public class ManageUsersScreen extends JPanel {
         usersPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Título
-        JLabel title = new JLabel("Manage Users", UIUtils.LoadIcon("/icons/users.png"), SwingConstants.CENTER);
+        JLabel title = new JLabel("Manage Users", AppIcons.USERS_ICON, SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
         title.setBorder(UIUtils.getDefaultPadding());
@@ -99,18 +100,18 @@ public class ManageUsersScreen extends JPanel {
         JPanel actionsPanel = new JPanel();
         actionsPanel.setBackground(UITheme.getSecondaryColor());
 
-        JLabel editRoleBtn = ButtonFactory.createIconButton(UIUtils.LoadIcon("/icons/admin-alt.png"), () -> changeRole(user));
+        JLabel editRoleBtn = ButtonFactory.createIconButton(AppIcons.ADMIN_ICON, () -> changeRole(user));
         //separación entre botones
         editRoleBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
-        ImageIcon deleteIcon = UIUtils.LoadIcon("/icons/trash.png");
+        ImageIcon deleteIcon = AppIcons.DELETE_ICON;
         ImageIcon iconDanger = UIUtils.tintImage(deleteIcon, UITheme.getDangerColor());
         JLabel deleteBtn = ButtonFactory.createIconButton(iconDanger, () -> deleteUser(user.getId()));
         deleteBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
-        JLabel infoBtn = ButtonFactory.createIconButton(UIUtils.LoadIcon("/icons/user.png"), () -> infoComplete(user));
+        JLabel infoBtn = ButtonFactory.createIconButton(AppIcons.USER_ICON, () -> infoComplete(user));
         infoBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
-        JLabel statusBtn = ButtonFactory.createIconButton(UIUtils.LoadIcon("/icons/defuse.png"), () -> changeUserStatus(user));
+        JLabel statusBtn = ButtonFactory.createIconButton(AppIcons.UNACTIVE_ICON, () -> changeUserStatus(user));
         statusBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
         actionsPanel.add(editRoleBtn, BorderLayout.WEST);
@@ -176,5 +177,9 @@ public class ManageUsersScreen extends JPanel {
                 NotificationHandler.error("Failed to change user status: " + response.getMessage());
             }
         }).setVisible(true);
+    }
+
+    public MainUI getParentMU() {
+        return parent;
     }
 }

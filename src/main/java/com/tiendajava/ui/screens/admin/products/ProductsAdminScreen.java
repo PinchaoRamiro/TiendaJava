@@ -6,7 +6,6 @@ import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,11 +17,12 @@ import com.tiendajava.model.Product;
 import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
+import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.components.ProductItemCard;
 import com.tiendajava.ui.components.SearchBar;
 import com.tiendajava.ui.components.dialogs.DeleteConfirmDialog;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
@@ -40,7 +40,7 @@ public class ProductsAdminScreen extends JPanel {
         productsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // --- Título ---
-        JLabel title = new JLabel("Manage Products", new ImageIcon(getClass().getResource("/icons/box.png")), SwingConstants.CENTER);
+        JLabel title = new JLabel("Manage Products", AppIcons.BOX_ICON, SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
         title.setBorder(UIUtils.getDefaultPadding());
@@ -51,7 +51,7 @@ public class ProductsAdminScreen extends JPanel {
         topPanel.setBackground(UITheme.getPrimaryColor());
         topPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
 
-        JButton createProductBtn = ButtonFactory.createPrimaryButton("Add Product", UIUtils.LoadIcon("/icons/user-add.png"), this::createProduct);
+        JButton createProductBtn = ButtonFactory.createPrimaryButton("Add Product", AppIcons.USER_PLUS_ICON, this::createProduct);
         topPanel.add(createProductBtn);
 
         searchBar = new SearchBar(e -> searchProducts());
@@ -141,4 +141,8 @@ public class ProductsAdminScreen extends JPanel {
     // public MainUI getParent() {
     //     return parent;
     // }
+
+    public MainUI getParentPA() {
+        return parent;
+    }
 }

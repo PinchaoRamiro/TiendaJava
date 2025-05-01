@@ -12,8 +12,8 @@ import javax.swing.JPanel;
 
 import com.tiendajava.model.Session;
 import com.tiendajava.ui.MainUI;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.UITheme;
-import com.tiendajava.ui.utils.UIUtils;
 
 public class SidebarPanel extends JPanel {
 
@@ -32,25 +32,28 @@ public class SidebarPanel extends JPanel {
         String role = Session.getInstance().getRole();
 
         if ("admin".equalsIgnoreCase(role)) {
-            addSidebarButton("Admin Dashboard", "/icons/user.png", () -> frame.showScreen("admin-dashboard"));
-            addSidebarButton("Users", "/icons/users.png", () -> frame.showScreen("manage-users"));
-            addSidebarButton("Admins", "/icons/admin-alt.png", () -> frame.showScreen("manage-admins"));
-            addSidebarButton("Products", "/icons/box.png", () -> frame.showScreen("manage-products"));
+            addSidebarButton("Admin Dashboard", AppIcons.ADMIN_ICON, () -> frame.showScreen("admin-dashboard"));
+            addSidebarButton("Users", AppIcons.USERS_ICON, () -> frame.showScreen("manage-users"));
+            addSidebarButton("Admins", AppIcons.ADMIN_ICON, () -> frame.showScreen("manage-admins"));
+            addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("manage-products"));
         } else {
-            addSidebarButton("Dashboard", "/icons/store.png", () -> frame.showScreen("dashboard"));
-            addSidebarButton("Products", "/icons/selling.png", () -> frame.showScreen("products-user"));
-            addSidebarButton("Cart", "/icons/Cart.png", () -> frame.showScreen("orders"));
+            addSidebarButton("Dashboard", AppIcons.APP_ICON, () -> frame.showScreen("dashboard"));
+            addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("products-user"));
+            addSidebarButton("Cart", AppIcons.CART_ICON, () -> frame.showScreen("orders"));
         }
 
         add(Box.createVerticalGlue());
     }
 
-    private void addSidebarButton(String label, String iconPath, Runnable action) {
-        ImageIcon icon = UIUtils.LoadIcon(iconPath);
+    private void addSidebarButton(String label, ImageIcon icon, Runnable action) {
         JButton button = ButtonFactory.createSecondaryButton(label, icon, action);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setMaximumSize(new Dimension(160, 40));
         add(Box.createVerticalStrut(10));
         add(button);
+    }
+
+    public MainUI getFrame() {
+        return frame;
     }
 }

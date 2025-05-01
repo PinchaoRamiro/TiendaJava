@@ -18,6 +18,7 @@ import javax.swing.SwingConstants;
 import com.tiendajava.model.Product;
 import com.tiendajava.model.Session;
 import com.tiendajava.service.CategoryService;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
@@ -47,7 +48,7 @@ public class ProductItemCard extends JPanel {
         if (product.getImage() != null && !product.getImage().isEmpty()) {
             imageLabel.setIcon(ChargueImage(product)); // Cargar la imagen desde la URL
         } else {
-            imageLabel.setIcon( UIUtils.LoadIcon("/icons/product.png")); // Icono por defecto
+            imageLabel.setIcon( AppIcons.PRODUCT_ICON); // Icono por defecto
         }
 
         add(imageLabel, BorderLayout.WEST);
@@ -90,11 +91,11 @@ public class ProductItemCard extends JPanel {
         actionPanel.setBackground(UITheme.getSecondaryColor());
 
         if (Session.getInstance().getRole().equalsIgnoreCase("admin")) {
-            JLabel editBtn = ButtonFactory.createIconButton(UIUtils.LoadIcon("/icons/edit.png"), onEdit);
+            JLabel editBtn = ButtonFactory.createIconButton(AppIcons.EDIT_ICON, onEdit);
             editBtn.setForeground(UITheme.getButtonColor());
 
             editBtn.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
-            ImageIcon deleteIcon = UIUtils.LoadIcon("/icons/trash.png");
+            ImageIcon deleteIcon = AppIcons.DELETE_ICON;
             ImageIcon iconDanger = UIUtils.tintImage(deleteIcon, UITheme.getDangerColor());
             JLabel deleteBtn = ButtonFactory.createIconButton( iconDanger, onDelete);
             deleteBtn.setForeground(UITheme.getDangerColor());
@@ -103,7 +104,7 @@ public class ProductItemCard extends JPanel {
             actionPanel.add(editBtn);
             actionPanel.add(deleteBtn);
         } else {
-            JLabel addToCartBtn = ButtonFactory.createIconButton(UIUtils.LoadIcon("/icons/cart-add.png"), onAddToCart);
+            JLabel addToCartBtn = ButtonFactory.createIconButton(AppIcons.CART_ADD_ICON, onAddToCart);
             actionPanel.add(addToCartBtn);
         }
 
@@ -123,7 +124,7 @@ public class ProductItemCard extends JPanel {
             rawIcon = new ImageIcon(URI.create(imageUrl).toURL());
         } catch (MalformedURLException e) {
             System.out.println("Error loading image: " + e.getMessage());
-            rawIcon = UIUtils.LoadIcon("/icons/product.png");
+            rawIcon = AppIcons.PRODUCT_ICON;
         }
         // 3) Escala el icono a 100×100 px
         Image scaled = rawIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);

@@ -1,4 +1,4 @@
-package com.tiendajava.ui.utils;
+package com.tiendajava.ui.components;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -7,7 +7,9 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
-import com.tiendajava.ui.components.Toast;
+import com.tiendajava.ui.utils.Fonts;
+import com.tiendajava.ui.utils.UITheme;
+import com.tiendajava.ui.utils.animations.Toast;
 
 public class NotificationHandler {
 

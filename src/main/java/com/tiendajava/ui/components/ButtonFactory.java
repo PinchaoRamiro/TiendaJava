@@ -80,7 +80,7 @@ public class ButtonFactory {
             @Override
             public void mouseEntered(MouseEvent e) {
                 // Change icon size or color if needed
-                button.setIcon(new ImageIcon(icon.getImage().getScaledInstance(28, 28, java.awt.Image.SCALE_SMOOTH)));
+                button.setIcon(new ImageIcon(icon.getImage().getScaledInstance(26, 26, java.awt.Image.SCALE_SMOOTH)));
             }
 
             @Override

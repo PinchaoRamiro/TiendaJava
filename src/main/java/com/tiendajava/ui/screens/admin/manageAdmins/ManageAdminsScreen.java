@@ -16,8 +16,9 @@ import com.tiendajava.model.User;
 import com.tiendajava.service.AdminService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
+import com.tiendajava.ui.components.NotificationHandler;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
-import com.tiendajava.ui.utils.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
@@ -35,14 +36,14 @@ public class ManageAdminsScreen extends JPanel {
         adminsPanel.setBorder(BorderFactory.createEmptyBorder(25, 20, 20, 20));
 
         // Título
-        JLabel title = new JLabel("Manage Admins", UIUtils.LoadIcon("/icons/admin-alt.png"), SwingConstants.CENTER);
+        JLabel title = new JLabel("Manage Admins", AppIcons.ADMIN_ICON, SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
         title.setBorder(UIUtils.getDefaultPadding());
         add(title, BorderLayout.NORTH);
 
         // Botón para agregar admin
-        JButton createAdminBtn = ButtonFactory.createPrimaryButton("Add Admin", UIUtils.LoadIcon("/icons/user-add.png"), this::registerAdmin);
+        JButton createAdminBtn = ButtonFactory.createPrimaryButton("Add Admin",AppIcons.USER_PLUS_ICON, this::registerAdmin);
         createAdminBtn.setPreferredSize(new java.awt.Dimension(150, 40));
 
         JPanel topPanel = new JPanel();
@@ -105,12 +106,12 @@ public class ManageAdminsScreen extends JPanel {
         JPanel actionsPanel = new JPanel();
         actionsPanel.setBackground(UITheme.getSecondaryColor());
 
-        JButton demoteBtn = ButtonFactory.createDangerButton("Demote to User", UIUtils.LoadIcon("/icons/user.png"), () -> demoteAdmin(admin));
+        JButton demoteBtn = ButtonFactory.createDangerButton("Demote to User", AppIcons.USER_ICON, () -> demoteAdmin(admin));
         actionsPanel.add(demoteBtn);
 
         // Botón para eliminar admin
         
-        JButton deleteBtn = ButtonFactory.createDangerButton("Delete Admin", UIUtils.LoadIcon("/icons/trash.png"), () -> {
+        JButton deleteBtn = ButtonFactory.createDangerButton("Delete Admin", AppIcons.DELETE_ICON , () -> {
             ApiResponse<String> response = adminService.deleteUser(admin.getId());
             if (response.isSuccess()) {
                 NotificationHandler.success("Admin " + admin.getName() + " deleted successfully.");
@@ -134,5 +135,9 @@ public class ManageAdminsScreen extends JPanel {
         } else {
             NotificationHandler.error("Failed to demote: " + response.getMessage());
         }
+    }
+
+    public MainUI getParentMA() {
+        return parent;
     }
 }

@@ -5,6 +5,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -16,15 +17,15 @@ import com.tiendajava.model.Session;
 import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.dialogs.ConfirmationDialog;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
-import com.tiendajava.ui.utils.UIUtils;
 
 public class HeaderPanel extends JPanel {
     private JLabel welcomeLabel = new JLabel();;
     private final UserService userService = new UserService();
     private JButton settingsButton;
-    private final MainUI parent; // Initialized in the constructor
+    private final MainUI parent;
     private final JPopupMenu settingsMenu = new JPopupMenu();
 
     public HeaderPanel(MainUI parent) {
@@ -40,7 +41,7 @@ public class HeaderPanel extends JPanel {
     }
 
     private JLabel buildLogo() {
-        JLabel logoLabel = new JLabel(UIUtils.LoadIcon("/icons/logo.png"));
+        JLabel logoLabel = new JLabel(AppIcons.LOGO_ICON);
         logoLabel.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 10));
         return logoLabel;
     }
@@ -76,9 +77,10 @@ public class HeaderPanel extends JPanel {
     }
 
     private void createSettingsButton() {
-        settingsButton = ButtonFactory.createSecondaryButton("Settings", UIUtils.LoadIcon("/icons/settings.png"), () -> {
+        settingsButton = ButtonFactory.createSecondaryButton("Settings", AppIcons.SETTINGS_ICON, () -> {
             settingsMenu.show(settingsButton, 0, settingsButton.getHeight());
         });
+        
 
         settingsButton.setPreferredSize(new Dimension(140, 40));
         settingsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -91,20 +93,16 @@ public class HeaderPanel extends JPanel {
         settingsMenu.setFont(Fonts.NORMAL_FONT);
         settingsMenu.setBackground(UITheme.getSecondaryColor());
 
-        JMenuItem accountItem = createMenuItem("Account", "/icons/user.png", () -> {
+        JMenuItem accountItem = createMenuItem("Account", AppIcons.USER_ICON, () -> {
             parent.showScreen("account-settings");
         });
 
-        JMenuItem passwordItem = createMenuItem("Change Password", "/icons/door-key.png", () -> {
+        JMenuItem passwordItem = createMenuItem("Change Password", AppIcons.KEYS_ICON, () -> {
             parent.showScreen("change-password");
         });
 
-        JMenuItem logoutItem = createMenuItem("Logout", "/icons/exit.png", () -> {
-            new ConfirmationDialog( "Logout Confirmation", "Are you sure you want to logout?", () -> {
-                userService.Logout();
-                parent.showScreen("login");
-            }).setVisible(true);
-        });
+        JMenuItem logoutItem = createMenuItem("Logout", AppIcons.EXIT_ICON, () -> logout());
+
         logoutItem.setBackground(UITheme.getDangerColor());
 
         settingsMenu.add(accountItem);
@@ -114,8 +112,15 @@ public class HeaderPanel extends JPanel {
         settingsMenu.add(logoutItem);
     }
 
-    private JMenuItem createMenuItem(String text, String iconPath, Runnable action) {
-        JMenuItem item = new JMenuItem(text, UIUtils.LoadIcon(iconPath));
+    private void logout() {
+        new ConfirmationDialog( "Logout Confirmation", "Are you sure you want to logout?", () -> {
+            userService.Logout();
+            parent.showScreen("login");
+        }).setVisible(true);
+    }
+
+    private JMenuItem createMenuItem(String text, ImageIcon icon, Runnable action) {
+        JMenuItem item = new JMenuItem(text, icon);
         item.setFont(Fonts.NORMAL_FONT);
         item.setBackground(UITheme.getSecodaryButtonColor());
         item.setForeground(UITheme.getTextColor());

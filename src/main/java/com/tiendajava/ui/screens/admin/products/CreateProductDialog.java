@@ -17,7 +17,7 @@ import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Category;
 import com.tiendajava.model.Product;
 import com.tiendajava.ui.components.ButtonFactory;
-import com.tiendajava.ui.utils.NotificationHandler;
+import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 

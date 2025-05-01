@@ -8,9 +8,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
-import com.tiendajava.ui.utils.UIUtils;
 
 public class SearchBar extends JPanel {
 
@@ -31,7 +31,7 @@ public class SearchBar extends JPanel {
 
         searchField.addActionListener(onSearch);
 
-        searchButton = ButtonFactory.createIconButton( UIUtils.LoadIcon("/icons/search.png"), () -> onSearch.actionPerformed(null));
+        searchButton = ButtonFactory.createIconButton( AppIcons.SEARCH_ICON, () -> onSearch.actionPerformed(null));
 
         add(searchField, BorderLayout.CENTER);
         add(searchButton, BorderLayout.EAST);

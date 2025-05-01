@@ -11,7 +11,7 @@ public class OrderItem {
     private int quantity;
     private BigDecimal price;
 
-    private List<Product> products; // Assuming an order item is associated with a product
+    private List<Product> products;
 
     public OrderItem() {
     }

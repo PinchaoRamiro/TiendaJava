@@ -33,6 +33,7 @@ public final class MainUI extends JFrame {
     public MainUI() {
         UIUtils.applyDarkTheme();
 
+
         setTitle("RP Store - Java");
         setSize(1000, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
