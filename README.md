@@ -16,7 +16,7 @@ Si eres un usuario normal puedes registrarte y acceder desde la primera vista.
 
 Si quieres acceder como admistrador, las credenciales iniciales son las siguientes:
 
-**Email:** Admin@tienda.com
+**Email:** Admin@tienda.com 
 
 **Password:**123
 
