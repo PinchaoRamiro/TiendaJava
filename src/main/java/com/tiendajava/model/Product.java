@@ -101,4 +101,19 @@ public class Product {
     public void setCategory(Category category) {
         this.Category = category;
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "product_id=" + product_id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                ", category_id=" + category_id +
+                ", createdAt='" + createdAt + '\'' +
+                ", image='" + image + '\'' +
+                ", Category=" + Category +
+                '}';
+    }
 }

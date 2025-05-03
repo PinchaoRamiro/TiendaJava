@@ -79,6 +79,9 @@ public class CreateProductDialog extends IProductDialog {
         String stockText = stockField.getText().trim();
         String description = descriptionField.getText().trim();
 
+        System.out.println("Creating product with name: " + name); // Debugging line
+        System.out.println("Image file: " + (imageFile != null ? imageFile.getAbsolutePath() : "No image selected")); // Debugging line
+
         Category selectedCategory = (Category) categoryComboBox.getSelectedItem();
         if (selectedCategory == null) {
             NotificationHandler.warning("Please select a category.");
@@ -96,12 +99,16 @@ public class CreateProductDialog extends IProductDialog {
             }
             int stock = Integer.parseInt(stockText);
             int category_id = selectedCategory.getCategory_id();
+
+            this.product = new Product();
             
             product.setName(name);
             product.setPrice(price);
             product.setStock(stock);
             product.setCategory_id(category_id);
             product.setDescription(description);
+
+            System.out.println("Creating product: " + product.toString()); // Debugging line
 
             ApiResponse<Product> resp = productService.createProductWithImage(product, imageFile);
             if (resp.isSuccess()) {

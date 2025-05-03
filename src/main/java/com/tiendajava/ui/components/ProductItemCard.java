@@ -1,136 +1,131 @@
 package com.tiendajava.ui.components;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Image;
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 import com.tiendajava.model.Product;
 import com.tiendajava.model.Session;
-import com.tiendajava.service.CategoryService;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
 public class ProductItemCard extends JPanel {
+    private static final Map<String,ImageIcon> imageCache = new ConcurrentHashMap<>();
 
-    private final CategoryService categoryService = new CategoryService();
+    public ProductItemCard(Product product,
+                           Runnable onEdit,
+                           Runnable onDelete,
+                           Runnable onAddToCart) {
 
-
-    public ProductItemCard(Product product, Runnable onEdit, Runnable onDelete, Runnable onAddToCart) {
-
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new BorderLayout(10,10));
         setBackground(UITheme.getSecondaryColor());
-        setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, UITheme.getBorderCardsColor()));
-        setPreferredSize(new Dimension(400, 120));
+        setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        setPreferredSize(new Dimension(400,120));
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // Get a padding for the card
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        setCursor(Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
-
-
-        // Imagen
-        JLabel imageLabel = new JLabel();
+        // --- Imagen ---
+        JLabel imageLabel = new JLabel(getPlaceholderIcon());
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        imageLabel.setPreferredSize(new Dimension(100, 100));
-
-        if (product.getImage() != null && !product.getImage().isEmpty()) {
-            imageLabel.setIcon(ChargueImage(product)); // Cargar la imagen desde la URL
-        } else {
-            imageLabel.setIcon( AppIcons.PRODUCT_ICON); // Icono por defecto
-        }
-
+        imageLabel.setPreferredSize(new Dimension(100,100));
         add(imageLabel, BorderLayout.WEST);
 
-        // Información del producto
-        JPanel infoPanel = new JPanel(new GridLayout(3, 1));
-        infoPanel.setBackground(UITheme.getSecondaryColor());
+        if (product.getImage() != null && !product.getImage().isEmpty()) {
+            loadImageAsync(product.getImage(), imageLabel);
+        }
 
-        JLabel nameLabel = new JLabel(product.getName());
-        nameLabel.setFont(Fonts.SUBTITLE_FONT);
-        nameLabel.setForeground(UITheme.getTextColor());
+        // --- Info ---
+        JPanel info = new JPanel(new GridLayout(5,1,0,2));
+        info.setBackground(UITheme.getSecondaryColor());
+        info.add(createLabel(product.getName(), Fonts.SUBTITLE_FONT, UITheme.getTextColor()));
+        info.add(createLabel("Category: "+product.getCategory().getCategory_name(),
+                             Fonts.SMALL_FONT, UITheme.getTextColor()));
+        info.add(createLabel("$"+product.getPrice(), Fonts.NORMAL_FONT, UITheme.getSuccessColor()));
+        info.add(createLabel("Stock: "+product.getStock(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+        info.add(createLabel(product.getDescription(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+        add(info, BorderLayout.CENTER);
 
-        JLabel priceLabel = new JLabel("$" + product.getPrice());
-        priceLabel.setFont(Fonts.NORMAL_FONT);
-        priceLabel.setForeground(UITheme.getSuccessColor());
-
-        JLabel stockLabel = new JLabel("Stock: " + product.getStock());
-        stockLabel.setFont(Fonts.SMALL_FONT);
-        stockLabel.setForeground(UITheme.getTextColor());
-
-        // descripción
-        JLabel descriptionLabel = new JLabel(product.getDescription());
-        descriptionLabel.setFont(Fonts.SMALL_FONT);
-        descriptionLabel.setForeground(UITheme.getTextColor());
-
-        JLabel categoryLabel = new JLabel("Category: " + product.getCategory().getCategory_name());
-        categoryLabel.setFont(Fonts.SMALL_FONT);
-        categoryLabel.setForeground(UITheme.getTextColor());
-
-        infoPanel.add(nameLabel);
-        infoPanel.add(categoryLabel);
-        infoPanel.add(priceLabel);
-        infoPanel.add(stockLabel);
-        infoPanel.add(descriptionLabel);
-
-        add(infoPanel, BorderLayout.CENTER);
-
-        // Botones de acción
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        actionPanel.setBackground(UITheme.getSecondaryColor());
-
-        if (Session.getInstance().getRole().equalsIgnoreCase("admin")) {
-            JLabel editBtn = ButtonFactory.createIconButton(AppIcons.EDIT_ICON, onEdit);
-            editBtn.setForeground(UITheme.getButtonColor());
-
-            editBtn.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
-            ImageIcon deleteIcon = AppIcons.DELETE_ICON;
-            ImageIcon iconDanger = UIUtils.tintImage(deleteIcon, UITheme.getDangerColor());
-            JLabel deleteBtn = ButtonFactory.createIconButton( iconDanger, onDelete);
-            deleteBtn.setForeground(UITheme.getDangerColor());
-            deleteBtn.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
-
-            actionPanel.add(editBtn);
-            actionPanel.add(deleteBtn);
+        // --- Acciones ---
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER,10,0));
+        actions.setBackground(UITheme.getSecondaryColor());
+        if ("admin".equalsIgnoreCase(Session.getInstance().getRole())) {
+            actions.add(ButtonFactory.createIconButton(AppIcons.EDIT_ICON, onEdit));
+            ImageIcon tintedDelete = UIUtils.tintImage(AppIcons.DELETE_ICON, UITheme.getDangerColor());
+            actions.add(ButtonFactory.createIconButton(tintedDelete, onDelete));
         } else {
-            JLabel addToCartBtn = ButtonFactory.createIconButton(AppIcons.CART_ADD_ICON, onAddToCart);
-            actionPanel.add(addToCartBtn);
+            actions.add(ButtonFactory.createIconButton(AppIcons.CART_ADD_ICON, onAddToCart));
         }
-
-        add(actionPanel, BorderLayout.EAST);
+        add(actions, BorderLayout.EAST);
     }
 
-
-    private ImageIcon ChargueImage(Product product) {
-       // 1) Construye la URL de la imagen 
-        String imageUrl = "http://localhost:5000" + product.getImage();
-
-        System.out.println("Image URL: " + imageUrl); // Debugging line
-        
-        // 2) Carga el icono (con un placeholder si falla)
-        ImageIcon rawIcon;
-        try {
-            rawIcon = new ImageIcon(URI.create(imageUrl).toURL());
-        } catch (MalformedURLException e) {
-            System.out.println("Error loading image: " + e.getMessage());
-            rawIcon = AppIcons.PRODUCT_ICON;
-        }
-        // 3) Escala el icono a 100×100 px
-        Image scaled = rawIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-        ImageIcon icon = new ImageIcon(scaled);
-
-        return icon;
-
+    private JLabel createLabel(String text, Font font, Color color) {
+        JLabel lbl = new JLabel(text);
+        lbl.setFont(font);
+        lbl.setForeground(color);
+        return lbl;
     }
+
+    private ImageIcon getPlaceholderIcon() {
+        return AppIcons.PRODUCT_ICON;
+    }
+
+    private void loadImageAsync(String imagePath, JLabel target) {
+        String url = "https://tienda-backend-381g.onrender.com" + imagePath;
+        if (imageCache.containsKey(url)) {
+            target.setIcon(imageCache.get(url));
+            return;
+        }
+        new SwingWorker<ImageIcon,Void>() {
+            @Override
+            protected ImageIcon doInBackground() {
+                try {
+                    URL imageUrl = new URI(url).toURL();
+                    HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
+                    conn.setConnectTimeout(10000);
+                    conn.setReadTimeout(10000);
+                    try (InputStream in = conn.getInputStream()) {
+                        byte[] data = in.readAllBytes();
+                        ImageIcon raw = new ImageIcon(data);
+                        Image scaled = raw.getImage()
+                                        .getScaledInstance(100,100,Image.SCALE_SMOOTH);
+                        return new ImageIcon(scaled);
+                    }
+                } catch (IOException | URISyntaxException e) {
+                    return getPlaceholderIcon();
+                }
+            }
+            @Override
+            protected void done() {
+                try {
+                    ImageIcon icon = get();
+                    imageCache.put(url, icon);
+                    target.setIcon(icon);
+                } catch (InterruptedException | ExecutionException ignored) {
+                }
+            }
+        }.execute();
+    }
+
 }
