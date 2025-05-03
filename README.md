@@ -4,6 +4,12 @@ TiendaJava es una aplicación de escritorio desarrollada en **Java Swing**, que 
 
 ---
 
+## Aplicación ejecutable .jar
+
+### 🔗 [link](tiendajava-2.0-jar-with-dependencies.jar)
+
+
+
 ## 📌 Características
 
 ### 👤 Usuario Común
