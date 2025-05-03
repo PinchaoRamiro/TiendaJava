@@ -18,7 +18,7 @@ Si quieres acceder como admistrador, las credenciales iniciales son las siguient
 
 **Email:** Admin@tienda.com 
 
-**Password:**123
+**Password:** 123
 
 ## 📌 Características
 
