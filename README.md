@@ -6,9 +6,18 @@ TiendaJava es una aplicación de escritorio desarrollada en **Java Swing**, que 
 
 ## Aplicación ejecutable .jar
 
+si no tienes maven puedes descargar el .jar y mirar la aplicación
+
 ### 🔗 [link](tiendajava-2.0-jar-with-dependencies.jar)
 
+## Inicio 
 
+Si eres un usuario normal puedes registrarte y acceder desde la primera vista.
+
+Si quieres acceder como admistrador, las credenciales iniciales son las siguientes:
+
+**Email:** Admin@tienda.com
+**Password:**123
 
 ## 📌 Características
 
@@ -126,7 +135,6 @@ Se cargan con rutas relativas que apuntan a http://localhost:5000/public/....
 ### 🧑‍🏫 Desarrollador
 ### 👨‍💻 Ramiro Antonio Pinchao Chachinoy
 ### 📍 Colombia 
-### 🔗 [Github](https://github.com/PinchaoRamiro)
 
 ## 📄 Licencia
 Este proyecto es de código abierto y libre de uso para propósitos educativos o personales.
