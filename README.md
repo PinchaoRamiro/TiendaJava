@@ -20,13 +20,13 @@ Si quieres acceder como admistrador, las credenciales iniciales son las siguient
 
 **Password:** 123
 
+---
+
 ## 📌 Características
 
 ### 👤 Usuario Común
 - Ver productos disponibles con imágenes, precio y descripción.
 - Buscar productos por nombre.
-- Añadir productos al carrito de compras.
-- Consultar y gestionar sus órdenes.
 - Editar su información personal y contraseña.
 
 ### 🛠️ Administrador
