@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -37,27 +38,37 @@ public class ManageUsersScreen extends JPanel {
 
     public ManageUsersScreen(MainUI parent) {
         this.parent = parent;
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(10, 10));
         setBackground(UITheme.getPrimaryColor());
-        usersPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Título
+        // === Título ===
         JLabel title = new JLabel("Manage Users", AppIcons.USERS_ICON, SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
         title.setBorder(UIUtils.getDefaultPadding());
         add(title, BorderLayout.NORTH);
 
-        // Scroll para usuarios
+        // === Botón para agregar usuario ===
+        JButton addUserBtn = ButtonFactory.createSecondaryButton("Add user", AppIcons.USER_PLUS_ICON,  () -> parent.showScreen("add-user"));
+        addUserBtn.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(UITheme.getPrimaryColor());
+        buttonPanel.add(addUserBtn);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // === Panel de usuarios con scroll ===
+        usersPanel.setBackground(UITheme.getPrimaryColor());
+        usersPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
         JScrollPane scrollPane = new JScrollPane(usersPanel);
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
-
         scrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar());
         scrollPane.getHorizontalScrollBar().setUI(UIUtils.createDarkScrollBar());
 
         add(scrollPane, BorderLayout.CENTER);
 
+        // === Cargar usuarios ===
         loadUsers();
     }
 

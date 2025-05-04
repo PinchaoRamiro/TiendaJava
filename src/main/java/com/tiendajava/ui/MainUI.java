@@ -69,6 +69,7 @@ public final class MainUI extends JFrame {
                 // case "orders" -> contentPanel.add(new OrdersScreen(this), "orders");
                 case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
                 case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
+                case "add-user" -> contentPanel.add(new RegisterScreen(this), "add-user");
                 case "manage-admins" -> contentPanel.add(new ManageAdminsScreen(this), "manage-admins");
                 case "manage-products" -> contentPanel.add(new ProductsAdminScreen(this), "manage-products");
                 case "change-password" -> contentPanel.add(new ChangePasswordScreen(this), "change-password");
@@ -85,7 +86,7 @@ public final class MainUI extends JFrame {
     private boolean nameRequiresAuth(String name) {
         return switch (name) {
             case "dashboard", "products-user", "orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products"
-            , "account-settings", "change-password"  -> true;
+            , "account-settings", "change-password", "add-user"  -> true;
             default -> false;
         };
     }

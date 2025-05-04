@@ -5,8 +5,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -15,8 +13,10 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 import com.tiendajava.model.ApiResponse;
+import com.tiendajava.model.Session;
 import com.tiendajava.model.User;
 import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
@@ -24,83 +24,120 @@ import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
+import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
 public class RegisterScreen extends JPanel {
+    private final MainUI parent;
+    private final UserService userService;
 
-  private final MainUI parent;
+    // Campos del formulario
+    private final JTextField nameField;
+    private final JTextField lastNameField;
+    private final JTextField emailField;
+    private final JPasswordField passwordField;
+    private final JPasswordField passwordConfirmField;
+    private final JTextField typeDocumentField;
+    private final JTextField numDocumentField;
+    private final JTextField addressField;
+    private final JTextField phoneField;
 
-  private final JTextField nameField = UIUtils.createTextField(Fonts.NORMAL_FONT);
-  private final JTextField lastNameField = UIUtils.createTextField(Fonts.NORMAL_FONT);
-  private final JTextField emailField = UIUtils.createTextField(Fonts.NORMAL_FONT);
-  private final JPasswordField passwordField = UIUtils.createPasswordField();
-  private final JPasswordField passwordConfirmField = UIUtils.createPasswordField();
-  private final JTextField typeDocumentField = UIUtils.createTextField(Fonts.NORMAL_FONT);
-  private final JTextField numDocumentField = UIUtils.createTextField(Fonts.NORMAL_FONT);
-  private final JTextField addressField = UIUtils.createTextField(Fonts.NORMAL_FONT);
-  private final JTextField phoneField = UIUtils.createTextField(Fonts.NORMAL_FONT);
-  private final UserService userService = new UserService();
+    public RegisterScreen(MainUI parent) {
+        this.parent = parent;
+        this.userService = new UserService();
 
-  public RegisterScreen(MainUI mainFrame) {
-    this.parent = mainFrame;
-    setLayout(new BorderLayout());
+        // Inicializar campos del formulario
+        this.nameField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+        this.lastNameField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+        this.emailField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+        this.passwordField = UIUtils.createPasswordField();
+        this.passwordConfirmField = UIUtils.createPasswordField();
+        this.typeDocumentField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+        this.numDocumentField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+        this.addressField = UIUtils.createTextField(Fonts.NORMAL_FONT);
+        this.phoneField = UIUtils.createTextField(Fonts.NORMAL_FONT);
 
-    JPanel panel = new JPanel(new GridBagLayout());
-    panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 30, 30));
+        setLayout(new BorderLayout());
+        setBackground(UITheme.getPrimaryColor());
 
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.insets = new Insets(10, 10, 10, 10);
-    gbc.fill = GridBagConstraints.HORIZONTAL;
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBorder(new EmptyBorder(10, 40, 20, 40));
+        formPanel.setBackground(UITheme.getPrimaryColor());
 
-    int y = 0;
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(12, 12, 12, 12);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        int y = 0;
+
+        // === Título ===
+        JLabel title = new JLabel("Create Account", AppIcons.USER_PLUS_ICON, SwingConstants.CENTER);
+        title.setFont(Fonts.TITLE_FONT);
+        title.setForeground(UITheme.getTextColor());
+
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        gbc.gridwidth = 4;
+        formPanel.add(title, gbc);
+
+        gbc.gridwidth = 1;
+        y += 2;
+
+        addField(formPanel, gbc, y++, "Name:", nameField, "Lastname:", lastNameField);
+        addField(formPanel, gbc, y++, "Email:", emailField, "Phone:", phoneField);
+        addField(formPanel, gbc, y++, "Password:", passwordField, "Confirm Password:", passwordConfirmField);
+        addField(formPanel, gbc, y++, "Document Type:", typeDocumentField, "Document No.:", numDocumentField);
+
+        // Campo individual (Address, usa solo la mitad izquierda)
+        gbc.gridx = 0;
+        gbc.gridy = y++;
+        formPanel.add(UIUtils.createTextLabel("Address:", Fonts.BOLD_NFONT), gbc);
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        formPanel.add(addressField, gbc);
+        // Label derecha
+        gbc.gridx = 2;
+        gbc.weightx = 0.0;
+        formPanel.add(UIUtils.createTextLabel("", Fonts.BOLD_NFONT ), gbc);
+
+        // === Botones de acción ===
+        JButton registerBtn = ButtonFactory.createPrimaryButton("Register", AppIcons.USER_CHECK_ICON, this::register);
+
+        gbc.gridy = y++;
+        gbc.gridx = 1;
+        formPanel.add(registerBtn, gbc);
+
+        if(!Session.getInstance().isLogged()){
+          JButton backButton = ButtonFactory.createSecondaryButton("Back", AppIcons.BACK_ICON, () -> parent.showScreen("login"));
+          gbc.gridx = 2;
+          formPanel.add(backButton, gbc);
+        }
+
+        add(formPanel, BorderLayout.CENTER);
+    }
+
+  private void addField(JPanel panel, GridBagConstraints gbc, int y, String labelLeft, JComponent fieldLeft,
+      String labelRight, JComponent fieldRight) {
+
+    // Label izquierda
     gbc.gridx = 0;
     gbc.gridy = y;
-    gbc.gridwidth = 4;
+    panel.add(UIUtils.createTextLabel(labelLeft, Fonts.BOLD_NFONT), gbc);
 
-    ImageIcon userIcon = AppIcons.USER_PLUS_ICON;
-    JLabel title = new JLabel("Create Account", userIcon, SwingConstants.CENTER);
-    title.setFont(Fonts.TITLE_FONT);
-    panel.add(title, gbc);
-
-    y = 2;
-
-    gbc.gridwidth = 1;
-    addField(panel, gbc, ++y, 0, "Name:", nameField);
-    addField(panel, gbc, y, 2, "Lastname:", lastNameField);
-
-    addField(panel, gbc, ++y, 0, "Email:", emailField);
-    addField(panel, gbc, y, 2, "Cel:", phoneField);
-
-    addField(panel, gbc, ++y, 0, "Password:", passwordField);
-    addField(panel, gbc, y, 2, "Confirm Password:", passwordConfirmField);
-
-    addField(panel, gbc, ++y, 0, "Type of Document:", typeDocumentField);
-    addField(panel, gbc, y, 2, "N° Document:", numDocumentField);
-    addField(panel, gbc, ++y, 0, "Address:", addressField);
-
-    ImageIcon backIcon = AppIcons.BACK_ICON;
-    ImageIcon registerIcon = AppIcons.USER_CHECK_ICON;
-
+    // Campo izquierda
     gbc.gridx = 1;
-    gbc.gridy = y + 2;
-    JButton registerBtn = ButtonFactory.createPrimaryButton("Register", registerIcon, this::register);
-    panel.add(registerBtn, gbc);
+    gbc.weightx = 1.0;
+    panel.add(fieldLeft, gbc);
 
+    // Label derecha
     gbc.gridx = 2;
-    JButton backBtn = ButtonFactory.createSecondaryButton("Back", backIcon, () -> {
-      SwingUtilities.invokeLater(() -> parent.showScreen("login"));
-    });
-    panel.add(backBtn, gbc);
+    gbc.weightx = 0.0;
+    panel.add(UIUtils.createTextLabel(labelRight, Fonts.BOLD_NFONT), gbc);
 
-    add(panel, BorderLayout.CENTER);
-  }
-
-  private void addField(JPanel panel, GridBagConstraints gbc, int y, int x, String label, JComponent field) {
-    gbc.gridx = x;
-    gbc.gridy = y;
-    panel.add(UIUtils.createTextLabel(label, Fonts.BOLD_NFONT), gbc);
-    gbc.gridx = x + 1;
-    panel.add(field, gbc);
+    // Campo derecha
+    gbc.gridx = 3;
+    gbc.weightx = 1.0;
+    panel.add(fieldRight, gbc);
   }
 
   private void register() {
@@ -115,13 +152,13 @@ public class RegisterScreen extends JPanel {
     String phone = phoneField.getText().trim();
 
     if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-        NotificationHandler.warning(this, "Please complete the required fields");
-        return;
+      NotificationHandler.warning(this, "Please complete the required fields");
+      return;
     }
 
     if (!password.equals(confirmPassword)) {
-        NotificationHandler.error(this, "Passwords do not match");
-        return;
+      NotificationHandler.error(this, "Passwords do not match");
+      return;
     }
 
     User user = new User();
@@ -137,11 +174,11 @@ public class RegisterScreen extends JPanel {
     ApiResponse<User> response = userService.Register(user);
 
     if (response.isSuccess()) {
-        NotificationHandler.success(this, "Successfully registered user");
-        SwingUtilities.invokeLater(() -> parent.showScreen("dashboard"));
+      NotificationHandler.success(this, "Successfully registered user");
+      SwingUtilities.invokeLater(() -> parent.showScreen("dashboard"));
     } else {
-        NotificationHandler.error(this, response.getMessage());
+      NotificationHandler.error(this, response.getMessage());
     }
-}
+  }
 
 }
