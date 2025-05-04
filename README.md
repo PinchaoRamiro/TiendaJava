@@ -92,7 +92,8 @@ Crear .jar
   ~~~bash
   mvn clean compile assembly:single
   ~~~ 
-  Y obtendrás un archivo como:
+
+Y obtendrás un archivo como:
 
   ~~~pgsql
   target/tiendajava-1.0-SNAPSHOT-jar-with-dependencies.jar
