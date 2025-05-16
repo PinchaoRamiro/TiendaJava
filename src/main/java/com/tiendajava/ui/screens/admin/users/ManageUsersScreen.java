@@ -1,6 +1,7 @@
 package com.tiendajava.ui.screens.admin.users;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -17,23 +17,22 @@ import javax.swing.SwingConstants;
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
 import com.tiendajava.service.AdminService;
-import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.NotificationHandler;
-import com.tiendajava.ui.components.dialogs.ConfirmationDialog;
 import com.tiendajava.ui.components.dialogs.DeleteConfirmDialog;
 import com.tiendajava.ui.components.dialogs.ShowInfoDialog;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
+import static com.tiendajava.ui.utils.UIUtils.getRoundedBorder;
 
 public class ManageUsersScreen extends JPanel {
 
     private final MainUI parent;
     private final AdminService adminService = new AdminService();
-    private final UserService userService = new UserService();
+    // private final UserService userService = new UserService();
     private final JPanel usersPanel = new JPanel(new GridLayout(0, 2, 15, 15));
 
     public ManageUsersScreen(MainUI parent) {
@@ -47,14 +46,6 @@ public class ManageUsersScreen extends JPanel {
         title.setForeground(UITheme.getTextColor());
         title.setBorder(UIUtils.getDefaultPadding());
         add(title, BorderLayout.NORTH);
-
-        // === Botón para agregar usuario ===
-        JButton addUserBtn = ButtonFactory.createSecondaryButton("Add user", AppIcons.USER_PLUS_ICON,  () -> parent.showScreen("add-user"));
-        addUserBtn.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(UITheme.getPrimaryColor());
-        buttonPanel.add(addUserBtn);
-        add(buttonPanel, BorderLayout.SOUTH);
 
         // === Panel de usuarios con scroll ===
         usersPanel.setBackground(UITheme.getPrimaryColor());
@@ -95,58 +86,44 @@ public class ManageUsersScreen extends JPanel {
     private JPanel createUserCard(User user) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(UITheme.getSecondaryColor());
-        card.setBorder(UIUtils.getRoundedBorder());
-        card.setPreferredSize(new java.awt.Dimension(250, 120));
+        card.setBorder(getRoundedBorder());
+        card.setPreferredSize(new Dimension(300, 240));
 
-        JLabel userInfo = new JLabel("<html><div style='text-align: left; margin-left: 20px'>" +
-                "<strong>" + user.getName() + " " + user.getLastName()+ " </strong><br>" + user.getEmail() + "</small><br>" +
-                "Role: " + user.getRole() + 
-                "</div><br>" +
-       " </html>");
+        String userInfoHtml = String.format(
+            "<html>" +
+                "<div style='padding: 10px; font-family: sans-serif;'>" +
+                    "<div style='font-size: 14px; color: #999;'>Full Name: <div style='color:white; font-size: 16px; font-weight: bold;'>%s %s</div>  </div>" +
+                    "<div style='margin-top: 8px; font-size: 14px; color: #999;'>Email:  <div style='color:white;  font-size: 14px;'>%s</div> </div>"+
+                "</div>" +
+            "</html>",
+            user.getName(), user.getLastName(),
+            user.getEmail()
+        );
+
+        JLabel userInfo = new JLabel(userInfoHtml);
         userInfo.setFont(Fonts.NORMAL_FONT);
         userInfo.setForeground(UITheme.getTextColor());
         card.add(userInfo, BorderLayout.CENTER);
 
+
         // Botones de acciones
         JPanel actionsPanel = new JPanel();
         actionsPanel.setBackground(UITheme.getSecondaryColor());
-
-        JLabel editRoleBtn = ButtonFactory.createIconButton(AppIcons.ADMIN_ICON, () -> changeRole(user));
-        //separación entre botones
-        editRoleBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
         ImageIcon deleteIcon = AppIcons.DELETE_ICON;
         ImageIcon iconDanger = UIUtils.tintImage(deleteIcon, UITheme.getDangerColor());
-        JLabel deleteBtn = ButtonFactory.createIconButton(iconDanger, () -> deleteUser(user.getId()));
+        JLabel deleteBtn = ButtonFactory.createIconButton(iconDanger, "Delete", () -> deleteUser(user.getId()));
         deleteBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
-        JLabel infoBtn = ButtonFactory.createIconButton(AppIcons.USER_ICON, () -> infoComplete(user));
+        JLabel infoBtn = ButtonFactory.createIconButton(AppIcons.USER_ICON, "Information",  () -> infoComplete(user));
         infoBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
-        JLabel statusBtn = ButtonFactory.createIconButton(AppIcons.UNACTIVE_ICON, () -> changeUserStatus(user));
-        statusBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
-
-        actionsPanel.add(editRoleBtn, BorderLayout.WEST);
         actionsPanel.add(infoBtn, BorderLayout.WEST);
-        actionsPanel.add(statusBtn, BorderLayout.WEST);
         actionsPanel.add(deleteBtn, BorderLayout.WEST);
 
 
         card.add(actionsPanel, BorderLayout.SOUTH);
 
         return card;
-    }
-
-    private void changeRole(User user) {
-      new ConfirmationDialog("Change Role", "Are you sure you want to change the role of " + user.getName() + "?", () -> {
-            // Logic to change user role
-            ApiResponse<User> response = adminService.updateUserRole(user.getId(), user.getRole().equals("user") ? "admin" : "user");
-            if (response.isSuccess()) {
-                NotificationHandler.success("User role changed successfully for " + response.getData().getName());
-                loadUsers();
-            } else {
-                NotificationHandler.error("Failed to change user role: " + response.getMessage());
-            }
-        }).setVisible(true);
     }
 
     private void deleteUser(int userId) {
@@ -175,19 +152,6 @@ public class ManageUsersScreen extends JPanel {
 
         ShowInfoDialog dialog = new ShowInfoDialog("User Details", userInfo);
         dialog.setVisible(true);
-    }
-
-    private void changeUserStatus(User user) {
-        new ConfirmationDialog("Change Status", "Are you sure you want to change the status of " + user.getName() + "?", () -> {
-            // Logic to change user status
-            ApiResponse<Boolean> response = userService.setStatusUser(user, !user.getStatus());
-            if (response.isSuccess()) {
-                NotificationHandler.success("User status changed successfully for " + user.getName());
-                loadUsers();
-            } else {
-                NotificationHandler.error("Failed to change user status: " + response.getMessage());
-            }
-        }).setVisible(true);
     }
 
     public MainUI getParentMU() {

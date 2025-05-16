@@ -56,7 +56,7 @@ public class FooterPanel extends JPanel {
     private JLabel createLinkLabel(String iconPath, String url) {
         // Crear íconos clickeables
         ImageIcon icon = AppIcons.getIcon(iconPath);
-        JLabel label = ButtonFactory.createIconButton(icon, () -> {
+        JLabel label = ButtonFactory.createIconButton(icon, url, () -> {
             try {
                 Desktop.getDesktop().browse(new URI(url));
             } catch (IOException | URISyntaxException e) {

@@ -29,25 +29,11 @@ public class AdminService {
         return adminRepository.getAllAdmins();
     }
 
-    public ApiResponse<User> updateUserRole(int userId, String newRole) {
-        String json = gson.toJson(new RolePayload(newRole));
-        return adminRepository.updateUserRole(json, userId);
-    }
-
     public ApiResponse<String> deleteUser(int userId) {
         return adminRepository.deleteUser(userId);
     }
 
-    // Clase interna para representar la carga útil del cambio de rol
-    private static class RolePayload {
-        private final String role;
-
-        public RolePayload(String role) {
-            this.role = role;
-        }
-
-        public String getRole() {
-            return role;
-        }
+    public ApiResponse<List<User>> searchAdmins(String name){
+        return adminRepository.searchAdmins(name);
     }
 }

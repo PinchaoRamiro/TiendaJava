@@ -2,6 +2,7 @@ package com.tiendajava.ui.screens.admin.manageAdmins;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.function.Consumer;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -28,10 +29,9 @@ public class RegisterAdminDialog extends JDialog {
     private final JTextField emailField = new JTextField();
     private final JPasswordField passwordField = new JPasswordField();
     private final AdminService adminService = new AdminService();
-    private final Runnable onSuccess;
+    private Consumer<User> onAdminRegistered;
 
-    public RegisterAdminDialog(Runnable onSuccess) {
-        this.onSuccess = onSuccess;
+    public RegisterAdminDialog() {
         setTitle("Register New Admin");
         setModal(true);
         setSize(400, 400);
@@ -97,10 +97,21 @@ public class RegisterAdminDialog extends JDialog {
         ApiResponse<User> response = adminService.registerAdmin(newAdmin);
         if (response.isSuccess()) {
             NotificationHandler.success(this, "Admin registered successfully!");
-            onSuccess.run();
+            notifyAdminRegistered(newAdmin);
             dispose();
         } else {
             NotificationHandler.error(this, "Failed to register admin: " + response.getMessage());
+        }
+    }
+
+    public void setOnAdminRegistered(Consumer<User> callback) {
+        this.onAdminRegistered = callback;
+    }
+
+    // Call this method after a new admin is registered
+    private void notifyAdminRegistered(User newAdmin) {
+        if (onAdminRegistered != null) {
+            onAdminRegistered.accept(newAdmin);
         }
     }
 }

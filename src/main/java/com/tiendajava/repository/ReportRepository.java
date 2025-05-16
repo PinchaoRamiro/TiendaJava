@@ -7,9 +7,9 @@ import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
 import com.tiendajava.model.ApiResponse;
-import com.tiendajava.model.Product;
-import com.tiendajava.model.OrderStatusReport;
 import com.tiendajava.model.DashboardSummary;
+import com.tiendajava.model.OrderStatusReport;
+import com.tiendajava.model.Product;
 import com.tiendajava.model.Session;
 
 public class ReportRepository extends BaseRepository {

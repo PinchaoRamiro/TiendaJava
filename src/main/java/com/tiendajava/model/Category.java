@@ -1,12 +1,9 @@
 package com.tiendajava.model;
 
-import java.util.List;
-
 public class Category {
 
     private int category_id;
     private String category_name;
-    private List<Product> products; // Assuming a category can have multiple products
 
     public Category() {
     }
@@ -39,12 +36,4 @@ public class Category {
         return category_name;  
     }
     
-
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
-    }
 }

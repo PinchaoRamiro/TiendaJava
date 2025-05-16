@@ -36,6 +36,9 @@ public class SidebarPanel extends JPanel {
             addSidebarButton("Users", AppIcons.USERS_ICON, () -> frame.showScreen("manage-users"));
             addSidebarButton("Admins", AppIcons.ADMIN_ICON, () -> frame.showScreen("manage-admins"));
             addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("manage-products"));
+            // addSidebarButton("Orders", AppIcons.ORDERS_ICON, () -> frame.showScreen("manage-orders"));
+            // addSidebarButton("Categories", AppIcons.CATEGORIES_ICON, () -> frame.showScreen("manage-categories"));
+            
         } else {
             addSidebarButton("Dashboard", AppIcons.APP_ICON, () -> frame.showScreen("dashboard"));
             addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("products-user"));

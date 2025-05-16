@@ -76,22 +76,6 @@ public class AdminRepository extends BaseRepository {
         }
     }
 
-    public ApiResponse<User> updateUserRole(String json, int userId) {
-        try {
-            HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "admin/user-role/" + userId))
-            .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer " + Session.getInstance().getToken())
-            .method("PATCH", HttpRequest.BodyPublishers.ofString(json))
-            .build();
-
-            Type type = new TypeToken<ApiResponse<User>>() {}.getType();
-            return sendRequest(request, type);
-        } catch (Exception e) {
-            return new ApiResponse<>(false, null, "Error to update user role");
-        }
-    }
-
     public ApiResponse<String> deleteUser(int userId) {
 
         try {
@@ -105,6 +89,22 @@ public class AdminRepository extends BaseRepository {
             return sendRequest(request, type);
         } catch (Exception e) {
             return new ApiResponse<>(false, null, "Error to delete user");
+        }
+    }
+
+    public ApiResponse<List<User>> searchAdmins(String name){
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(URL_BASE + "admin/search-admin?q=" + name))
+                .header("Authorization", "Bearer " + Session.getInstance().getToken())
+                .GET()
+                .build();
+
+            Type responseType = new TypeToken<ApiResponse<List<User>>>() {
+            }.getType();
+            return sendRequest(request, responseType);
+        } catch (Exception e) {
+        return new ApiResponse<>(false, null, "Error searching products: " + e.getMessage());
         }
     }
 }

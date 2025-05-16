@@ -9,11 +9,11 @@ public class Session {
 	private Session() {
 	}
 
-	public static Session getInstance() {
-		if (instance == null) {
-			instance = new Session();
-		}
-		return instance;
+	public static synchronized Session getInstance() {
+    if (instance == null) {
+        instance = new Session();
+    }
+    return instance;
 	}
 
 	public boolean isLogged() {

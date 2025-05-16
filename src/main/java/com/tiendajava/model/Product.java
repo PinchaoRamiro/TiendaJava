@@ -3,17 +3,17 @@ package com.tiendajava.model;
 import java.math.BigDecimal;
 
 public class Product {
-
     private int product_id;
+    private int category_id;
+    private String Category;
     private String name;
     private String description;
     private BigDecimal price;
     private int stock;
-    private int category_id;
-    private String createdAt;
     private String image;
+    private String created_at;
 
-    private Category Category;
+    // Getters & Setters...
 
     public Product() {
     }
@@ -25,7 +25,7 @@ public class Product {
         this.price = price;
         this.stock = stock;
         this.category_id = category_id;
-        this.createdAt = createdAt;
+        this.created_at = createdAt;
     }
 
     // Getters
@@ -79,11 +79,11 @@ public class Product {
     }
 
     public String getCreatedAt() {
-        return createdAt;
+        return created_at;
     }
 
     public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+        this.created_at = createdAt;
     }
 
     public String getImage() {
@@ -92,14 +92,6 @@ public class Product {
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public Category getCategory() {
-        return Category;
-    }
-
-    public void setCategory(Category category) {
-        this.Category = category;
     }
 
     @Override
@@ -111,9 +103,15 @@ public class Product {
                 ", price=" + price +
                 ", stock=" + stock +
                 ", category_id=" + category_id +
-                ", createdAt='" + createdAt + '\'' +
-                ", image='" + image + '\'' +
-                ", Category=" + Category +
-                '}';
+                ", createdAt='" + created_at + '\'' +
+                ", image='" + image ;
+    }
+
+    public String getCategory() {
+        return Category;
+    }
+
+    public void setCategory(String Category) {
+        this.Category = Category;
     }
 }

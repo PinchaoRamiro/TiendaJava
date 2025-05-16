@@ -11,7 +11,7 @@ import com.google.gson.JsonSyntaxException;
 import com.tiendajava.model.ApiResponse;
 
 public abstract class BaseRepository {
-    protected static final String URL_BASE = "https://tienda-backend-381g.onrender.com/api/";
+    protected static final String URL_BASE = "http://localhost:5000/api/";
     protected final HttpClient client = HttpClient.newHttpClient();
     protected final Gson gson = new Gson();
 

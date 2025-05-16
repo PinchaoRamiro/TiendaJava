@@ -31,12 +31,16 @@ public class UserRepository extends BaseRepository {
         LoginResponse loginResponse = gson.fromJson(response.body(), LoginResponse.class);
         User user = loginResponse.getUser();
         String token = loginResponse.getToken();
-  
-        Session.getInstance().setToken(token);
-        Session.getInstance().setUser(user);
-        Session.getInstance().setRole(user.getRole());
-  
-        return new ApiResponse<>(true, user, "User Registred");
+      
+
+        if(Session.getInstance().isLogged()){
+          return new ApiResponse<>(true, user, "User Registred");
+        }   
+          Session.getInstance().setToken(token);
+          Session.getInstance().setUser(user);
+          Session.getInstance().setRole(user.getRole());
+    
+          return new ApiResponse<>(true, user, "User Registred");
       } else {
         String msg = gson.fromJson(response.body(), JsonObject.class).get("msg").getAsString();
         return new ApiResponse<>(false, null, msg);

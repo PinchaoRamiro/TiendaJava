@@ -6,7 +6,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,6 +26,9 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
 import com.tiendajava.model.Product;
+import com.tiendajava.model.ProductsModels.ClothingProduct;
+import com.tiendajava.model.ProductsModels.ElectronicsProduct;
+import com.tiendajava.model.ProductsModels.FurnitureProduct;
 import com.tiendajava.model.Session;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
@@ -57,25 +60,49 @@ public class ProductItemCard extends JPanel {
         }
 
         // --- Info ---
-        JPanel info = new JPanel(new GridLayout(5,1,0,2));
+        JPanel info = new JPanel();
+        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
         info.setBackground(UITheme.getSecondaryColor());
-        info.add(createLabel(product.getName(), Fonts.SUBTITLE_FONT, UITheme.getTextColor()));
-        info.add(createLabel("Category: "+product.getCategory().getCategory_name(),
-                             Fonts.SMALL_FONT, UITheme.getTextColor()));
-        info.add(createLabel("$"+product.getPrice(), Fonts.NORMAL_FONT, UITheme.getSuccessColor()));
-        info.add(createLabel("Stock: "+product.getStock(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-        info.add(createLabel(product.getDescription(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+
+        info.add(createLabel("Name: " + product.getName(), Fonts.SUBTITLE_FONT, UITheme.getTextColor()));
+        info.add(createLabel("Category: " + product.getCategory(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+        info.add(createLabel("Price: $" + product.getPrice(), Fonts.NORMAL_FONT, UITheme.getSuccessColor()));
+        info.add(createLabel("Stock: " + product.getStock(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+        info.add(createLabel("Description: " + product.getDescription(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+
+        // --- Atributos específicos ---
+        switch (product) {
+            case ClothingProduct clothing -> {
+                info.add(createLabel("Size: " + clothing.getSize(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                info.add(createLabel("Color: " + clothing.getColor(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                info.add(createLabel("Material: " + clothing.getMaterial(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+            }
+            case ElectronicsProduct electronics -> {
+                info.add(createLabel("Voltage: " + electronics.getVoltage(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                info.add(createLabel("Warranty: " + electronics.getWarranty(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                info.add(createLabel("Brand: " + electronics.getBrand(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+            }
+            case FurnitureProduct furniture -> {
+                info.add(createLabel("Dimensions: " + furniture.getDimensions(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                info.add(createLabel("Material: " + furniture.getMaterial(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                info.add(createLabel("Wood Type: " + furniture.getWoodType(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+            }
+            default -> {
+            }
+        }
+
         add(info, BorderLayout.CENTER);
+
 
         // --- Acciones ---
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER,10,0));
         actions.setBackground(UITheme.getSecondaryColor());
         if ("admin".equalsIgnoreCase(Session.getInstance().getRole())) {
-            actions.add(ButtonFactory.createIconButton(AppIcons.EDIT_ICON, onEdit));
+            actions.add(ButtonFactory.createIconButton(AppIcons.EDIT_ICON, "Edit Product", onEdit));
             ImageIcon tintedDelete = UIUtils.tintImage(AppIcons.DELETE_ICON, UITheme.getDangerColor());
-            actions.add(ButtonFactory.createIconButton(tintedDelete, onDelete));
+            actions.add(ButtonFactory.createIconButton(tintedDelete, "Delete", onDelete));
         } else {
-            actions.add(ButtonFactory.createIconButton(AppIcons.CART_ADD_ICON, onAddToCart));
+            actions.add(ButtonFactory.createIconButton(AppIcons.CART_ADD_ICON, "Add to Cart", onAddToCart));
         }
         add(actions, BorderLayout.EAST);
     }
@@ -92,7 +119,7 @@ public class ProductItemCard extends JPanel {
     }
 
     private void loadImageAsync(String imagePath, JLabel target) {
-        String url = "https://tienda-backend-381g.onrender.com" + imagePath;
+        String url = "http://localhost:5000" + imagePath;
         if (imageCache.containsKey(url)) {
             target.setIcon(imageCache.get(url));
             return;
@@ -103,9 +130,8 @@ public class ProductItemCard extends JPanel {
                 try {
                     URL imageUrl = new URI(url).toURL();
                     HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
-                    conn.setConnectTimeout(10000);
-                    conn.setReadTimeout(10000);
-                    System.out.println("" + conn.getResponseCode() + " " + conn.getResponseMessage());
+                    conn.setConnectTimeout(5000);
+                    conn.setReadTimeout(5000);
                     System.out.println("Loading image from: " + url);
                     try (InputStream in = conn.getInputStream()) {
                         byte[] data = in.readAllBytes();

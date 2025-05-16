@@ -31,7 +31,7 @@ public class SearchBar extends JPanel {
 
         searchField.addActionListener(onSearch);
 
-        searchButton = ButtonFactory.createIconButton( AppIcons.SEARCH_ICON, () -> onSearch.actionPerformed(null));
+        searchButton = ButtonFactory.createIconButton( AppIcons.SEARCH_ICON, "Search", () -> onSearch.actionPerformed(null));
 
         add(searchField, BorderLayout.CENTER);
         add(searchButton, BorderLayout.EAST);

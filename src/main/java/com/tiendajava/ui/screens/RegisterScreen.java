@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import com.tiendajava.model.ApiResponse;
@@ -173,9 +172,14 @@ public class RegisterScreen extends JPanel {
 
     ApiResponse<User> response = userService.Register(user);
 
+    if("admin".equals(Session.getInstance().getRole())){
+      NotificationHandler.info(this, "Successfully registered user");
+      return;
+    }
+
     if (response.isSuccess()) {
       NotificationHandler.success(this, "Successfully registered user");
-      SwingUtilities.invokeLater(() -> parent.showScreen("dashboard"));
+      parent.showScreen("dashboard");
     } else {
       NotificationHandler.error(this, response.getMessage());
     }

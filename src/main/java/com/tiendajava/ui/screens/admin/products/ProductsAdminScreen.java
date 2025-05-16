@@ -32,6 +32,7 @@ public class ProductsAdminScreen extends JPanel {
     private final ProductService productService = new ProductService();
     private final JPanel productsPanel = new JPanel(new GridLayout(0, 1, 15, 15)); 
     private final SearchBar searchBar;
+    private  List<Product> products = null;
 
     public ProductsAdminScreen(MainUI parent) {
         this.parent = parent;
@@ -44,7 +45,6 @@ public class ProductsAdminScreen extends JPanel {
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
         title.setBorder(UIUtils.getDefaultPadding());
-        add(title, BorderLayout.NORTH);
 
         // --- Barra superior: Botón + Búsqueda ---
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
@@ -57,6 +57,8 @@ public class ProductsAdminScreen extends JPanel {
         searchBar = new SearchBar(e -> searchProducts());
         topPanel.add(searchBar);
 
+        topPanel.add(title, BorderLayout.EAST);
+
         add(topPanel, BorderLayout.NORTH);
 
         // --- Productos ---
@@ -67,24 +69,32 @@ public class ProductsAdminScreen extends JPanel {
         scrollPane.getHorizontalScrollBar().setUI(UIUtils.createDarkScrollBar());
         add(scrollPane, BorderLayout.CENTER);
 
+        getProductsDataBase();
         loadProducts();
     }
+
+    private void getProductsDataBase(){
+        ApiResponse<List<Product>> response = productService.getAllProducts();
+        this.products = response.isSuccess() ? response.getData() : null;
+    }
+
+
     private void loadProducts() {
         productsPanel.removeAll();
-        ApiResponse<List<Product>> response = productService.getAllProducts();
-        List<Product> products = response.isSuccess() ? response.getData() : null;
         printProducts(products);
         productsPanel.revalidate();
         productsPanel.repaint();
     }
 
     private void printProducts(List<Product> products) {
+        productsPanel.removeAll();
+
         if (products != null && !products.isEmpty()) {
             for (Product product : products) {
                 productsPanel.add(new ProductItemCard(
                     product,
                     () -> editProduct(product),
-                    () -> deleteProduct(product.getProduct_id(), product.getName()),
+                    () -> deleteProduct(product, product.getProduct_id(), product.getName()),
                     () -> {}
                 ));
             }
@@ -109,11 +119,12 @@ public class ProductsAdminScreen extends JPanel {
         dialog.setVisible(true);
     }
 
-    private void deleteProduct( int productId, String productName) {
+    private void deleteProduct( Product product,  int productId, String productName) {
         new DeleteConfirmDialog(productName, () -> {
             ApiResponse<String> response = productService.deleteProduct(productId);
             if (response.isSuccess()) {
                 NotificationHandler.success("Product deleted successfully!");
+                products.remove(product);
                 loadProducts();
             } else {
                 NotificationHandler.error("Failed to delete product: " + response.getMessage());
@@ -126,13 +137,13 @@ public class ProductsAdminScreen extends JPanel {
         productsPanel.removeAll(); // Limpiar la lista de productos antes de agregar los nuevos
         String keyword = searchBar.getText();
         ApiResponse<List<Product>> response = productService.getProductsByName(keyword);
-        List<Product> products = response.isSuccess() ? response.getData() : null;
-        if(products == null){
+        List<Product> productsFind = response.isSuccess() ? response.getData() : null;
+        if(productsFind == null){
             NotificationHandler.error("No products found with the name: " + keyword);
-             loadProducts();
-             return;
+            loadProducts();
+            return;
         }
-        printProducts(products); // Mostrar los productos filtrados
+        printProducts(productsFind); // Mostrar los productos filtrados
         System.out.println("Searching: " + keyword);
     }
     
