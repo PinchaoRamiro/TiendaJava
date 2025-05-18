@@ -36,4 +36,11 @@ public class AdminService {
     public ApiResponse<List<User>> searchAdmins(String name){
         return adminRepository.searchAdmins(name);
     }
+
+    public ApiResponse<List<User>> searchUsers(String name){
+        if(name == null){
+            return new ApiResponse<>(false, null, "Error the fiels cannton be null");
+        }
+        return adminRepository.searchUsers(name);
+    }
 }

@@ -2,12 +2,14 @@ package com.tiendajava.ui.screens.admin.users;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -20,6 +22,7 @@ import com.tiendajava.service.AdminService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.NotificationHandler;
+import com.tiendajava.ui.components.SearchBar;
 import com.tiendajava.ui.components.dialogs.DeleteConfirmDialog;
 import com.tiendajava.ui.components.dialogs.ShowInfoDialog;
 import com.tiendajava.ui.utils.AppIcons;
@@ -34,18 +37,42 @@ public class ManageUsersScreen extends JPanel {
     private final AdminService adminService = new AdminService();
     // private final UserService userService = new UserService();
     private final JPanel usersPanel = new JPanel(new GridLayout(0, 2, 15, 15));
+    private final SearchBar searchBar;
 
     public ManageUsersScreen(MainUI parent) {
         this.parent = parent;
         setLayout(new BorderLayout(10, 10));
         setBackground(UITheme.getPrimaryColor());
 
+        // === Panel superior (título + acciones) ===
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        topPanel.setBackground(UITheme.getPrimaryColor());
+
         // === Título ===
         JLabel title = new JLabel("Manage Users", AppIcons.USERS_ICON, SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
         title.setBorder(UIUtils.getDefaultPadding());
-        add(title, BorderLayout.NORTH);
+
+        title.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                loadUsers();
+            }
+        });
+
+        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        row1.setOpaque(false);
+        row1.add(title);
+
+        searchBar = new SearchBar(e -> searchUsers());
+
+        row1.setOpaque(false);
+        row1.add(searchBar);
+
+        topPanel.add(row1);
+        add(topPanel, BorderLayout.NORTH);
 
         // === Panel de usuarios con scroll ===
         usersPanel.setBackground(UITheme.getPrimaryColor());
@@ -152,6 +179,27 @@ public class ManageUsersScreen extends JPanel {
 
         ShowInfoDialog dialog = new ShowInfoDialog("User Details", userInfo);
         dialog.setVisible(true);
+    }
+
+    private void searchUsers() {
+        String query = searchBar.getText();
+        ApiResponse<List<User>> response = adminService.searchUsers(query);
+        List<User> users = response.isSuccess() ? response.getData() : null;
+
+        if (users != null && !users.isEmpty()) {
+            usersPanel.removeAll();
+            for (User user : users) {
+                usersPanel.add(createUserCard(user));
+            }
+        } else {
+            JLabel noData = new JLabel("No users found", SwingConstants.CENTER);
+            noData.setFont(Fonts.NORMAL_FONT);
+            noData.setForeground(UITheme.getTextColor());
+            usersPanel.add(noData);
+        }
+
+        usersPanel.revalidate();
+        usersPanel.repaint();
     }
 
     public MainUI getParentMU() {
