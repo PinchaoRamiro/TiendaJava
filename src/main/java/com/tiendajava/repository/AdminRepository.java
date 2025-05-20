@@ -25,7 +25,7 @@ public class AdminRepository extends BaseRepository {
             return sendRequest(request, type);        
             
         } catch ( Exception e) {
-            return new ApiResponse<>(false, null, "Error to register admin: " + e.getMessage() );
+            return new ApiResponse<>(false, null, "Error to register admin: " + e.getMessage());
         }
 
     }

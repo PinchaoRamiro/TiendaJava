@@ -33,4 +33,8 @@ public class CategoryService {
     public ApiResponse<String> deleteCategory(int id) {
         return repository.deleteCategory(id);
     }
+
+    public ApiResponse<Category> getCategoryByName(String name) {
+        return repository.getCategoryByName(name);
+    }
 }

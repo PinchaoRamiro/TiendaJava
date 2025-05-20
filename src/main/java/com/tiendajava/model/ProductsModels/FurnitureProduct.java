@@ -15,9 +15,9 @@ public class FurnitureProduct extends Product {
         return "FurnitureProduct [dimensions=" + Dimensions + ", material=" + Material + ", woodType=" + woodType + "]";
     }
 
-    public FurnitureProduct(int product_id, String name, String description, BigDecimal price, int stock,
-            int category_id, String createdAt, String dimensions, String material, String woodType) {
-        super(product_id, name, description, price, stock, category_id, createdAt);
+    public FurnitureProduct( String name, String description, BigDecimal price, int stock,
+            int category_id, String dimensions, String material, String woodType) {
+        super( name, description, price, stock, category_id);
         this.Dimensions = dimensions;
         this.Material = material;
         this.woodType = woodType;
@@ -26,8 +26,8 @@ public class FurnitureProduct extends Product {
     public FurnitureProduct() {
     }
 
-    public FurnitureProduct(int product_id, String name, String description, BigDecimal price, int stock, int category_id, String createdAt) {
-        super(product_id, name, description, price, stock, category_id, createdAt);
+    public FurnitureProduct( String name, String description, BigDecimal price, int stock, int category_id, String createdAt) {
+        super( name, description, price, stock, category_id);
     }
 
 

@@ -3,7 +3,9 @@ package com.tiendajava.ui.screens.admin.users;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +41,10 @@ public class ManageUsersScreen extends JPanel {
     private final JPanel usersPanel = new JPanel(new GridLayout(0, 2, 15, 15));
     private final SearchBar searchBar;
 
+    private static final int TOP_PANEL_PADDING = 20;
+    private static final int TOP_PANEL_HORIZONTAL_GAP = 15;
+    private static final int TOP_PANEL_VERTICAL_GAP = 5;
+
     public ManageUsersScreen(MainUI parent) {
         this.parent = parent;
         setLayout(new BorderLayout(10, 10));
@@ -48,6 +54,12 @@ public class ManageUsersScreen extends JPanel {
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
         topPanel.setBackground(UITheme.getPrimaryColor());
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, TOP_PANEL_PADDING, 0, TOP_PANEL_PADDING));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(TOP_PANEL_VERTICAL_GAP, TOP_PANEL_HORIZONTAL_GAP, TOP_PANEL_VERTICAL_GAP, TOP_PANEL_HORIZONTAL_GAP);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = 2;
 
         // === Título ===
         JLabel title = new JLabel("Manage Users", AppIcons.USERS_ICON, SwingConstants.CENTER);
@@ -76,7 +88,7 @@ public class ManageUsersScreen extends JPanel {
 
         // === Panel de usuarios con scroll ===
         usersPanel.setBackground(UITheme.getPrimaryColor());
-        usersPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        usersPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
 
         JScrollPane scrollPane = new JScrollPane(usersPanel);
         scrollPane.setBorder(null);
@@ -94,6 +106,11 @@ public class ManageUsersScreen extends JPanel {
         usersPanel.removeAll();
         ApiResponse<List<User>> response = adminService.getAllUsers();
         List<User> users = response.isSuccess() ? response.getData() : null;
+
+        if(response.getStatusCode() == 400){
+            NotificationHandler.error("Error the fiels cannton be null");
+            return;
+        }
 
         if (users != null && !users.isEmpty()) {
             for (User user : users) {
@@ -183,6 +200,12 @@ public class ManageUsersScreen extends JPanel {
 
     private void searchUsers() {
         String query = searchBar.getText();
+
+        if (query.isEmpty()) {
+            NotificationHandler.warning(this, "Please enter a search query.");
+            return;
+        }
+
         ApiResponse<List<User>> response = adminService.searchUsers(query);
         List<User> users = response.isSuccess() ? response.getData() : null;
 
@@ -192,10 +215,7 @@ public class ManageUsersScreen extends JPanel {
                 usersPanel.add(createUserCard(user));
             }
         } else {
-            JLabel noData = new JLabel("No users found", SwingConstants.CENTER);
-            noData.setFont(Fonts.NORMAL_FONT);
-            noData.setForeground(UITheme.getTextColor());
-            usersPanel.add(noData);
+            NotificationHandler.error("No users found with the name: " + query);
         }
 
         usersPanel.revalidate();

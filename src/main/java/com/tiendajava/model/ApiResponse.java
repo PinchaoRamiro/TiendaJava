@@ -2,6 +2,7 @@ package com.tiendajava.model;
 
 public class ApiResponse<T> {
     private boolean success;
+    private int statusCode;
     private final T data;
     private final String message;
 
@@ -10,6 +11,11 @@ public class ApiResponse<T> {
         this.data = data;
         this.message = message;
     }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
 
     public boolean isSuccess() {
         return success;
@@ -33,6 +39,11 @@ public class ApiResponse<T> {
                 "success=" + success +
                 ", data=" + data +
                 ", message='" + message + '\'' +
-                '}';
+                '}'
+                + ", statusCode: " + statusCode;
+    }
+
+    public int getStatusCode() {
+        return statusCode;
     }
 }

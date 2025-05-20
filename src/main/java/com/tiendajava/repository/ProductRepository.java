@@ -74,12 +74,12 @@ public class ProductRepository extends BaseRepository {
   /**
    * Crea un nuevo producto (requiere token de administrador).
    */
-  public ApiResponse<Product> createProductWithImage(Product prod, File imageFile) throws IOException, InterruptedException {
+  public ApiResponse<Product> createProductWithImage(Product prod, File imageFile, String category) throws IOException, InterruptedException {
     // if image is null, not required to upload
     HttpRequest request;
     if (imageFile == null) {
       request = HttpRequest.newBuilder()
-          .uri(URI.create(URL_BASE + "product/create"))
+          .uri(URI.create(URL_BASE + "product/create/" + category))
           .header("Authorization", "Bearer " + Session.getInstance().getToken())
           .header("Content-Type", "application/json")
           .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(prod)))

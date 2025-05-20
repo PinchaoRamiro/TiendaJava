@@ -6,6 +6,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,39 +60,49 @@ public class ProductItemCard extends JPanel {
             loadImageAsync(product.getImage(), imageLabel);
         }
 
-        // --- Info ---
-        JPanel info = new JPanel();
-        info.setLayout(new BoxLayout(info, BoxLayout.Y_AXIS));
-        info.setBackground(UITheme.getSecondaryColor());
+        JPanel infoContainer = new JPanel(new GridLayout(1, 2)); // Divide en dos columnas
+        infoContainer.setBackground(UITheme.getSecondaryColor());
 
-        info.add(createLabel("Name: " + product.getName(), Fonts.SUBTITLE_FONT, UITheme.getTextColor()));
-        info.add(createLabel("Category: " + product.getCategory(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-        info.add(createLabel("Price: $" + product.getPrice(), Fonts.NORMAL_FONT, UITheme.getSuccessColor()));
-        info.add(createLabel("Stock: " + product.getStock(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-        info.add(createLabel("Description: " + product.getDescription(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+        // --- Columna 1: info general ---
+        JPanel infoLeft = new JPanel();
+        infoLeft.setLayout(new BoxLayout(infoLeft, BoxLayout.Y_AXIS));
+        infoLeft.setBackground(UITheme.getSecondaryColor());
 
-        // --- Atributos específicos ---
+        infoLeft.add(createLabel("Name: " + product.getName(), Fonts.SUBTITLE_FONT, UITheme.getTextColor()));
+        infoLeft.add(createLabel("Category: " + product.getCategory(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+        infoLeft.add(createLabel("Price: $" + product.getPrice(), Fonts.NORMAL_FONT, UITheme.getSuccessColor()));
+        infoLeft.add(createLabel("Stock: " + product.getStock(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+        infoLeft.add(createLabel("Description: " + product.getDescription(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+
+        // --- Columna 2: atributos específicos ---
+        JPanel infoRight = new JPanel();
+        infoRight.setLayout(new BoxLayout(infoRight, BoxLayout.Y_AXIS));
+        infoRight.setBackground(UITheme.getSecondaryColor());
+
         switch (product) {
             case ClothingProduct clothing -> {
-                info.add(createLabel("Size: " + clothing.getSize(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                info.add(createLabel("Color: " + clothing.getColor(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                info.add(createLabel("Material: " + clothing.getMaterial(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                infoRight.add(createLabel("Size: " + clothing.getSize(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                infoRight.add(createLabel("Color: " + clothing.getColor(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                infoRight.add(createLabel("Material: " + clothing.getMaterial(), Fonts.SMALL_FONT, UITheme.getTextColor()));
             }
             case ElectronicsProduct electronics -> {
-                info.add(createLabel("Voltage: " + electronics.getVoltage(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                info.add(createLabel("Warranty: " + electronics.getWarranty(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                info.add(createLabel("Brand: " + electronics.getBrand(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                infoRight.add(createLabel("Voltage: " + electronics.getVoltage(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                infoRight.add(createLabel("Warranty: " + electronics.getWarranty(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                infoRight.add(createLabel("Brand: " + electronics.getBrand(), Fonts.SMALL_FONT, UITheme.getTextColor()));
             }
             case FurnitureProduct furniture -> {
-                info.add(createLabel("Dimensions: " + furniture.getDimensions(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                info.add(createLabel("Material: " + furniture.getMaterial(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                info.add(createLabel("Wood Type: " + furniture.getWoodType(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                infoRight.add(createLabel("Dimensions: " + furniture.getDimensions(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                infoRight.add(createLabel("Material: " + furniture.getMaterial(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+                infoRight.add(createLabel("Wood Type: " + furniture.getWoodType(), Fonts.SMALL_FONT, UITheme.getTextColor()));
             }
-            default -> {
-            }
+            default -> {}
         }
 
-        add(info, BorderLayout.CENTER);
+        infoContainer.add(infoLeft);
+        infoContainer.add(infoRight);
+
+        add(infoContainer, BorderLayout.CENTER);
+
 
 
         // --- Acciones ---

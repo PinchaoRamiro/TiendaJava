@@ -2,7 +2,7 @@ package com.tiendajava.model;
 
 import java.math.BigDecimal;
 
-public class Product {
+public  class Product {
     private int product_id;
     private int category_id;
     private String Category;
@@ -18,15 +18,27 @@ public class Product {
     public Product() {
     }
 
-    public Product(int product_id, String name, String description, BigDecimal price, int stock, int category_id, String createdAt) {
-        this.product_id = product_id;
+    public Product( String name, String description, BigDecimal price, int stock, int category_id) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.stock = stock;
         this.category_id = category_id;
-        this.created_at = createdAt;
     }
+
+    public Product(String Category, int category_id, String created_at, String description, String image, String name, BigDecimal price, int product_id, int stock) {
+        this.Category = Category;
+        this.category_id = category_id;
+        this.created_at = created_at;
+        this.description = description;
+        this.image = image;
+        this.name = name;
+        this.price = price;
+        this.product_id = product_id;
+        this.stock = stock;
+    }
+
+
 
     // Getters
     public int getProduct_id() {
@@ -109,9 +121,5 @@ public class Product {
 
     public String getCategory() {
         return Category;
-    }
-
-    public void setCategory(String Category) {
-        this.Category = Category;
     }
 }

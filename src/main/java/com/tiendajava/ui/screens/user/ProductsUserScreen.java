@@ -50,7 +50,6 @@ public class ProductsUserScreen extends JPanel {
         add(topPanel, BorderLayout.NORTH);
 
         // 🔹 Productos Panel
-        productsPanel.setBackground(UITheme.getPrimaryColor());
         JScrollPane scrollPane = new JScrollPane(productsPanel);
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
@@ -74,14 +73,11 @@ public class ProductsUserScreen extends JPanel {
             NotificationHandler.warning("No products available.");
             return;
         }
-
         printProducts(products, productsPanel);
-
-
     }
 
     private void printProducts(List<Product> products, JPanel productsPanel) {    
-        
+        productsPanel.removeAll(); // Limpiar el panel de productos antes de agregar los nuevos      
         for (Product product : products) {
             productsPanel.add(new ProductItemCard(
                 product,
@@ -96,8 +92,6 @@ public class ProductsUserScreen extends JPanel {
     }
 
     private void addToCart(Product product) {
-
-
         NotificationHandler.info("Added to cart: " + product.getName());
     }
 

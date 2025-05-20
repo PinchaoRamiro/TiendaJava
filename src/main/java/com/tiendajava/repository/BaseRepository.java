@@ -18,23 +18,27 @@ public abstract class BaseRepository {
     protected <T> ApiResponse<T> sendRequest(HttpRequest request, Type responseType) {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            String body = response.body().trim();
+            ApiResponse<T> apiResponse = gson.fromJson(response.body(), responseType);
 
-            
-            System.out.println("Response body: " + body);
-            System.out.println("Status code: " + response.statusCode());
+            System.out.println("Http response " + response);
+            System.out.println("Response: " + apiResponse);
+            String body = response.body().trim();
     
             if (body.startsWith("\"") && body.endsWith("\"")) {
-                String msg = gson.fromJson(body, String.class);
-                return new ApiResponse<>(false, null, msg);
+                // String msg = gson.fromJson(body, String.class);
+                apiResponse.setStatusCode(response.statusCode());
+                return apiResponse;
             }
 
-            if (body.startsWith("[")) {
-                return new ApiResponse<>(true,
-                                         gson.fromJson(body, responseType),
-                                         "OK");
+            if ((body.startsWith("[") && body.endsWith("]")) || (body.startsWith("{") && body.endsWith("}"))) {
+                apiResponse.setStatusCode(response.statusCode());
+                return apiResponse;
             }
-            return gson.fromJson(body, responseType);
+
+            System.out.println("Unexpected response: " + response.body());
+    
+            return new ApiResponse<>(false, null,
+                    "Unexpected response: " + response.body());
     
         } catch (IOException | InterruptedException e) {
             return new ApiResponse<>(false, null,

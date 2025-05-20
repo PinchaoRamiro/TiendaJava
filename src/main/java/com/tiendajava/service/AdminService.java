@@ -14,7 +14,8 @@ public class AdminService {
 
     public ApiResponse<User> registerAdmin(User admin) {
         String json = gson.toJson(admin);
-        return adminRepository.registerAdmin(json);
+        ApiResponse<User> response = adminRepository.registerAdmin(json);
+        return response;
     }
 
     public ApiResponse<String> logoutAdmin() {
@@ -38,9 +39,6 @@ public class AdminService {
     }
 
     public ApiResponse<List<User>> searchUsers(String name){
-        if(name == null){
-            return new ApiResponse<>(false, null, "Error the fiels cannton be null");
-        }
         return adminRepository.searchUsers(name);
     }
 }
