@@ -25,24 +25,10 @@ public class CreateFurnitureProductDialog extends IProductDialog {
     // Panel para los botones de acción, se agregará en BorderLayout.SOUTH del diálogo
     private JPanel actionButtonPanel;
 
-    public CreateFurnitureProductDialog(String category, Runnable onProductCreated) {
-        // Llama al constructor de la superclase IProductDialog
-        // 'product' es null para creación
-        super(null, category, onProductCreated);
-
-        // No es necesario llamar a setTitle, setModal, setSize, setLocationRelativeTo,
-        // getContentPane().setBackground aquí, ya se manejan en el constructor de IProductDialog.
-
-        // Configurar el estilo del botón selectImageBtn si quieres que sea diferente.
-        // selectImageBtn es un miembro de la superclase y ya está inicializado.
-        // Solo cambiamos sus propiedades aquí, no lo reasignamos.
-        // Asumiendo que UITheme no tiene getSecondaryButtonColor(), usamos el primario o un color fijo.
-        selectImageBtn.setText("Select Image"); // Mantener texto original o cambiarlo
-        selectImageBtn.setBackground(UITheme.getPrimaryButtonColor()); // O UITheme.getAccentColor(), o Color.LIGHT_GRAY, etc.
-
-        // buildForm() es llamado automáticamente por IProductDialog.initializeCategoryAndUI()
-        // después de que la categoría se haya cargado.
-        // No es necesario llamarlo aquí de nuevo.
+    public CreateFurnitureProductDialog(String category) {
+        super(null, category, null);
+        selectImageBtn.setText("Select Image"); 
+        selectImageBtn.setBackground(UITheme.getPrimaryButtonColor()); 
     }
 
     @Override
@@ -52,11 +38,7 @@ public class CreateFurnitureProductDialog extends IProductDialog {
 
     @Override
     protected void buildForm() {
-        // Llama a la implementación de la superclase para construir los campos comunes
-        super.buildForm(); // Esto asegurará que nameField, priceField, etc. se añadan y currentRow se actualice.
-
-        // Añadir campos específicos para Muebles usando los campos de la superclase
-        // addLabelAndField ahora usa formPanel y gbc de la superclase directamente.
+        super.buildForm();
         addLabelAndField(formPanel, gbc, "Dimensions", dimensionsField);
         addLabelAndField(formPanel, gbc, "Material", materialField);
         addLabelAndField(formPanel, gbc, "Wood Type", woodTypeField);
@@ -109,7 +91,7 @@ public class CreateFurnitureProductDialog extends IProductDialog {
         int categoryId = category.getCategory_id();
 
         // Crear el objeto FurnitureProduct
-        Product newFurnitureProduct = new FurnitureProduct(
+        super.product = new FurnitureProduct(
             name,
             description,
             priceValue,
@@ -123,7 +105,7 @@ public class CreateFurnitureProductDialog extends IProductDialog {
         // Ejecutar la operación de creación en un hilo secundario para no bloquear el EDT
         new Thread(() -> {
             // 'productService' es un campo protegido de IProductDialog
-            ApiResponse<Product> resp = productService.createProductWithImage(newFurnitureProduct, imageFile, "furniture");
+            ApiResponse<Product> resp = productService.createProductWithImage(super.product, imageFile, "furniture");
             SwingUtilities.invokeLater(() -> { // Volver al EDT para actualizar la UI
                 if (resp.isSuccess()) {
                     NotificationHandler.success("Product created successfully!");

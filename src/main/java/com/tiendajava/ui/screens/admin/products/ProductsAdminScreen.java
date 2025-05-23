@@ -26,6 +26,7 @@ import com.tiendajava.ui.components.dialogs.DeleteConfirmDialog;
 import com.tiendajava.ui.screens.admin.products.creaate_by_categories.CreateClothingProductDialog;
 import com.tiendajava.ui.screens.admin.products.creaate_by_categories.CreateElectronicsProductDialog;
 import com.tiendajava.ui.screens.admin.products.creaate_by_categories.CreateFurnitureProductDialog;
+import com.tiendajava.ui.screens.user.products.InfoProductDialog;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
@@ -135,6 +136,7 @@ public class ProductsAdminScreen extends JPanel {
                     product,
                     () -> editProduct(product),
                     () -> deleteProduct( product.getProduct_id(), product.getName()),
+                    () -> onClickProduct(product),
                     () -> {} // Asumiendo que es una acción de ver detalles o similar
                 ));
             }
@@ -163,13 +165,14 @@ public class ProductsAdminScreen extends JPanel {
         new SelectCategoryProductDialog(parent, category -> {
             SwingUtilities.invokeLater(() -> { // Asegurarse de que el diálogo se muestre en el EDT
                 switch (category) {
-                    case "Electronics" -> new CreateElectronicsProductDialog("Electronics", ProductsAdminScreen.this::getProductsDataBase).setVisible(true); // Actualizar desde DB
-                    case "Clothing" -> new CreateClothingProductDialog("Clothing", ProductsAdminScreen.this::getProductsDataBase).setVisible(true); // Actualizar desde DB
-                    case "Furniture" -> new CreateFurnitureProductDialog("Furniture", ProductsAdminScreen.this::getProductsDataBase).setVisible(true); // Actualizar desde DB
+                    case "Electronics" -> new CreateElectronicsProductDialog("Electronics").setVisible(true); // Actualizar desde DB
+                    case "Clothing" -> new CreateClothingProductDialog("Clothing").setVisible(true); // Actualizar desde DB
+                    case "Furniture" -> new CreateFurnitureProductDialog("Furniture").setVisible(true); // Actualizar desde DB
                     default -> NotificationHandler.error("Invalid category selected.");
                 }
             });
-        }).setVisible(true); // El diálogo se muestra en el EDT por defecto
+        }).setVisible(true);
+         // El diálogo se muestra en el EDT por defecto
     }
 
     private void editProduct(Product product) {
@@ -181,22 +184,24 @@ public class ProductsAdminScreen extends JPanel {
 
     private void deleteProduct( int productId, String productName) {
         new DeleteConfirmDialog(productName, () -> {
-            // Operación de eliminación en un hilo separado
             new Thread(() -> {
                 ApiResponse<String> response = productService.deleteProduct(productId);
                 SwingUtilities.invokeLater(() -> { // Volver al EDT para actualizar la UI
                     if (response.isSuccess()) {
                         NotificationHandler.success("Product deleted successfully!");
-                        // No eliminar directamente de la lista 'products' local,
-                        // sino recargar de la base de datos para asegurar consistencia
                         getProductsDataBase();
                     } else {
                         NotificationHandler.error("Failed to delete product: " + response.getMessage());
                     }
-                    // La carga de productos se maneja en getProductsDataBase
                 });
             }).start();
         }).setVisible(true);
+    }
+
+    public void addProduct(Product product) {
+        products.add(product);
+        System.out.println("Product added: " + product);
+        printProducts(products);
     }
 
     private void searchProducts() {
@@ -206,8 +211,7 @@ public class ProductsAdminScreen extends JPanel {
             getProductsDataBase(); // Si el campo de búsqueda está vacío, mostrar todos los productos
             return;
         }
-
-        // Ejecutar la búsqueda en un hilo separado
+        
         new Thread(() -> {
             ApiResponse<List<Product>> response = productService.getProductsByName(keyword);
             System.out.println("Response: " + response);
@@ -230,6 +234,10 @@ public class ProductsAdminScreen extends JPanel {
                 productsPanel.repaint();
             });
         }).start();
+    }
+
+    private void onClickProduct(Product product) {
+        new InfoProductDialog(product).setVisible(true);
     }
 
     public MainUI getParentPA() {

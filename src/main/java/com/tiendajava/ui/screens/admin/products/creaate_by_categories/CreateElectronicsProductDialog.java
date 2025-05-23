@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
-import com.tiendajava.model.ProductsModels.ElectronicsProduct; // Corregido: Importar ElectronicsProduct
+import com.tiendajava.model.ProductsModels.ElectronicsProduct;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.screens.admin.products.IProductDialog;
@@ -22,14 +22,13 @@ public class CreateElectronicsProductDialog extends IProductDialog {
     private final JTextField voltageField = new JTextField(20);
     private final JTextField warrantyField = new JTextField(20);
 
-    private JPanel actionButtonPanel; // Panel para los botones de acción
+    private JPanel actionButtonPanel;
 
-    public CreateElectronicsProductDialog(String category, Runnable onProductCreated) {
-        super(null, category, onProductCreated);
+    public CreateElectronicsProductDialog(String category) {
+        super(null, category, null);
 
-        selectImageBtn.setText("Choose Image"); 
-        selectImageBtn.setBackground(UITheme.getPrimaryButtonColor()); 
-
+        selectImageBtn.setText("Choose Image");
+        selectImageBtn.setBackground(UITheme.getPrimaryButtonColor());
     }
 
     @Override
@@ -39,17 +38,15 @@ public class CreateElectronicsProductDialog extends IProductDialog {
 
     @Override
     protected void buildForm() {
-        super.buildForm(); 
+        super.buildForm();
 
-        // Añadir campos específicos para Electrónica
         addLabelAndField(formPanel, gbc, "Brand", brandField);
         addLabelAndField(formPanel, gbc, "Voltage", voltageField);
         addLabelAndField(formPanel, gbc, "Warranty", warrantyField);
 
-        // Configurar y añadir los botones de acción al diálogo principal (BorderLayout.SOUTH)
         if (actionButtonPanel == null) {
             actionButtonPanel = new JPanel(new BorderLayout());
-            JButton createBtn = ButtonFactory.createPrimaryButton("Create Product", null, this::onSave); 
+            JButton createBtn = ButtonFactory.createPrimaryButton("Create Product", null, this::onSave);
             JButton cancelBtn = ButtonFactory.createSecondaryButton("Cancel", null, this::dispose);
             actionButtonPanel.add(cancelBtn, BorderLayout.WEST);
             actionButtonPanel.add(createBtn, BorderLayout.CENTER);
@@ -58,7 +55,7 @@ public class CreateElectronicsProductDialog extends IProductDialog {
     }
 
     @Override
-    protected void onSave() { // Renombrado de createProduct() a onSave()
+    protected void onSave() {
         String name = nameField.getText().trim();
         String priceStr = priceField.getText().trim();
         String stockStr = stockField.getText().trim();
@@ -67,55 +64,47 @@ public class CreateElectronicsProductDialog extends IProductDialog {
         String voltage = voltageField.getText().trim();
         String warranty = warrantyField.getText().trim();
 
-        if (name.isEmpty() || priceStr.isEmpty() || stockStr.isEmpty() || description.isEmpty() || brand.isEmpty() || voltage.isEmpty() || warranty.isEmpty()) {
+        if (name.isEmpty() || priceStr.isEmpty() || stockStr.isEmpty() ||
+            description.isEmpty() || brand.isEmpty() || voltage.isEmpty() || warranty.isEmpty()) {
             NotificationHandler.error("Please fill all fields.");
             return;
         }
 
-        BigDecimal priceValue;
-        int stockValue;
         try {
-            priceValue = new BigDecimal(priceStr);
-            stockValue = Integer.parseInt(stockStr);
-        } catch (NumberFormatException ex) {
-            NotificationHandler.error("Price, Stock, Voltage (if numeric) and Warranty (if numeric) must be valid numbers.");
-            return;
-        }
+            BigDecimal price = new BigDecimal(priceStr);
+            int stock = Integer.parseInt(stockStr);
+            int categoryId = category.getCategory_id();
 
-        if (category == null) {
-            NotificationHandler.error("Category data not loaded. Please try again.");
-            return;
-        }
-
-        int categoryId = category.getCategory_id();
-
-        // Corregido: Crear ElectronicsProduct en lugar de ClothingProduct
-        Product newElectronicsProduct = new ElectronicsProduct(
+            super.product = new ElectronicsProduct(
                 name,
                 description,
-                priceValue,
-                stockValue,
-                categoryId, // Usar categoryId
+                price,
+                stock,
+                categoryId,
                 brand,
                 voltage,
                 warranty
-        );
+            );
 
-        // Ejecutar la operación de creación en un hilo secundario para no bloquear el EDT
-        new Thread(() -> {
-            ApiResponse<Product> resp = productService.createProductWithImage(newElectronicsProduct, imageFile, "electronics");
-            SwingUtilities.invokeLater(() -> { // Volver al EDT para actualizar la UI
-                if (resp.isSuccess()) {
-                    NotificationHandler.success("Product created successfully!");
-                    dispose(); // Cerrar el diálogo
-                    if (onRunnable != null) {
-                        onRunnable.run(); // Ejecutar la acción de refresco
+            new Thread(() -> {
+                ApiResponse<Product> response = productService.createProductWithImage(super.product, imageFile, "electronic");
+                System.out.println("Response: " + response);
+                SwingUtilities.invokeLater(() -> {
+                    if (response.isSuccess()) {
+                        NotificationHandler.success("Product created successfully!");
+                        // imprimir super product
+                        System.out.println("Product + " + super.product);
+                        dispose();
+                        if (onRunnable != null) onRunnable.run();
+                    } else {
+                        NotificationHandler.error("Failed to create product: " + response.getMessage());
+                        System.err.println("API Error: " + response.getMessage());
                     }
-                } else {
-                    NotificationHandler.error("Failed to create product: " + resp.getMessage());
-                    System.out.println("Error: " + resp.getMessage());
-                }
-            });
-        }).start();
+                });
+            }).start();
+
+        } catch (NumberFormatException ex) {
+            NotificationHandler.error("Please enter valid numeric values for price and stock.");
+        }
     }
 }

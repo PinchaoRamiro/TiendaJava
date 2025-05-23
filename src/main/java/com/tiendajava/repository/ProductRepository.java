@@ -75,6 +75,10 @@ public class ProductRepository extends BaseRepository {
    * Crea un nuevo producto (requiere token de administrador).
    */
   public ApiResponse<Product> createProductWithImage(Product prod, File imageFile, String category) throws IOException, InterruptedException {
+
+    System.err.println("Creating product: " + prod);
+    System.err.println("Image file: " + imageFile);
+    System.err.println("Category: " + category);
     // if image is null, not required to upload
     HttpRequest request;
     if (imageFile == null) {

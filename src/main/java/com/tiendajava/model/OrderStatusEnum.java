@@ -1,6 +1,6 @@
 package com.tiendajava.model;
 
-public enum OrderStatus {
+public enum OrderStatusEnum {
   aproved,
   rejected,
   pending

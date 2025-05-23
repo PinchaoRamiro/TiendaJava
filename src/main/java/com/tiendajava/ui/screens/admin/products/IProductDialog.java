@@ -46,7 +46,7 @@ public abstract class IProductDialog extends JDialog {
     private final CategoryService categoryService = new CategoryService(); // Private, ya que se usa internamente aquí
 
     // Datos del producto y categoría - cambiados a protected
-    protected Product product;
+    public Product product;
     protected Category category;
     protected final String categoryName;
     protected final Runnable onRunnable;
@@ -69,16 +69,11 @@ public abstract class IProductDialog extends JDialog {
         this.product = product;
         this.categoryName = categoryName;
         this.onRunnable = onRunnable;
-
-        // Configuración básica del diálogo
         setModal(true);
-        // El título se establecerá dinámicamente llamando a getDialogTitle()
-        // No llamamos a setTitle aquí directamente, sino al método abstracto
-        // setSize y setLocationRelativeTo se configuran aquí
         setSize(DIALOG_WIDTH, DIALOG_HEIGHT);
         setLocationRelativeTo(null);
         getContentPane().setBackground(UITheme.getPrimaryColor());
-        setLayout(new BorderLayout()); // Usar BorderLayout para el diálogo principal
+        setLayout(new BorderLayout()); 
 
         // Configurar los campos de texto
         nameField.setPreferredSize(FIELD_PREFERRED_SIZE);
@@ -86,23 +81,24 @@ public abstract class IProductDialog extends JDialog {
         stockField.setPreferredSize(FIELD_PREFERRED_SIZE);
         descriptionField.setPreferredSize(FIELD_PREFERRED_SIZE);
         imageField.setPreferredSize(FIELD_PREFERRED_SIZE);
-        imageField.setEditable(false); // La ruta de la imagen no debe ser editable directamente
+        imageField.setEditable(false); 
 
         // Inicializar GridBagConstraints comunes
         gbc.insets = FIELD_INSETS;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = GBC_WEIGHTX;
 
-        // Añadir el panel del formulario al diálogo
         add(formPanel, BorderLayout.CENTER);
-
-        // La construcción del formulario y la carga de la categoría se manejan en initializeCategoryAndUI
-        // que es llamado después de la construcción del diálogo base para asegurar que 'this' esté completamente construido.
         initializeCategoryAndUI();
-
-        // Establecer el título del diálogo DESPUÉS de que se haya cargado la categoría o se haya inicializado la UI.
-        // Esto permite que las subclases definan el título de forma dinámica.
         setTitle(getDialogTitle());
+    }
+
+    public Product getProduct(){
+        return product;
+    }
+
+    public void setProduct(Product product){
+        this.product = product;
     }
 
     protected void addLabelAndField(JPanel panel, GridBagConstraints gbc, String labelText, JTextField field) {
@@ -145,8 +141,6 @@ public abstract class IProductDialog extends JDialog {
             SwingUtilities.invokeLater(() -> {
                 if (response.isSuccess() && response.getData() != null) {
                     this.category = response.getData();
-                    // Una vez que la categoría está cargada, construimos el formulario
-                    // Esto asegura que 'category' esté disponible si es necesario en buildForm o populateFields
                     buildForm();
                     if (product != null) {
                         populateFields();
@@ -163,9 +157,6 @@ public abstract class IProductDialog extends JDialog {
         priceField.setText(String.valueOf(product.getPrice()));
         stockField.setText(String.valueOf(product.getStock()));
         descriptionField.setText(product.getDescription());
-        // if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
-        //     imageField.setText(new File(product.getImageUrl()).getName());
-        // }
     }
 
     protected void chooseImage() {
@@ -181,14 +172,12 @@ public abstract class IProductDialog extends JDialog {
         formPanel.setBackground(UITheme.getPrimaryColor());
         formPanel.setBorder(UIUtils.getDefaultPadding());
 
-        currentRow = 0; // Reiniciar la fila para asegurar que los componentes se añadan correctamente
+        currentRow = 0; 
 
         addLabelAndField(formPanel, gbc, "Name", nameField);
         addLabelAndField(formPanel, gbc, "Price", priceField);
         addLabelAndField(formPanel, gbc, "Stock", stockField);
         addLabelAndField(formPanel, gbc, "Description", descriptionField);
-
-        // Panel para el campo de imagen y el botón de selección
         gbc.gridx = 0;
         gbc.gridy = currentRow;
         gbc.anchor = GridBagConstraints.WEST;

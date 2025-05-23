@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import com.tiendajava.model.Cart;
 import com.tiendajava.model.Session;
 import com.tiendajava.ui.components.FooterPanel;
 import com.tiendajava.ui.components.HeaderPanel;
@@ -20,8 +21,9 @@ import com.tiendajava.ui.screens.admin.AdminDashboardScreen;
 import com.tiendajava.ui.screens.admin.manageAdmins.ManageAdminsScreen;
 import com.tiendajava.ui.screens.admin.products.ProductsAdminScreen;
 import com.tiendajava.ui.screens.admin.users.ManageUsersScreen;
+import com.tiendajava.ui.screens.user.Cart.CartScreen;
 import com.tiendajava.ui.screens.user.DashboardUserScreen;
-import com.tiendajava.ui.screens.user.ProductsUserScreen;
+import com.tiendajava.ui.screens.user.products.ProductsUserScreen;
 import com.tiendajava.ui.utils.UIUtils;
 
 public final class MainUI extends JFrame {
@@ -29,6 +31,7 @@ public final class MainUI extends JFrame {
     private final JPanel sidebarContainer = new JPanel(new BorderLayout());
     private final HeaderPanel headerPanel = new HeaderPanel(this);
     private final FooterPanel footerPanel = new FooterPanel();
+    private final Cart cart = new Cart();
 
     public MainUI() {
         UIUtils.applyDarkTheme();
@@ -66,6 +69,7 @@ public final class MainUI extends JFrame {
             switch (name) {
                 case "dashboard" -> contentPanel.add(new DashboardUserScreen(this), "dashboard");
                 case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
+                case "cart-user" -> contentPanel.add(new CartScreen(this, cart), "cart-user");
                 // case "orders" -> contentPanel.add(new OrdersScreen(this), "orders");
                 case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
                 case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
@@ -85,7 +89,7 @@ public final class MainUI extends JFrame {
 
     private boolean nameRequiresAuth(String name) {
         return switch (name) {
-            case "dashboard", "products-user", "orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products"
+            case "dashboard", "products-user", "cart-user", "orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products"
             , "account-settings", "change-password", "add-user"  -> true;
             default -> false;
         };
@@ -113,6 +117,10 @@ public final class MainUI extends JFrame {
         sidebarContainer.removeAll();
         sidebarContainer.revalidate();
         sidebarContainer.repaint();
+    }
+
+    public Cart getCart() {
+        return cart;
     }
 
     public static void start() {

@@ -16,7 +16,15 @@ public class User {
   private String password;
   private String role;
 
-  
+  // Constructor por defecto
+  public User() {
+  }
+
+  public User(int id, String name, String email) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+  }
 
   private List<Order> orders; // Assuming a user can have multiple orders
 

@@ -1,4 +1,4 @@
-package com.tiendajava.ui.screens.user;
+package com.tiendajava.ui.screens.user.products;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -18,6 +18,7 @@ import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.components.ProductItemCard;
 import com.tiendajava.ui.components.SearchBar;
+import com.tiendajava.ui.screens.user.Cart.AddCartDialog;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
@@ -28,8 +29,10 @@ public class ProductsUserScreen extends JPanel {
     private final ProductService productService = new ProductService();
     private final JPanel productsPanel = new JPanel(new GridLayout(0, 1, 15, 15)); // Espacio entre productos
     private final SearchBar searchBar;
+    private final MainUI parent;
 
     public ProductsUserScreen(MainUI parent) {
+        this.parent = parent;
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
         setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20)); // padding general
@@ -83,16 +86,26 @@ public class ProductsUserScreen extends JPanel {
                 product,
                 () -> {},
                 () -> {},
+                () -> onClickProduct(product),
                 () -> addToCart(product)
             ));
-
         }
         productsPanel.revalidate();
         productsPanel.repaint();
     }
 
     private void addToCart(Product product) {
-        NotificationHandler.info("Added to cart: " + product.getName());
+        try {
+            new AddCartDialog(parent.getCart(), product).setVisible(true);
+            NotificationHandler.success("Product added to cart: " + product.getName());
+        } catch (NumberFormatException e) {
+            NotificationHandler.warning("Please enter a valid quantity.");
+        } catch (IllegalArgumentException e) {
+            NotificationHandler.error("Invalid product: " + e.getMessage());
+        } catch (Exception e) {
+            NotificationHandler.error("An error occurred while adding the product to the cart" );
+            System.err.println("Error adding product to cart: " + e.getMessage());
+        }
     }
 
     private void searchProducts( JPanel productsPanel) {
@@ -105,5 +118,11 @@ public class ProductsUserScreen extends JPanel {
         } else {
             NotificationHandler.error("Failed to search products: " + response.getMessage());
         }
+    }
+
+    
+    private void onClickProduct(Product product) {
+        // Aquí puedes abrir un diálogo o una nueva pantalla con la información del producto
+        new InfoProductDialog(product).setVisible(true);
     }
 }

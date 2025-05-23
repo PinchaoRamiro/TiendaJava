@@ -13,15 +13,24 @@ public class Order {
 
     private List<OrderItem> orderItems; 
 
+    // Constructor sin order_id y order_date para la creación inicial (serán asignados por el backend)
+    public Order(int user_id, BigDecimal total_amount, OrderStatusEnum status, List<OrderItem> order_items) {
+        this.user_id = user_id;
+        this.total_amount = total_amount;
+        this.status = status;
+        this.orderItems = order_items;
+    }
+
     public Order() {
     }
 
-    public Order(int order_id, int user_id, OrderStatusEnum status, BigDecimal total_amount, String createdAt) {
+    public Order(int order_id, int user_id, OrderStatusEnum status, BigDecimal total_amount, String createdAt, List<OrderItem> orderItems) {
         this.order_id = order_id;
         this.user_id = user_id;
         this.status = status;
         this.total_amount = total_amount;
         this.createdAt = createdAt;
+        this.orderItems = orderItems;
     }
 
     // Getters

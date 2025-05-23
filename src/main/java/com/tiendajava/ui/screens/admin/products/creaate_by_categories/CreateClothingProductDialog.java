@@ -20,29 +20,18 @@ import com.tiendajava.ui.utils.UITheme;
 // Si IProductDialog fuera final, esta clase no podría extenderla.
 public class CreateClothingProductDialog extends IProductDialog {
 
+    private Product productCreated; // Producto creado
+
     private final JTextField sizeField = new JTextField(20);
     private final JTextField colorField = new JTextField(20);
     private final JTextField materialField = new JTextField(20);
 
     private JPanel actionButtonPanel; // Panel para los botones de acción
 
-    public CreateClothingProductDialog(String category, Runnable onProductCreated) {
-        // Llama al constructor de la superclase IProductDialog
-        super(null, category, onProductCreated);
-
-        // Ya no es necesario inicializar JDialog properties aquí, IProductDialog lo maneja:
-        // setTitle("Create New Product");
-        // setModal(true);
-        // setSize(400, 400);
-        // setLocationRelativeTo(null);
-        // getContentPane().setBackground(UITheme.getPrimaryColor());
-
-        // selectImageBtn es un miembro de la superclase, solo cambia su estilo si es necesario
-        selectImageBtn.setText("Choose Image"); // Mantener texto original o cambiarlo
-        selectImageBtn.setBackground(UITheme.getPrimaryButtonColor()); // Asumiendo que no hay getSecondaryButtonColor()
-
-        // buildForm() se llama automáticamente en IProductDialog.initializeCategoryAndUI()
-        // No es necesario llamarlo aquí de nuevo.
+    public CreateClothingProductDialog(String category) {
+        super(null, category, null);
+        selectImageBtn.setText("Choose Image"); 
+        selectImageBtn.setBackground(UITheme.getPrimaryButtonColor());
     }
 
     @Override
@@ -51,21 +40,18 @@ public class CreateClothingProductDialog extends IProductDialog {
     }
 
     @Override
-    public void buildForm() { // 'final' eliminado si no es necesario, o mantenido si se desea.
-        // Llama a la implementación de la superclase para construir los campos comunes
-        super.buildForm(); // Esto asegurará que nameField, priceField, etc. se añadan y currentRow se actualice.
+    public void buildForm() { 
+        super.buildForm();
 
-        // Añadir campos específicos para Ropa
         addLabelAndField(formPanel, gbc, "Size", sizeField);
         addLabelAndField(formPanel, gbc, "Color", colorField);
         addLabelAndField(formPanel, gbc, "Material", materialField);
 
-        // Configurar y añadir los botones de acción al diálogo principal (BorderLayout.SOUTH)
         if (actionButtonPanel == null) {
             actionButtonPanel = new JPanel(new BorderLayout());
             actionButtonPanel.setBackground(UITheme.getPrimaryColor());
             JButton createBtn = ButtonFactory.createPrimaryButton("Create Product", null, this::onSave); 
-            JButton cancelBtn = ButtonFactory.createSecondaryButton("Cancel", null, this::dispose);
+            JButton cancelBtn = ButtonFactory.createSecondaryButton("Cancel",null, this::dispose);
             actionButtonPanel.add(cancelBtn, BorderLayout.WEST);
             actionButtonPanel.add(createBtn, BorderLayout.CENTER);
             add(actionButtonPanel, BorderLayout.SOUTH); // Añadir al diálogo
@@ -104,7 +90,7 @@ public class CreateClothingProductDialog extends IProductDialog {
 
         int categoryId = category.getCategory_id();
 
-        product = new ClothingProduct(
+        productCreated = new ClothingProduct(
                 name,
                 description,
                 priceValue,
@@ -117,7 +103,7 @@ public class CreateClothingProductDialog extends IProductDialog {
 
         // Ejecutar la operación de creación en un hilo secundario para no bloquear el EDT
         new Thread(() -> {
-            ApiResponse<Product> resp = productService.createProductWithImage(product, imageFile, "clothing");
+            ApiResponse<Product> resp = productService.createProductWithImage(productCreated, imageFile, "clothing");
             SwingUtilities.invokeLater(() -> { // Volver al EDT para actualizar la UI
                 if (resp.isSuccess()) {
                     NotificationHandler.success("Product created successfully!");
