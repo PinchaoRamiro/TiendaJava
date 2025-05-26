@@ -3,7 +3,7 @@ package com.tiendajava.ui.screens.admin.products;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout; // Importar GridLayout
+import java.awt.GridLayout; 
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -12,7 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities; // Importar SwingUtilities
+import javax.swing.SwingUtilities; 
 
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
@@ -115,12 +115,10 @@ public class ProductsAdminScreen extends JPanel {
                 JLabel noData = new JLabel("No products available", SwingConstants.CENTER);
                 noData.setFont(Fonts.NORMAL_FONT);
                 noData.setForeground(UITheme.getTextColor());
-                // Para centrar el "No products available" en el GridLayout,
-                // necesitamos un panel contenedor con un FlowLayout.
                 JPanel noDataPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
                 noDataPanel.setBackground(UITheme.getPrimaryColor());
                 noDataPanel.add(noData);
-                productsPanel.add(noDataPanel); // Agregamos el panel con el mensaje centrado
+                productsPanel.add(noDataPanel); 
             }
             productsPanel.revalidate();
             productsPanel.repaint();
@@ -128,7 +126,6 @@ public class ProductsAdminScreen extends JPanel {
     }
 
     private void printProducts(List<Product> productsToDisplay) {
-        // Asumiendo que productsPanel ya fue limpiado en loadProducts()
         productsPanel.removeAll();
         if (productsToDisplay != null && !productsToDisplay.isEmpty()) {
             for (Product product : productsToDisplay) {
@@ -137,33 +134,31 @@ public class ProductsAdminScreen extends JPanel {
                     () -> editProduct(product),
                     () -> deleteProduct( product.getProduct_id(), product.getName()),
                     () -> onClickProduct(product),
-                    () -> {} // Asumiendo que es una acción de ver detalles o similar
+                    () -> {} 
                 ));
             }
         }
-        productsPanel.revalidate(); // Revalidar el panel para que se muestren los cambios
+        productsPanel.revalidate(); 
 
-        productsPanel.repaint(); // Repaint para asegurar que se vean los cambios
+        productsPanel.repaint(); 
     }
 
     private void getProductsDataBase() {
-        // Es buena práctica ejecutar operaciones de red en un hilo separado
-        // para no bloquear el EDT.
         new Thread(() -> {
             ApiResponse<List<Product>> response = productService.getAllProducts();
-            SwingUtilities.invokeLater(() -> { // Volver al EDT para actualizar la UI
+            SwingUtilities.invokeLater(() -> { 
                 this.products = response.isSuccess() ? response.getData() : null;
                 if (!response.isSuccess()) {
                     NotificationHandler.error("Failed to load products: " + response.getMessage());
                 }
-                loadProducts(); // Cargar los productos después de obtenerlos
+                loadProducts(); 
             });
         }).start();
     }
 
     private void createProduct() {
         new SelectCategoryProductDialog(parent, category -> {
-            SwingUtilities.invokeLater(() -> { // Asegurarse de que el diálogo se muestre en el EDT
+            SwingUtilities.invokeLater(() -> { 
                 switch (category) {
                     case "Electronics" -> new CreateElectronicsProductDialog("Electronics").setVisible(true); // Actualizar desde DB
                     case "Clothing" -> new CreateClothingProductDialog("Clothing").setVisible(true); // Actualizar desde DB
@@ -172,11 +167,10 @@ public class ProductsAdminScreen extends JPanel {
                 }
             });
         }).setVisible(true);
-         // El diálogo se muestra en el EDT por defecto
     }
 
     private void editProduct(Product product) {
-        SwingUtilities.invokeLater(() -> { // Asegurarse de que el diálogo se muestre en el EDT
+        SwingUtilities.invokeLater(() -> { 
             EditProductDialog dialog = new EditProductDialog(product, product.getCategory(), this::getProductsDataBase); // Actualizar desde DB
             dialog.setVisible(true);
         });
@@ -186,7 +180,7 @@ public class ProductsAdminScreen extends JPanel {
         new DeleteConfirmDialog(productName, () -> {
             new Thread(() -> {
                 ApiResponse<String> response = productService.deleteProduct(productId);
-                SwingUtilities.invokeLater(() -> { // Volver al EDT para actualizar la UI
+                SwingUtilities.invokeLater(() -> { 
                     if (response.isSuccess()) {
                         NotificationHandler.success("Product deleted successfully!");
                         getProductsDataBase();
@@ -208,20 +202,20 @@ public class ProductsAdminScreen extends JPanel {
         String keyword = searchBar.getText();
         if (keyword.trim().isEmpty()) {
             NotificationHandler.info("Showing all products.");
-            getProductsDataBase(); // Si el campo de búsqueda está vacío, mostrar todos los productos
+            getProductsDataBase(); 
             return;
         }
         
         new Thread(() -> {
             ApiResponse<List<Product>> response = productService.getProductsByName(keyword);
             System.out.println("Response: " + response);
-            SwingUtilities.invokeLater(() -> { // Volver al EDT para actualizar la UI
+            SwingUtilities.invokeLater(() -> {
                 if (response.isSuccess() && response.getData() != null && !response.getData().isEmpty()) {
                     printProducts(response.getData());
                     NotificationHandler.info("Products found for: " + keyword);
                 } else {
                     NotificationHandler.info("No products found with the name: " + keyword);
-                    productsPanel.removeAll(); // Limpiar el panel si no hay resultados
+                    productsPanel.removeAll();
                     JLabel noData = new JLabel("No products found for \"" + keyword + "\"", SwingConstants.CENTER);
                     noData.setFont(Fonts.NORMAL_FONT);
                     noData.setForeground(UITheme.getTextColor());

@@ -16,21 +16,26 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
+import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Cart;
 import com.tiendajava.model.Product;
 import com.tiendajava.service.CartService;
+import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
+import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 
 public class CartScreen extends JPanel {
 
     private final CartService cartService;
+    private final MainUI parent;
     private final JPanel itemsPanel;
     private final JLabel totalLabel;
 
     public CartScreen(MainUI parent, Cart cart) {
+        this.parent = parent;
         this.cartService = new CartService(cart);
         this.itemsPanel = new JPanel();
         this.totalLabel = new JLabel();
@@ -126,7 +131,7 @@ public class CartScreen extends JPanel {
         JPanel actions = new JPanel();
         actions.setBackground(UITheme.getSecondaryColor());
 
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(product.getStock(), 1, 999, 1);
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(product.getStock(), 1, getMax(product.getProduct_id()), 1);
         JSpinner qtySpinner = new JSpinner(spinnerModel);
         qtySpinner.setPreferredSize(new Dimension(60, 25));
 
@@ -141,7 +146,7 @@ public class CartScreen extends JPanel {
             refresh();
         });
 
-        actions.add(new JLabel("Qty:"));
+        actions.add(new JLabel("Quantity:"));
         actions.add(qtySpinner);
         actions.add(updateBtn);
         actions.add(removeBtn);
@@ -154,5 +159,20 @@ public class CartScreen extends JPanel {
     private void updateTotal() {
         BigDecimal total = cartService.getTotal();
         totalLabel.setText("Total: $" + total);
+    }
+
+    private int getMax(int productId) {
+        ProductService productService = new ProductService();
+
+        ApiResponse<Product> response = productService.getProductById(productId);
+        if (!response.isSuccess() || response.getData() == null) {
+            return 0; 
+        }
+        Product product = response.getData();
+        if (product.getStock() <= 0) {
+            NotificationHandler.error("Product is out of stock: " + product.getName());
+            return 0;
+        }
+        return product.getStock(); 
     }
 }

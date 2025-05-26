@@ -16,7 +16,6 @@ import com.tiendajava.model.Cart;
 import com.tiendajava.model.Product;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.NotificationHandler;
-import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 
@@ -49,7 +48,7 @@ public class AddCartDialog extends JDialog {
         quantityField.setMaximumSize(new Dimension(100, 30));
         quantityField.setFont(Fonts.NORMAL_FONT);
 
-        JButton addButton = ButtonFactory.createPrimaryButton("Add to Cart", AppIcons.CART_ICON, this::addToCart);
+        JButton addButton = ButtonFactory.createPrimaryButton("Add to Cart", null, this::addToCart);
         addButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         panel.add(title);
@@ -66,6 +65,10 @@ public class AddCartDialog extends JDialog {
         try {
             int qty = Integer.parseInt(quantityField.getText().trim());
             if (qty <= 0) throw new NumberFormatException();
+            if (qty > product.getStock()) {
+                NotificationHandler.warning("Quantity exceeds available stock.");
+                return;
+            }
             cart.addItem(product, qty);
             NotificationHandler.success("Product added to cart!");
             dispose();
