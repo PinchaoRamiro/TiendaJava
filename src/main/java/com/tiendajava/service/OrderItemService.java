@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.tiendajava.model.ApiResponse;
-import com.tiendajava.model.OrderItem;
+import com.tiendajava.model.orders.OrderItem;
 import com.tiendajava.repository.OrderItemRepository;
 
 public class OrderItemService {

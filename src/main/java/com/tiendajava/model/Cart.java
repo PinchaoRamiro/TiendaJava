@@ -41,7 +41,6 @@ public class Cart {
         } else {
             for (Product item : items) {
                 if (item.getProduct_id() == productId) {
-                    if (newQuantity > item.getStock()) return;
                     item.setStock(newQuantity);
                     return;
                 }

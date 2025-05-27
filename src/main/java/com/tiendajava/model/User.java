@@ -2,6 +2,8 @@ package com.tiendajava.model;
 
 import java.util.List;
 
+import com.tiendajava.model.orders.Order;
+
 public class User {
 
   private int id;

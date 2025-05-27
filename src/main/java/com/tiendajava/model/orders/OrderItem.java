@@ -1,7 +1,9 @@
-package com.tiendajava.model;
+package com.tiendajava.model.orders;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.tiendajava.model.Product;
 
 public class OrderItem {
 

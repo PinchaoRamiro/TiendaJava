@@ -27,7 +27,7 @@ import com.tiendajava.ui.utils.UIUtils;
 public class ProductsUserScreen extends JPanel {
 
     private final ProductService productService = new ProductService();
-    private final JPanel productsPanel = new JPanel(new GridLayout(0, 1, 15, 15)); // Espacio entre productos
+    private final JPanel productsPanel = new JPanel(new GridLayout(0, 1, 15, 15)); 
     private final SearchBar searchBar;
     private final MainUI parent;
 
@@ -35,7 +35,7 @@ public class ProductsUserScreen extends JPanel {
         this.parent = parent;
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20)); // padding general
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20)); 
 
         // 🔹 Top Panel (Titulo + Barra de Búsqueda)
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
@@ -80,7 +80,7 @@ public class ProductsUserScreen extends JPanel {
     }
 
     private void printProducts(List<Product> products, JPanel productsPanel) {    
-        productsPanel.removeAll(); // Limpiar el panel de productos antes de agregar los nuevos      
+        productsPanel.removeAll();    
         for (Product product : products) {
             productsPanel.add(new ProductItemCard(
                 product,

@@ -42,7 +42,7 @@ public class CartScreen extends JPanel {
 
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20)); // Padding general
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20)); 
 
         // Título
         JLabel title = new JLabel("🛒 Your Cart");
@@ -131,7 +131,9 @@ public class CartScreen extends JPanel {
         JPanel actions = new JPanel();
         actions.setBackground(UITheme.getSecondaryColor());
 
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(product.getStock(), 1, getMax(product.getProduct_id()), 1);
+        int stock = Math.max(1, getMax(product.getProduct_id()));
+
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(product.getStock(), 1, stock , 1);
         JSpinner qtySpinner = new JSpinner(spinnerModel);
         qtySpinner.setPreferredSize(new Dimension(60, 25));
 
@@ -166,7 +168,8 @@ public class CartScreen extends JPanel {
 
         ApiResponse<Product> response = productService.getProductById(productId);
         if (!response.isSuccess() || response.getData() == null) {
-            return 0; 
+            NotificationHandler.error("Error fetching product: " + response.getMessage());
+            return 0;
         }
         Product product = response.getData();
         if (product.getStock() <= 0) {

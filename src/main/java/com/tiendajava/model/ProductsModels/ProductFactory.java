@@ -2,11 +2,13 @@ package com.tiendajava.model.ProductsModels;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.tiendajava.model.Category;
 import com.tiendajava.model.Product;
 
 public class ProductFactory {
     public static Product createProduct(JsonObject json) {
-        String category = json.get("Category").getAsString();
+        Category objCaregory = new Gson().fromJson(json.get("Category"), Category.class);
+        String category = objCaregory.getCategory_name();
 
         switch (category) {
             case "Clothing" -> {

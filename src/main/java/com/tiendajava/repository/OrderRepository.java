@@ -8,8 +8,8 @@ import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
 import com.tiendajava.model.ApiResponse;
-import com.tiendajava.model.Order;
 import com.tiendajava.model.Session;
+import com.tiendajava.model.orders.Order;
 
 public class OrderRepository extends BaseRepository {
 

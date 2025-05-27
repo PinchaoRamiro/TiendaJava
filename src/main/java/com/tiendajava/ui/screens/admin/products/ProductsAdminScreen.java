@@ -171,7 +171,7 @@ public class ProductsAdminScreen extends JPanel {
 
     private void editProduct(Product product) {
         SwingUtilities.invokeLater(() -> { 
-            EditProductDialog dialog = new EditProductDialog(product, product.getCategory(), this::getProductsDataBase); // Actualizar desde DB
+            EditProductDialog dialog = new EditProductDialog(product, product.getCategory().getCategory_name(), this::getProductsDataBase); // Actualizar desde DB
             dialog.setVisible(true);
         });
     }

@@ -1,5 +1,5 @@
 // OrderStatusReport.java
-package com.tiendajava.model;
+package com.tiendajava.model.orders;
 
 public class OrderStatusReport {
     private String status;

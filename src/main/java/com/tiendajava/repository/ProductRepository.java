@@ -43,13 +43,10 @@ public class ProductRepository extends BaseRepository {
           if (success) {
               JsonArray data = json.get("data").getAsJsonArray();
               for (JsonElement el : data) {
-                System.out.println("Json: " + el );
                   Product p = ProductFactory.createProduct(el.getAsJsonObject());
                   products.add(p);
               }
           }
-
-          System.out.println("Prodictos: " + products);
 
           return new ApiResponse<>(success, products, message);
 
@@ -68,7 +65,8 @@ public class ProductRepository extends BaseRepository {
         .GET()
         .build();
 
-    return sendRequest(request, Product.class);
+    Type type = new TypeToken<ApiResponse<Product>>(){}.getType();
+    return sendRequest(request, type);
   }
 
   /**

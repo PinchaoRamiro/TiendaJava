@@ -25,7 +25,8 @@ public class ProductService {
      * Obtener un producto por su ID
      */
     public ApiResponse<Product> getProductById(int id) {
-        return productRepository.getProductById(id);
+        ApiResponse<Product> response = productRepository.getProductById(id);
+        return response;
     }
 
     /**
