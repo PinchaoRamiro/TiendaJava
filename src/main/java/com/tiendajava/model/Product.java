@@ -6,7 +6,7 @@ public class Product {
 
     private int product_id;
     private int category_id;
-    private Category Category; // ← Campo exacto que espera el backend
+    private Category Category; 
     private String name;
     private String description;
     private BigDecimal price;

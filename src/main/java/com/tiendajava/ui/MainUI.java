@@ -23,6 +23,7 @@ import com.tiendajava.ui.screens.admin.products.ProductsAdminScreen;
 import com.tiendajava.ui.screens.admin.users.ManageUsersScreen;
 import com.tiendajava.ui.screens.user.Cart.CartScreen;
 import com.tiendajava.ui.screens.user.DashboardUserScreen;
+import com.tiendajava.ui.screens.user.order.OrderScreen;
 import com.tiendajava.ui.screens.user.products.ProductsUserScreen;
 import com.tiendajava.ui.utils.UIUtils;
 
@@ -70,7 +71,7 @@ public final class MainUI extends JFrame {
                 case "dashboard" -> contentPanel.add(new DashboardUserScreen(this), "dashboard");
                 case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
                 case "cart-user" -> contentPanel.add(new CartScreen(this, cart), "cart-user");
-                // case "orders" -> contentPanel.add(new OrdersScreen(this), "orders");
+                case "orders-user" -> contentPanel.add(new OrderScreen(this, cart), "orders-user");
                 case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
                 case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
                 case "add-user" -> contentPanel.add(new RegisterScreen(this), "add-user");
@@ -89,7 +90,7 @@ public final class MainUI extends JFrame {
 
     private boolean nameRequiresAuth(String name) {
         return switch (name) {
-            case "dashboard", "products-user", "cart-user", "orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products"
+            case "dashboard", "products-user", "cart-user", "orders-user", "admin-dashboard", "manage-users", "manage-admins", "manage-products"
             , "account-settings", "change-password", "add-user"  -> true;
             default -> false;
         };

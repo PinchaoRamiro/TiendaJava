@@ -135,6 +135,7 @@ public class CartScreen extends JPanel {
 
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(product.getStock(), 1, stock , 1);
         JSpinner qtySpinner = new JSpinner(spinnerModel);
+        qtySpinner.setBackground(UITheme.getSecondaryColor());
         qtySpinner.setPreferredSize(new Dimension(60, 25));
 
         JButton updateBtn = ButtonFactory.createSecondaryButton("Update", null, () -> {
@@ -177,5 +178,10 @@ public class CartScreen extends JPanel {
             return 0;
         }
         return product.getStock(); 
+    }
+
+    @Override
+    public MainUI getParent() {
+        return parent;
     }
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.tiendajava.model.orders.OrderItem;
+
 public class Cart {
 
     private final List<Product> items = new ArrayList<>();
@@ -64,5 +66,11 @@ public class Cart {
 
     public boolean isEmpty() {
         return items.isEmpty();
+    }
+
+    public List<OrderItem> toOrderItems() {
+        return items.stream()
+                .map(item -> new OrderItem(  item.getProduct_id(), item.getStock(), item.getPrice()))
+                .toList();
     }
 }

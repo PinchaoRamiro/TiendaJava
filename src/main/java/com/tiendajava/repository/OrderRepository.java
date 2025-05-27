@@ -16,7 +16,7 @@ public class OrderRepository extends BaseRepository {
     public ApiResponse<Order> createOrder(String json) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "orders"))
+            .uri(URI.create(URL_BASE + "order/create"))
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .POST(BodyPublishers.ofString(json))
@@ -42,6 +42,17 @@ public class OrderRepository extends BaseRepository {
         } catch (Exception e) {
             return new ApiResponse<>(false, null, "Error to get my orders");
         }
+    }
+
+    public ApiResponse<List<Order>> getOrdersByUser(int userId) {
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(URL_BASE + "order/user/" + userId))
+            .header("Authorization", "Bearer " + Session.getInstance().getToken())
+            .GET()
+            .build();
+
+        Type responseType = new TypeToken<ApiResponse<List<Order>>>() {}.getType();
+        return sendRequest(request, responseType);
     }
 
     public ApiResponse<List<Order>> getAllOrders() {

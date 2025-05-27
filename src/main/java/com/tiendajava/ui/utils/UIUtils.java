@@ -35,6 +35,10 @@ public class UIUtils {
         UIManager.put("PasswordField.foreground", UITheme.getTextColor());
         UIManager.put("PasswordField.caretForeground", UITheme.getTextColor());
         UIManager.put("PasswordField.border", BorderFactory.createLineBorder(UITheme.getBorderColor()));
+        UIManager.put("ComboBox.background", UITheme.getSecondaryColor());
+        UIManager.put("ComboBox.foreground", UITheme.getTextColor());
+        UIManager.put("JTextArea.background", UITheme.getSecondaryColor());
+        UIManager.put("JTextArea.foreground", UITheme.getTextColor());
     }
     
     public static JTextField createTextField(Font font) {

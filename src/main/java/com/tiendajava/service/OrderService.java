@@ -26,11 +26,16 @@ public class OrderService {
         }
         // Convertir el objeto Order a JSON
         String orderJson = gson.toJson(order);
+        System.out.println("Creating order with JSON: " + orderJson);
         return orderRepository.createOrder(orderJson);
     }
 
     public ApiResponse<List<Order>> getMyOrders() {
         return repository.getMyOrders();
+    }
+
+    public ApiResponse<List<Order>> getOrdersByUser(int userId) {
+        return repository.getOrdersByUser(userId);
     }
 
     public ApiResponse<List<Order>> getAllOrders() {

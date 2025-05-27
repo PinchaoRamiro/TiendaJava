@@ -26,6 +26,12 @@ public class OrderItem {
         this.price = price;
     }
 
+    public OrderItem( int product_id, int quantity, BigDecimal price) {
+        this.product_id = product_id;
+        this.quantity = quantity;
+        this.price = price;
+    }
+
     // Getters
     public int getOrder_item_id() {
         return order_item_id;
