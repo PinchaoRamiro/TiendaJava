@@ -34,8 +34,6 @@ public abstract class BaseRepository {
                 apiResponse.setStatusCode(response.statusCode());
                 return apiResponse;
             }
-
-            System.out.println("Unexpected response: " + response.body());
     
             return new ApiResponse<>(false, null,
                     "Unexpected response: " + response.body());

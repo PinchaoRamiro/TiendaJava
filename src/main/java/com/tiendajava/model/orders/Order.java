@@ -3,17 +3,31 @@ package com.tiendajava.model.orders;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Order {
 
     private int order_id;
     private int user_id;
     private OrderStatusEnum status;
     private BigDecimal total_amount;
+    @SerializedName("created_at")
     private String createdAt;
     private String shipping_address;
     private String payment_method; 
 
-    private List<OrderItem> orderItems; 
+    @SerializedName("OrderItems")
+    private List<OrderItem> orderItems;
+
+    public Order(int order_id, int user_id, OrderStatusEnum status, BigDecimal total_amount, String created_at, String shipping_address, List<OrderItem> OrderItems) {
+        this.order_id = order_id;
+        this.user_id = user_id;
+        this.status = status;
+        this.total_amount = total_amount;
+        this.createdAt = created_at;
+        this.shipping_address = shipping_address;
+        this.orderItems = OrderItems;
+    }
 
     // Constructor sin order_id y order_date para la creación inicial (serán asignados por el backend)
     public Order(int user_id, BigDecimal total_amount, OrderStatusEnum status, String shipping_address, String payment_method, List<OrderItem> order_items) {
@@ -26,16 +40,6 @@ public class Order {
     }
 
     public Order() {
-    }
-
-    public Order(int order_id, int user_id, OrderStatusEnum status, BigDecimal total_amount, String createdAt, String shipping_address, List<OrderItem> orderItems) {
-        this.order_id = order_id;
-        this.user_id = user_id;
-        this.status = status;
-        this.total_amount = total_amount;
-        this.createdAt = createdAt;
-        this.shipping_address = shipping_address;
-        this.orderItems = orderItems;
     }
 
     // Getters
@@ -80,6 +84,15 @@ public class Order {
     }
 
     public String getCreatedAt() {
+            // Formato esperado: "2023-10-01T12:00:00Z"
+            // mejorar el formato si es necesario
+        if (createdAt != null) {
+                String[] parts = createdAt.split("T");
+                        if (parts.length > 1) {
+                return parts[0] ;
+            }
+        }
+
         return createdAt;
     }
 

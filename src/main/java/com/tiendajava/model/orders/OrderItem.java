@@ -1,9 +1,6 @@
 package com.tiendajava.model.orders;
 
 import java.math.BigDecimal;
-import java.util.List;
-
-import com.tiendajava.model.Product;
 
 public class OrderItem {
 
@@ -12,8 +9,6 @@ public class OrderItem {
     private int product_id;
     private int quantity;
     private BigDecimal price;
-
-    private List<Product> products;
 
     public OrderItem() {
     }
@@ -72,13 +67,5 @@ public class OrderItem {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
     }
 }

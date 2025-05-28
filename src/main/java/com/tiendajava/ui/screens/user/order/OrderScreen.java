@@ -69,6 +69,8 @@ public class OrderScreen extends JPanel {
         formPanel.add(createLabel("Cart Items:"), gbc);
         gbc.gridx = 1;
         cartItemsArea.setEditable(false);
+        cartItemsArea.setBackground(UITheme.getSecondaryColor());
+        cartItemsArea.setForeground(UITheme.getTextColor());
         JScrollPane scrollPane = new JScrollPane(cartItemsArea);
         formPanel.add(scrollPane, gbc);
 
@@ -82,8 +84,17 @@ public class OrderScreen extends JPanel {
 
         add(formPanel, BorderLayout.CENTER);
 
+        // action buttons
+        JPanel buttonPanel = new JPanel();
+
         JButton confirmOrderBtn = ButtonFactory.createPrimaryButton("Confirm Order", null, this::submitOrder);
-        add(confirmOrderBtn, BorderLayout.SOUTH);
+        buttonPanel.add(confirmOrderBtn);
+
+        // Go to My Orders screen button
+        JButton myOrdersBtn = ButtonFactory.createSecondaryButton("My Orders", null, () -> parent.showScreen("my-orders"));
+        buttonPanel.add(myOrdersBtn);
+
+        add(buttonPanel, BorderLayout.SOUTH);
 
         refreshCartDetails();
     }

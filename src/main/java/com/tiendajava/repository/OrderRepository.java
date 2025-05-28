@@ -32,7 +32,7 @@ public class OrderRepository extends BaseRepository {
     public ApiResponse<List<Order>> getMyOrders() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "orders"))
+            .uri(URI.create(URL_BASE + "order/me"))
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .GET()
             .build();
