@@ -68,4 +68,15 @@ public class OrderItem {
     public void setPrice(BigDecimal price) {
         this.price = price;
     }
+
+    @Override
+    public String toString() {
+        return "OrderItem{" +
+                "order_item_id=" + order_item_id +
+                ", order_id=" + order_id +
+                ", product_id=" + product_id +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                '}';
+    }
 }

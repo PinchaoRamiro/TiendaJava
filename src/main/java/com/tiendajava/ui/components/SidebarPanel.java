@@ -27,7 +27,7 @@ public class SidebarPanel extends JPanel {
         setPreferredSize(new Dimension(200, getHeight()));
         setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, UITheme.getTertiaryColor()));
 
-        add(Box.createVerticalStrut(40)); // spacing
+        add(Box.createVerticalStrut(40));
 
         String role = Session.getInstance().getRole();
 
@@ -36,14 +36,13 @@ public class SidebarPanel extends JPanel {
             addSidebarButton("Users", AppIcons.USERS_ICON, () -> frame.showScreen("manage-users"));
             addSidebarButton("Admins", AppIcons.ADMIN_ICON, () -> frame.showScreen("manage-admins"));
             addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("manage-products"));
-            // addSidebarButton("Orders", AppIcons.ORDERS_ICON, () -> frame.showScreen("manage-orders"));
-            // addSidebarButton("Categories", AppIcons.CATEGORIES_ICON, () -> frame.showScreen("manage-categories"));
+            addSidebarButton("Orders", null, () -> frame.showScreen("manage-orders"));
             
         } else {
             addSidebarButton("Dashboard", AppIcons.APP_ICON, () -> frame.showScreen("dashboard"));
             addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("products-user"));
             addSidebarButton("Cart", AppIcons.CART_ICON, () -> frame.showScreen("cart-user"));
-            addSidebarButton("Orders", null, () -> frame.showScreen("orders-user"));
+            addSidebarButton("Orders", null, () -> frame.showScreen("my-orders"));
         }
 
         add(Box.createVerticalGlue());

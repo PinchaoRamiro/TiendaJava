@@ -29,159 +29,199 @@ import com.tiendajava.ui.utils.UITheme;
 
 public class CartScreen extends JPanel {
 
-    private final CartService cartService;
-    private final MainUI parent;
-    private final JPanel itemsPanel;
-    private final JLabel totalLabel;
+  private final CartService cartService;
+  private final MainUI parent;
+  private final JPanel itemsPanel;
+  private final JLabel totalLabel;
 
-    public CartScreen(MainUI parent, Cart cart) {
-        this.parent = parent;
-        this.cartService = new CartService(cart);
-        this.itemsPanel = new JPanel();
-        this.totalLabel = new JLabel();
+  public CartScreen(MainUI parent, Cart cart) {
+    this.parent = parent;
+    this.cartService = new CartService(cart);
+    this.itemsPanel = new JPanel();
+    this.totalLabel = new JLabel();
 
-        setLayout(new BorderLayout());
-        setBackground(UITheme.getPrimaryColor());
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20)); 
+    setLayout(new BorderLayout());
+    setBackground(UITheme.getPrimaryColor());
+    setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20));
 
-        // Título
-        JLabel title = new JLabel("🛒 Your Cart");
-        title.setFont(Fonts.TITLE_FONT);
-        title.setForeground(UITheme.getTextColor());
-        title.setAlignmentX(SwingConstants.CENTER);
-        title.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+    // Título
+    JLabel title = new JLabel("🛒 Your Cart");
+    title.setFont(Fonts.TITLE_FONT);
+    title.setForeground(UITheme.getTextColor());
+    title.setAlignmentX(SwingConstants.CENTER);
+    title.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
-        add(title, BorderLayout.NORTH);
+    add(title, BorderLayout.NORTH);
 
-        // Contenedor de items
-        itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
-        itemsPanel.setBackground(UITheme.getPrimaryColor());
+    // Contenedor de items
+    itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.Y_AXIS));
+    itemsPanel.setBackground(UITheme.getPrimaryColor());
 
-        JScrollPane scrollPane = new JScrollPane(itemsPanel);
-        scrollPane.setBorder(null);
-        scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
-        scrollPane.getVerticalScrollBar().setUI(com.tiendajava.ui.utils.UIUtils.createDarkScrollBar());
+    itemsPanel.setOpaque(true);
 
-        add(scrollPane, BorderLayout.CENTER);
+    JScrollPane scrollPane = new JScrollPane(itemsPanel);
 
-        // Panel inferior (total + acciones)
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setBackground(UITheme.getPrimaryColor());
-        bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
+    scrollPane.setBorder(null);
+    scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
+    scrollPane.getVerticalScrollBar().setUI(com.tiendajava.ui.utils.UIUtils.createDarkScrollBar());
 
-        totalLabel.setFont(Fonts.SUBTITLE_FONT);
-        totalLabel.setForeground(UITheme.getSuccessColor());
-        bottomPanel.add(totalLabel, BorderLayout.WEST);
+    add(scrollPane, BorderLayout.CENTER);
 
-        JButton clearBtn = ButtonFactory.createDangerButton("Clear Cart", null, () -> {
-            cartService.clearCart();
-            refresh();
-        });
+    // Panel inferior (total + acciones)
+    JPanel bottomPanel = new JPanel(new BorderLayout());
+    bottomPanel.setOpaque(true);
+    bottomPanel.setBackground(UITheme.getPrimaryColor());
+    bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
 
-        bottomPanel.add(clearBtn, BorderLayout.EAST);
+    totalLabel.setFont(Fonts.SUBTITLE_FONT);
+    totalLabel.setForeground(UITheme.getSuccessColor());
+    bottomPanel.add(totalLabel, BorderLayout.WEST);
 
-        add(bottomPanel, BorderLayout.SOUTH);
+    // Panel de acciones
+    // JPanel actionsPanel = new JPanel();
+    // actionsPanel.setOpaque(true);
 
-        refresh();
+    JButton clearBtn = ButtonFactory.createDangerButton("Clear Cart", null, () -> {
+      cartService.clearCart();
+      refresh();
+    });
+    // actionsPanel.add(clearBtn);
+    // JButton continueShoppingBtn = ButtonFactory.createSecondaryButton("Continue Shopping", null, () -> {
+    //   NotificationHandler.info("Continue shopping to add more items to your cart.");
+    //   parent.showScreen("products-user");
+    // });
+
+    // JButton goToPayment = ButtonFactory.createPrimaryButton("Go to Payment", null, () -> {
+    //   System.out.println("Going to payment screen...");
+    //   if (cartService.getCartItems().isEmpty()) {
+    //     NotificationHandler.error("Your cart is empty. Please add items before proceeding to payment.");
+    //     return;
+    //   }
+    //   parent.showScreen("payment");
+    // });
+
+    // actionsPanel.add(continueShoppingBtn);
+    // actionsPanel.add(goToPayment);
+    // bottomPanel.add(actionsPanel, BorderLayout.EAST);
+
+    bottomPanel.add(clearBtn, BorderLayout.EAST);
+    add(bottomPanel, BorderLayout.SOUTH);
+
+    refresh();
+  }
+
+  private void refresh() {
+    itemsPanel.removeAll();
+
+    List<Product> products = cartService.getCartItems();
+
+    if (products.isEmpty()) {
+      JLabel empty = new JLabel("Your cart is empty.", SwingConstants.CENTER);
+      empty.setFont(Fonts.NORMAL_FONT);
+      empty.setForeground(UITheme.getTextColor());
+      itemsPanel.add(empty);
+    } else {
+      for (Product product : products) {
+        itemsPanel.add(createCartItem(product));
+      }
     }
 
-    private void refresh() {
-        itemsPanel.removeAll();
+    updateTotal();
+    revalidate();
+    repaint();
+  }
 
-        List<Product> products = cartService.getCartItems();
+  private JPanel createCartItem(Product product) {
+    JPanel panel = new JPanel(new BorderLayout());
+    panel.setBackground(UITheme.getSecondaryColor());
+    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
 
-        if (products.isEmpty()) {
-            JLabel empty = new JLabel("Your cart is empty.", SwingConstants.CENTER);
-            empty.setFont(Fonts.NORMAL_FONT);
-            empty.setForeground(UITheme.getTextColor());
-            itemsPanel.add(empty);
-        } else {
-            for (Product product : products) {
-                itemsPanel.add(createCartItem(product));
-            }
-        }
+    JLabel nameLabel = new JLabel(product.getName());
+    nameLabel.setFont(Fonts.BOLD_NFONT);
+    nameLabel.setForeground(UITheme.getTextColor());
 
-        updateTotal();
-        revalidate();
-        repaint();
+    JLabel priceLabel = new JLabel("Unit: $" + product.getPrice() + " | Subtotal: $"
+        + product.getPrice().multiply(BigDecimal.valueOf(product.getStock())));
+    priceLabel.setFont(Fonts.SMALL_FONT);
+    priceLabel.setForeground(UITheme.getTextColor());
+
+    JPanel info = new JPanel(new GridLayout(2, 1));
+    info.setBackground(UITheme.getSecondaryColor());
+    info.add(nameLabel);
+    info.add(priceLabel);
+
+    panel.add(info, BorderLayout.CENTER);
+
+    // Acciones
+    JPanel actions = new JPanel();
+    actions.setBackground(UITheme.getSecondaryColor());
+
+    int stock = Math.max(1, getMax(product.getProduct_id()));
+
+    SpinnerNumberModel spinnerModel = new SpinnerNumberModel(product.getStock(), 1, stock, 1);
+    JSpinner qtySpinner = new JSpinner(spinnerModel);
+    qtySpinner.setBackground(UITheme.getSecondaryColor());
+    qtySpinner.setPreferredSize(new Dimension(60, 25));
+
+    JButton updateBtn = ButtonFactory.createSecondaryButton("Update", null, () -> {
+      int qty = (Integer) qtySpinner.getValue();
+      cartService.updateQuantity(product.getProduct_id(), qty);
+      refresh();
+    });
+
+    JButton removeBtn = ButtonFactory.createDangerButton("Remove", null, () -> {
+      cartService.removeFromCart(product.getProduct_id());
+      refresh();
+    });
+
+    actions.add(new JLabel("Quantity:"));
+    actions.add(qtySpinner);
+    actions.add(updateBtn);
+    actions.add(removeBtn);
+
+    panel.add(actions, BorderLayout.EAST);
+
+    return panel;
+  }
+
+  private void updateTotal() {
+    BigDecimal total = cartService.getTotal();
+    totalLabel.setText("Total: $" + total);
+  }
+
+  private int getMax(int productId) {
+
+    // hacerlo en un hilo para no bloquear la UI
+    final int[] maxStock = {1};
+    Thread thread = new Thread(() -> {
+      ProductService productService = new ProductService();
+
+      ApiResponse<Product> response = productService.getProductById(productId);
+      if (!response.isSuccess() || response.getData() == null) {
+        NotificationHandler.error("Error fetching product: " + response.getMessage());
+        maxStock[0] = 0;
+        return;
+      }
+      Product product = response.getData();
+      if (product.getStock() <= 0) {
+        NotificationHandler.error("Product is out of stock: " + product.getName());
+        maxStock[0] = 0;
+        return;
+      }
+      maxStock[0] = product.getStock();
+    });
+    thread.start();
+    try {
+      thread.join();
+    } catch (InterruptedException e) {
     }
+    return maxStock[0];
 
-    private JPanel createCartItem(Product product) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(UITheme.getSecondaryColor());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
+  }
 
-        JLabel nameLabel = new JLabel(product.getName());
-        nameLabel.setFont(Fonts.BOLD_NFONT);
-        nameLabel.setForeground(UITheme.getTextColor());
-
-        JLabel priceLabel = new JLabel("Unit: $" + product.getPrice() + " | Subtotal: $" + product.getPrice().multiply(BigDecimal.valueOf(product.getStock())));
-        priceLabel.setFont(Fonts.SMALL_FONT);
-        priceLabel.setForeground(UITheme.getTextColor());
-
-        JPanel info = new JPanel(new GridLayout(2, 1));
-        info.setBackground(UITheme.getSecondaryColor());
-        info.add(nameLabel);
-        info.add(priceLabel);
-
-        panel.add(info, BorderLayout.CENTER);
-
-        // Acciones
-        JPanel actions = new JPanel();
-        actions.setBackground(UITheme.getSecondaryColor());
-
-        int stock = Math.max(1, getMax(product.getProduct_id()));
-
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(product.getStock(), 1, stock , 1);
-        JSpinner qtySpinner = new JSpinner(spinnerModel);
-        qtySpinner.setBackground(UITheme.getSecondaryColor());
-        qtySpinner.setPreferredSize(new Dimension(60, 25));
-
-        JButton updateBtn = ButtonFactory.createSecondaryButton("Update", null, () -> {
-            int qty = (Integer) qtySpinner.getValue();
-            cartService.updateQuantity(product.getProduct_id(), qty);
-            refresh();
-        });
-
-        JButton removeBtn = ButtonFactory.createDangerButton("Remove", null, () -> {
-            cartService.removeFromCart(product.getProduct_id());
-            refresh();
-        });
-
-        actions.add(new JLabel("Quantity:"));
-        actions.add(qtySpinner);
-        actions.add(updateBtn);
-        actions.add(removeBtn);
-
-        panel.add(actions, BorderLayout.EAST);
-
-        return panel;
-    }
-
-    private void updateTotal() {
-        BigDecimal total = cartService.getTotal();
-        totalLabel.setText("Total: $" + total);
-    }
-
-    private int getMax(int productId) {
-        ProductService productService = new ProductService();
-
-        ApiResponse<Product> response = productService.getProductById(productId);
-        if (!response.isSuccess() || response.getData() == null) {
-            NotificationHandler.error("Error fetching product: " + response.getMessage());
-            return 0;
-        }
-        Product product = response.getData();
-        if (product.getStock() <= 0) {
-            NotificationHandler.error("Product is out of stock: " + product.getName());
-            return 0;
-        }
-        return product.getStock(); 
-    }
-
-    @Override
-    public MainUI getParent() {
-        return parent;
-    }
+  @Override
+  public MainUI getParent() {
+    return parent;
+  }
 }

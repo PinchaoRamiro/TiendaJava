@@ -19,6 +19,7 @@ import com.tiendajava.ui.screens.LoginScreen;
 import com.tiendajava.ui.screens.RegisterScreen;
 import com.tiendajava.ui.screens.admin.AdminDashboardScreen;
 import com.tiendajava.ui.screens.admin.manageAdmins.ManageAdminsScreen;
+import com.tiendajava.ui.screens.admin.orders.PaymentsAdminScreen;
 import com.tiendajava.ui.screens.admin.products.ProductsAdminScreen;
 import com.tiendajava.ui.screens.admin.users.ManageUsersScreen;
 import com.tiendajava.ui.screens.user.Cart.CartScreen;
@@ -72,13 +73,14 @@ public final class MainUI extends JFrame {
                 case "dashboard" -> contentPanel.add(new DashboardUserScreen(this), "dashboard");
                 case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
                 case "cart-user" -> contentPanel.add(new CartScreen(this, cart), "cart-user");
-                case "orders-user" -> contentPanel.add(new OrderScreen(this, cart), "orders-user");
+                case "payment" -> contentPanel.add(new OrderScreen(this, cart), "payment");
                 case "my-orders" -> contentPanel.add(new MyOrdersScreen(this), "my-orders");
                 case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
                 case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
                 case "add-user" -> contentPanel.add(new RegisterScreen(this), "add-user");
                 case "manage-admins" -> contentPanel.add(new ManageAdminsScreen(this), "manage-admins");
                 case "manage-products" -> contentPanel.add(new ProductsAdminScreen(this), "manage-products");
+                case "manage-orders" -> contentPanel.add(new PaymentsAdminScreen(this), "manage-orders");
                 case "change-password" -> contentPanel.add(new ChangePasswordScreen(this), "change-password");
                 case "account-settings" -> contentPanel.add(new AccountSettingsScreen(this), "account-settings");
             }
@@ -92,7 +94,7 @@ public final class MainUI extends JFrame {
 
     private boolean nameRequiresAuth(String name) {
         return switch (name) {
-            case "dashboard", "products-user", "cart-user", "orders-user", "my-orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products"
+            case "dashboard", "products-user", "cart-user", "payment", "my-orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products", "manage-orders"
             , "account-settings", "change-password", "add-user"  -> true;
             default -> false;
         };

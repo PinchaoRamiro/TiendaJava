@@ -18,6 +18,13 @@ public abstract class BaseRepository {
     protected <T> ApiResponse<T> sendRequest(HttpRequest request, Type responseType) {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if(response.statusCode() == 404)
+                return new ApiResponse<>(false, null, "Resource not found");
+            if (response.statusCode() >= 300) {
+                return new ApiResponse<>(false, null,
+                        "Error: " + response.statusCode() + " - " + response.body());
+            }
             ApiResponse<T> apiResponse = gson.fromJson(response.body(), responseType);
 
             System.out.println("Http response " + response);

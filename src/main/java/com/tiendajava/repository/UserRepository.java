@@ -100,6 +100,24 @@ public class UserRepository extends BaseRepository {
     }
   }
 
+
+  public ApiResponse<User> getUserById(int id) {
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(URL_BASE + "user/" + id))
+        .header("Content-Type", "application/json")
+        .header("Authorization", "Bearer " + Session.getInstance().getToken())
+        .GET()
+        .build();
+    try {
+      Type responseType = new TypeToken<ApiResponse<User>>() {}.getType();
+      ApiResponse<User> response = sendRequest(request, responseType);
+      response.setSuccess(true);
+      return response;
+    } catch (JsonSyntaxException e) {
+      return new ApiResponse<>(false, null, "Error to get user");
+    }
+  }
+
   public ApiResponse<User> updateUser(String json, int id) {
     try {
       HttpRequest request = HttpRequest.newBuilder()

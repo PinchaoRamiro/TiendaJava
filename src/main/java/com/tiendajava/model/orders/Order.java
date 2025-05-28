@@ -119,4 +119,18 @@ public class Order {
     public enum OrderStatusEnum {
         Approved, Rejected, Pending
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "order_id=" + order_id +
+                ", user_id=" + user_id +
+                ", status=" + status +
+                ", total_amount=" + total_amount +
+                ", createdAt='" + createdAt + '\'' +
+                ", shipping_address='" + shipping_address + '\'' +
+                ", payment_method='" + payment_method + '\'' +
+                ", orderItems=" + orderItems +
+                '}';
+    }
 }

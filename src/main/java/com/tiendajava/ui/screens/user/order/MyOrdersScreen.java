@@ -15,11 +15,9 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import com.tiendajava.model.ApiResponse;
-import com.tiendajava.model.Product;
 import com.tiendajava.model.orders.Order;
 import com.tiendajava.model.orders.OrderItem;
 import com.tiendajava.service.OrderService;
-import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.Fonts;
@@ -32,29 +30,33 @@ public class MyOrdersScreen extends JPanel {
     private final OrderService orderService = new OrderService();
     private final JPanel ordersPanel = new JPanel();
     private final JComboBox<String> statusFilter = new JComboBox<>(new String[]{"All", "Pending", "Completed", "Cancelled"});
+    private List<Order> orders;
 
     public MyOrdersScreen(MainUI parent) {
         this.parent = parent;
 
         setLayout(new BorderLayout());
-        setBackground(UITheme.getPrimaryColor());
+
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setBackground(UITheme.getPrimaryColor());
 
         JLabel title = new JLabel("My Orders", SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
-        title.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
-        add(title, BorderLayout.NORTH);
+        title.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 20));
+        headerPanel.add(title);
 
         // create a filter by status
         JPanel filterPanel = new JPanel();
         filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.X_AXIS));
         filterPanel.setBackground(UITheme.getPrimaryColor());
-        filterPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        filterPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         JLabel filterLabel = new JLabel("Filter by status: ");
         filterLabel.setFont(Fonts.NORMAL_FONT);
         filterLabel.setForeground(UITheme.getTextColor());
         statusFilter.setFont(Fonts.NORMAL_FONT);
-        statusFilter.setBackground(UITheme.getSecondaryColor());
+        statusFilter.setBackground(UITheme.getBackgroundContrast());
         statusFilter.setForeground(UITheme.getTextColor());
         statusFilter.setBorder(BorderFactory.createLineBorder(UITheme.getTertiaryColor(), 1));
         statusFilter.addActionListener(e -> {
@@ -66,7 +68,10 @@ public class MyOrdersScreen extends JPanel {
         filterPanel.add(filterLabel);
         filterPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         filterPanel.add(statusFilter);
-        add(filterPanel);
+        headerPanel.add(filterPanel);
+
+        add(headerPanel, BorderLayout.NORTH);
+
 
 
         ordersPanel.setLayout(new BoxLayout(ordersPanel, BoxLayout.Y_AXIS));
@@ -79,34 +84,47 @@ public class MyOrdersScreen extends JPanel {
         scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
         add(scrollPane, BorderLayout.CENTER);
 
+        getOrderToDataBase();
         loadOrders();
     }
 
-    private void loadOrders() {
-        ordersPanel.removeAll();
 
+    private void getOrderToDataBase(){
         ApiResponse<List<Order>> response = orderService.getMyOrders();
         if (!response.isSuccess()) {
             NotificationHandler.error("Failed to load orders: " + response.getMessage());
             return;
         }
 
-        List<Order> orders = response.getData();
+        orders = response.getData();
+    }
+
+    private void loadOrders() {
+        ordersPanel.removeAll();
+
+        String selectedStatus = (String) statusFilter.getSelectedItem();
+
         if (orders == null || orders.isEmpty()) {
             JLabel noOrders = new JLabel("You have no orders.", SwingConstants.CENTER);
             noOrders.setFont(Fonts.NORMAL_FONT);
             noOrders.setForeground(UITheme.getTextColor());
             ordersPanel.add(noOrders);
         } else {
-            for (Order order : orders) {
-                ordersPanel.add(createOrderCard(order));
-                ordersPanel.add(Box.createRigidArea(new Dimension(0, 15)));
-            }
+            orders.stream()
+                .filter(order -> {
+                    if ("All".equalsIgnoreCase(selectedStatus)) return true;
+                    return order.getStatus().toString().equalsIgnoreCase(selectedStatus);
+                })
+                .forEach(order -> {
+                    ordersPanel.add(createOrderCard(order));
+                    ordersPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+                });
         }
 
         ordersPanel.revalidate();
         ordersPanel.repaint();
     }
+
 
     private JPanel createOrderCard(Order order) {
         JPanel card = new JPanel();
@@ -117,8 +135,8 @@ public class MyOrdersScreen extends JPanel {
             BorderFactory.createLineBorder(UITheme.getTertiaryColor(), 1),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
-        card.setPreferredSize(new Dimension(300, 200));
-        card.setMaximumSize(new Dimension(350, 200));
+        card.setPreferredSize(new Dimension(350, 220));
+        card.setMaximumSize(new Dimension(600, 250));
 
         JLabel idLabel = new JLabel("Order ID: " + order.getOrder_id());
         JLabel dateLabel = new JLabel("Date: " + order.getCreatedAt());
@@ -132,32 +150,24 @@ public class MyOrdersScreen extends JPanel {
         }
 
         card.add(Box.createRigidArea(new Dimension(0, 10)));
-        card.add(new JLabel("Items:", SwingConstants.LEFT));
 
-        if(order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
-            NotificationHandler.error("No items found in order ID: " + order.getOrder_id());
-            JLabel noItemsLabel = new JLabel("No items in this order.", SwingConstants.CENTER);
-            noItemsLabel.setFont(Fonts.NORMAL_FONT);
-            noItemsLabel.setForeground(UITheme.getTextColor());
-            card.add(noItemsLabel);
+        if (order.getOrderItems() == null || order.getOrderItems().isEmpty()) {
+            JLabel noItems = new JLabel("No items in this order.");
+            noItems.setFont(Fonts.SMALL_FONT);
+            noItems.setForeground(UITheme.getTextColor());
+            card.add(noItems);
             return card;
         }
 
+        JLabel itemTitle = new JLabel("Items:");
+        itemTitle.setFont(Fonts.BOLD_NFONT);
+        itemTitle.setForeground(UITheme.getTextColor());
+        card.add(itemTitle);
 
         for (OrderItem item : order.getOrderItems()) {
-            ProductService productService = new ProductService();
-            ApiResponse<Product> response = productService.getProductById(item.getProduct_id());
-            if (!response.isSuccess()) {
-                NotificationHandler.error("Failed to load product details: " + response.getMessage());
-                continue;
-            }
-            Product product = response.getData();
-            if (product == null) {
-                NotificationHandler.error("Product not found for ID: " + item.getProduct_id());
-                continue;
-            }
-
-            JLabel itemLabel = new JLabel("- " + product.getName() + " ( x" + item.getQuantity() + " )");
+            // Muestra solo el ID y cantidad (opcional: puedes guardar un mapa de nombres si ya los tienes)
+            String itemText = "• Product ID: " + item.getProduct_id() + " (x" + item.getQuantity() + ")";
+            JLabel itemLabel = new JLabel(itemText);
             itemLabel.setFont(Fonts.SMALL_FONT);
             itemLabel.setForeground(UITheme.getTextColor());
             card.add(itemLabel);
@@ -165,6 +175,7 @@ public class MyOrdersScreen extends JPanel {
 
         return card;
     }
+
 
     @Override
     public MainUI getParent() {
