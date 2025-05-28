@@ -1,4 +1,4 @@
-package com.tiendajava.ui.screens.admin.orders;
+package com.tiendajava.ui.screens.admin;
 
 import java.awt.BorderLayout;
 import java.util.List;

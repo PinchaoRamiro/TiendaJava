@@ -1,4 +1,4 @@
-package com.tiendajava.ui.screens.admin.orders;
+package com.tiendajava.ui.screens.admin;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -87,9 +87,9 @@ public class PaymentsAdminScreen extends JPanel {
         card.setBackground(UITheme.getSecondaryColor());
         card.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(UITheme.getTertiaryColor(), 1),
-            BorderFactory.createEmptyBorder(10, 20, 10, 10)
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
-        card.setMaximumSize(new Dimension(500, 200));
+        card.setMaximumSize(new Dimension(500, 220));
 
         User user = userService.findUserById(order.getUser_id()).getData();
 
@@ -104,6 +104,12 @@ public class PaymentsAdminScreen extends JPanel {
             label.setForeground(UITheme.getTextColor());
             card.add(label);
         }
+
+        // Botón de detalles
+        JButton viewDetailsBtn = new JButton("View Details");
+        viewDetailsBtn.addActionListener(e -> {
+            new DetailsOrderDialog(order, user).setVisible(true);
+        });
 
         // Status update
         JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -126,23 +132,11 @@ public class PaymentsAdminScreen extends JPanel {
             }
         });
 
-        // Botton to complete imformation
-        JButton detailsBtn = new JButton("View Details");
-        // detailsBtn.addActionListener(e -> {
-        //     DetailsOrderDialog dialog = new DetailsOrderDialog( order, user);
-        //     dialog.setVisible(true);
-        // });
-
         statusPanel.add(statusCombo);
         statusPanel.add(updateBtn);
-        statusPanel.add(detailsBtn);
+        statusPanel.add(viewDetailsBtn);
         card.add(statusPanel);
 
         return card;
-    }
-
-    @Override
-    public MainUI getParent() {
-        return parent;
     }
 }

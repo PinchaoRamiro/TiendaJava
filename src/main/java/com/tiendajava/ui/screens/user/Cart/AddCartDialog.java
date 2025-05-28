@@ -1,4 +1,4 @@
-package com.tiendajava.ui.screens.user.Cart;
+package com.tiendajava.ui.screens.user.cart;
 
 import java.awt.Component;
 import java.awt.Dimension;

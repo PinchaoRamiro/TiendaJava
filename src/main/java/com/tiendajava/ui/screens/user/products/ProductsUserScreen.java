@@ -19,7 +19,7 @@ import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.components.ProductItemCard;
 import com.tiendajava.ui.components.SearchBar;
-import com.tiendajava.ui.screens.user.Cart.AddCartDialog;
+import com.tiendajava.ui.screens.user.cart.AddCartDialog;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;

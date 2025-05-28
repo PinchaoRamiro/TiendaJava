@@ -2,7 +2,6 @@ package com.tiendajava.ui.screens.user.cart;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,29 +16,25 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
+import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Cart;
 import com.tiendajava.model.Product;
 import com.tiendajava.service.CartService;
+import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
-import com.tiendajava.ui.utils.AppIcons;
+import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 
-public class CartScreen extends JPanel {
+public class CartScreenBad extends JPanel {
 
     private final CartService cartService;
+    private final MainUI parent;
     private final JPanel itemsPanel;
     private final JLabel totalLabel;
-    private final MainUI parent;
 
-    // Constantes para el diseño
-    private static final int PADDING = 20;
-    private static final int BUTTON_PADDING = 10;
-    private static final int SPINNER_WIDTH = 60;
-    private static final int SPINNER_HEIGHT = 25;
-
-    public CartScreen(MainUI parent, Cart cart) {
+    public CartScreenBad(MainUI parent, Cart cart) {
         this.parent = parent;
         this.cartService = new CartService(cart);
         this.itemsPanel = new JPanel();
@@ -47,13 +42,14 @@ public class CartScreen extends JPanel {
 
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
-        setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20)); 
 
         // Título
-        JLabel title = new JLabel("🛒 Your Cart", AppIcons.CART_ICON, SwingConstants.LEFT);
+        JLabel title = new JLabel("🛒 Your Cart");
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
-        title.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+        title.setAlignmentX(SwingConstants.CENTER);
+        title.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
         add(title, BorderLayout.NORTH);
 
@@ -73,34 +69,16 @@ public class CartScreen extends JPanel {
         bottomPanel.setBackground(UITheme.getPrimaryColor());
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
 
-        // Panel de total
-        JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        totalPanel.setBackground(UITheme.getPrimaryColor());
-
         totalLabel.setFont(Fonts.SUBTITLE_FONT);
         totalLabel.setForeground(UITheme.getSuccessColor());
-        totalPanel.add(totalLabel);
+        bottomPanel.add(totalLabel, BorderLayout.WEST);
 
-        bottomPanel.add(totalPanel, BorderLayout.WEST);
-
-        // Panel de botones
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, BUTTON_PADDING, 0));
-        buttonsPanel.setBackground(UITheme.getPrimaryColor());
-
-        JButton clearBtn = ButtonFactory.createDangerButton("Clear Cart", AppIcons.DELETE_ICON, () -> {
+        JButton clearBtn = ButtonFactory.createDangerButton("Clear Cart", null, () -> {
             cartService.clearCart();
             refresh();
         });
 
-        JButton checkoutBtn = ButtonFactory.createPrimaryButton("Generete Order", null, () -> {
-            // Lógica para ir a pagar
-            parent.showScreen("payment");
-        });
-
-        buttonsPanel.add(clearBtn);
-        buttonsPanel.add(checkoutBtn);
-
-        bottomPanel.add(buttonsPanel, BorderLayout.EAST);
+        bottomPanel.add(clearBtn, BorderLayout.EAST);
 
         add(bottomPanel, BorderLayout.SOUTH);
 
@@ -134,51 +112,49 @@ public class CartScreen extends JPanel {
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
 
-        // Información del producto
-        JPanel infoPanel = new JPanel(new GridLayout(2, 1));
-        infoPanel.setBackground(UITheme.getSecondaryColor());
-
         JLabel nameLabel = new JLabel(product.getName());
         nameLabel.setFont(Fonts.BOLD_NFONT);
         nameLabel.setForeground(UITheme.getTextColor());
 
-        JLabel priceLabel = new JLabel("Unit: $" + product.getPrice() + " | Subtotal: $" +
-            product.getPrice().multiply(BigDecimal.valueOf(product.getStock())));
+        JLabel priceLabel = new JLabel("Unit: $" + product.getPrice() + " | Subtotal: $" + product.getPrice().multiply(BigDecimal.valueOf(product.getStock())));
         priceLabel.setFont(Fonts.SMALL_FONT);
         priceLabel.setForeground(UITheme.getTextColor());
 
-        infoPanel.add(nameLabel);
-        infoPanel.add(priceLabel);
+        JPanel info = new JPanel(new GridLayout(2, 1));
+        info.setBackground(UITheme.getSecondaryColor());
+        info.add(nameLabel);
+        info.add(priceLabel);
 
-        panel.add(infoPanel, BorderLayout.CENTER);
+        panel.add(info, BorderLayout.CENTER);
 
-        // Panel de acciones
-        JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        actionsPanel.setBackground(UITheme.getSecondaryColor());
+        // Acciones
+        JPanel actions = new JPanel();
+        actions.setBackground(UITheme.getSecondaryColor());
 
-        // Spinner para cantidad
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(product.getStock(), 1, 999, 1);
+        int stock = Math.max(1, getMax(product.getProduct_id()));
+
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(product.getStock(), 1, stock , 1);
         JSpinner qtySpinner = new JSpinner(spinnerModel);
-        qtySpinner.setPreferredSize(new Dimension(SPINNER_WIDTH, SPINNER_HEIGHT));
+        qtySpinner.setBackground(UITheme.getSecondaryColor());
+        qtySpinner.setPreferredSize(new Dimension(60, 25));
 
-        // Botones de acción
         JButton updateBtn = ButtonFactory.createSecondaryButton("Update", null, () -> {
             int qty = (Integer) qtySpinner.getValue();
             cartService.updateQuantity(product.getProduct_id(), qty);
             refresh();
         });
 
-        JButton removeBtn = ButtonFactory.createDangerButton("Remove", AppIcons.DELETE_ICON, () -> {
+        JButton removeBtn = ButtonFactory.createDangerButton("Remove", null, () -> {
             cartService.removeFromCart(product.getProduct_id());
             refresh();
         });
 
-        actionsPanel.add(new JLabel("Qty:"));
-        actionsPanel.add(qtySpinner);
-        actionsPanel.add(updateBtn);
-        actionsPanel.add(removeBtn);
+        actions.add(new JLabel("Quantity:"));
+        actions.add(qtySpinner);
+        actions.add(updateBtn);
+        actions.add(removeBtn);
 
-        panel.add(actionsPanel, BorderLayout.EAST);
+        panel.add(actions, BorderLayout.EAST);
 
         return panel;
     }
@@ -186,6 +162,22 @@ public class CartScreen extends JPanel {
     private void updateTotal() {
         BigDecimal total = cartService.getTotal();
         totalLabel.setText("Total: $" + total);
+    }
+
+    private int getMax(int productId) {
+        ProductService productService = new ProductService();
+
+        ApiResponse<Product> response = productService.getProductById(productId);
+        if (!response.isSuccess() || response.getData() == null) {
+            NotificationHandler.error("Error fetching product: " + response.getMessage());
+            return 0;
+        }
+        Product product = response.getData();
+        if (product.getStock() <= 0) {
+            NotificationHandler.error("Product is out of stock: " + product.getName());
+            return 0;
+        }
+        return product.getStock(); 
     }
 
     @Override
