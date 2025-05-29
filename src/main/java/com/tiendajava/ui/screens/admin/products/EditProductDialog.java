@@ -92,7 +92,7 @@ public class EditProductDialog extends IProductDialog {
         }
 
         // Mostrar diálogo de confirmación
-        ConfirmationDialog confirmationDialog = new ConfirmationDialog("Confirmation",
+        ConfirmationDialog confirmationDialog = new ConfirmationDialog("Confirmation", UITheme.getButtonColor(),
                 "Are you sure you want to update the product: " + product.getName() + "?", () -> {
             // Lógica de guardado ejecutada después de la confirmación
             try {

@@ -4,11 +4,15 @@ TiendaJava es una aplicación de escritorio desarrollada en **Java Swing**, que 
 
 ---
 
+## Versions and Details
+JVM version 23
+Maven version 4.0.0
+
 ## Aplicación ejecutable .jar
 
 si no tienes maven puedes descargar el .jar y mirar la aplicación
 
-### 🔗 [link](tiendajava-2.0-jar-with-dependencies.jar)
+### 🔗Get App [link](tiendajava-2.0-jar-with-dependencies.jar)
 
 ## Inicio 
 

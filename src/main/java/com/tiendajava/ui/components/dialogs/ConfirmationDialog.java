@@ -1,6 +1,7 @@
 package com.tiendajava.ui.components.dialogs;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -18,10 +19,12 @@ import com.tiendajava.ui.utils.UIUtils;
 public class ConfirmationDialog extends JDialog {
 
     private final Runnable onConfirm;
+    private final Color bgColor;
 
-    public ConfirmationDialog(String title, String message, Runnable onConfirm) {
+    public ConfirmationDialog(String title, Color bgColor, String message, Runnable onConfirm) {
         this.onConfirm = onConfirm;
-
+        this.bgColor = bgColor;
+        
         setTitle(title);
         setModal(true);
         setSize(400, 200);
@@ -51,6 +54,7 @@ public class ConfirmationDialog extends JDialog {
         gbc.insets = new Insets(5, 10, 5, 10);
 
         JButton yesBtn = ButtonFactory.createPrimaryButton("Yes", null, this::confirm);
+        yesBtn.setBackground(bgColor);
         JButton noBtn = ButtonFactory.createSecondaryButton("No", null, this::cancel);
 
         gbc.gridx = 0;

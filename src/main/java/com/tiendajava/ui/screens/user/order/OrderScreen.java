@@ -90,10 +90,6 @@ public class OrderScreen extends JPanel {
         JButton confirmOrderBtn = ButtonFactory.createPrimaryButton("Confirm Order", null, this::submitOrder);
         buttonPanel.add(confirmOrderBtn);
 
-        // Go to My Orders screen button
-        JButton myOrdersBtn = ButtonFactory.createSecondaryButton("My Orders", null, () -> parent.showScreen("my-orders"));
-        buttonPanel.add(myOrdersBtn);
-
         add(buttonPanel, BorderLayout.SOUTH);
 
         refreshCartDetails();

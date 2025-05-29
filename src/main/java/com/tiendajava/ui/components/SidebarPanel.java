@@ -32,7 +32,7 @@ public class SidebarPanel extends JPanel {
         String role = Session.getInstance().getRole();
 
         if ("admin".equalsIgnoreCase(role)) {
-            addSidebarButton("Admin Dashboard", AppIcons.ADMIN_ICON, () -> frame.showScreen("admin-dashboard"));
+            addSidebarButton("Admin Dashboard", null, () -> frame.showScreen("admin-dashboard"));
             addSidebarButton("Users", AppIcons.USERS_ICON, () -> frame.showScreen("manage-users"));
             addSidebarButton("Admins", AppIcons.ADMIN_ICON, () -> frame.showScreen("manage-admins"));
             addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("manage-products"));
@@ -41,8 +41,8 @@ public class SidebarPanel extends JPanel {
         } else {
             addSidebarButton("Dashboard", AppIcons.APP_ICON, () -> frame.showScreen("dashboard"));
             addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("products-user"));
-            addSidebarButton("Cart", AppIcons.CART_ICON, () -> frame.showScreen("cart-user"));
-            addSidebarButton("Orders", null, () -> frame.showScreen("my-orders"));
+            addSidebarButton("Cart", AppIcons.CART_ICON, () -> frame.showScreen("cart-p"));
+            addSidebarButton("Order History", null, () -> frame.showScreen("my-orders"));
         }
 
         add(Box.createVerticalGlue());

@@ -23,7 +23,7 @@ import com.tiendajava.ui.screens.admin.manageAdmins.ManageAdminsScreen;
 import com.tiendajava.ui.screens.admin.products.ProductsAdminScreen;
 import com.tiendajava.ui.screens.admin.users.ManageUsersScreen;
 import com.tiendajava.ui.screens.user.DashboardUserScreen;
-import com.tiendajava.ui.screens.user.cart.CartScreen;
+import com.tiendajava.ui.screens.user.cart.FunctionalCartScreen;
 import com.tiendajava.ui.screens.user.order.MyOrdersScreen;
 import com.tiendajava.ui.screens.user.order.OrderScreen;
 import com.tiendajava.ui.screens.user.products.ProductsUserScreen;
@@ -70,9 +70,9 @@ public final class MainUI extends JFrame {
         // Carga la pantalla solo si no se ha creado aún
         if (getScreen(name) == null) {
             switch (name) {
+                case "cart-p" -> contentPanel.add(new FunctionalCartScreen(this,cart), "cart-p");
                 case "dashboard" -> contentPanel.add(new DashboardUserScreen(this), "dashboard");
                 case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
-                case "cart-user" -> contentPanel.add(new CartScreen(this, cart), "cart-user");
                 case "payment" -> contentPanel.add(new OrderScreen(this, cart), "payment");
                 case "my-orders" -> contentPanel.add(new MyOrdersScreen(this), "my-orders");
                 case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
@@ -86,16 +86,16 @@ public final class MainUI extends JFrame {
             }
         }
 
-        cl.show(contentPanel, name);
-
         if (nameRequiresAuth(name)) loggedScreen();
         else logoutScreen();
+
+        cl.show(contentPanel, name);
     }
 
     private boolean nameRequiresAuth(String name) {
         return switch (name) {
-            case "dashboard", "products-user", "cart-user", "payment", "my-orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products", "manage-orders"
-            , "account-settings", "change-password", "add-user"  -> true;
+            case "dashboard", "products-user", "cart", "cart-p", "cart-order", "payment", "my-orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products", "manage-orders"
+            , "account-settings", "change-password", "add-user", "button-test"  -> true;
             default -> false;
         };
     }
@@ -126,6 +126,10 @@ public final class MainUI extends JFrame {
 
     public Cart getCart() {
         return cart;
+    }
+
+    public JPanel getContentPanel() {
+        return contentPanel;
     }
 
     public static void start() {
