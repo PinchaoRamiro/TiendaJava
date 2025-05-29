@@ -25,15 +25,18 @@ public class ProductService {
      * Obtener un producto por su ID
      */
     public ApiResponse<Product> getProductById(int id) {
-        return productRepository.getProductById(id);
+        ApiResponse<Product> response = productRepository.getProductById(id);
+        return response;
     }
 
     /**
      * Crear un nuevo producto
      */
-    public ApiResponse<Product> createProductWithImage(Product p, File image) {
+    public ApiResponse<Product> createProductWithImage(Product p, File image, String category) {
+
+         // Crear el producto con la imagen
         try {
-            return productRepository.createProductWithImage(p, image);
+            return productRepository.createProductWithImage(p, image, category);
         } catch (IOException | InterruptedException e) {
             return new ApiResponse<>(false, null, "Error al subir imagen: " + e.getMessage());
         }

@@ -65,29 +65,29 @@ public class ButtonFactory {
     }
 
     // create a button with icon only
-public static JLabel createIconButton(ImageIcon icon, String tooltip, Runnable onClick) {
-    JLabel button = new JLabel(icon);
-    button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    button.setToolTipText(tooltip); // <- Aquí se añade la ayuda
+    public static JLabel createIconButton(ImageIcon icon, String tooltip, Runnable onClick) {
+        JLabel button = new JLabel(icon);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setToolTipText(tooltip); // <- Aquí se añade la ayuda
 
-    button.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            onClick.run();
-        }
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                onClick.run();
+            }
 
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            button.setIcon(new ImageIcon(icon.getImage().getScaledInstance(26, 26, java.awt.Image.SCALE_SMOOTH)));
-        }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setIcon(new ImageIcon(icon.getImage().getScaledInstance(26, 26, java.awt.Image.SCALE_SMOOTH)));
+            }
 
-        @Override
-        public void mouseExited(MouseEvent e) {
-            button.setIcon(icon);
-        }
-    });
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setIcon(icon);
+            }
+        });
 
-    return button;
+        return button;
     }
 
 }

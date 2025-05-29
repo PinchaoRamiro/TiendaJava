@@ -15,8 +15,8 @@ import javax.swing.SwingConstants;
 
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.DashboardSummary;
-import com.tiendajava.model.OrderStatusReport;
 import com.tiendajava.model.Product;
+import com.tiendajava.model.orders.OrderStatusReport;
 import com.tiendajava.service.ReportService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.NotificationHandler;

@@ -16,6 +16,8 @@ public class AppIcons {
     public static final String USER_CHECK_PATH = "/icons/user-check.png";
     public static final String USER_PLUS_PATH = "/icons/user-add.png";
 
+    public static final String CANCEL_PATH = "/icons/cancel.png"; 
+    public static final String INFO_PATH = "/icons/info.png";
     public static final String SETTINGS_PATH = "/icons/settings.png";
     public static final String DELETE_PATH = "/icons/trash.png";
     public static final String PRODUCTS_PATH = "/icons/selling.png";
@@ -54,6 +56,7 @@ public class AppIcons {
     public static final ImageIcon USER_PLUS_ICON = LoadIcon(USER_PLUS_PATH);
     public static final ImageIcon SETTINGS_ICON = LoadIcon(SETTINGS_PATH);
     public static final ImageIcon DELETE_ICON = LoadIcon(DELETE_PATH);
+    public static final ImageIcon INFO_ICON = LoadIcon(INFO_PATH);
     public static final ImageIcon PRODUCTS_ICON = LoadIcon(PRODUCTS_PATH);
     public static final ImageIcon PRODUCT_ICON = LoadIcon(PRODUCT_PATH);
     public static final ImageIcon BOX_ICON = LoadIcon(BOX_PATH);
@@ -63,6 +66,7 @@ public class AppIcons {
     public static final ImageIcon CART_ICON = LoadIcon(CART_PATH);
     public static final ImageIcon CART_ADD_ICON = LoadIcon(CART_ADD_PATH);
     public static final ImageIcon EXIT_ICON = LoadIcon(EXIT_PATH);
+    public static final ImageIcon CANCEL_ICON = LoadIcon(CANCEL_PATH);
     public static final ImageIcon ENTER_ICON = LoadIcon(ENTER_PATH);
     public static final ImageIcon BACK_ICON = LoadIcon(BACK_PATH);
     public static final ImageIcon ADD_ICON = LoadIcon(ADD_PATH);

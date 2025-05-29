@@ -42,6 +42,7 @@ public class ProductItemCard extends JPanel {
     public ProductItemCard(Product product,
                            Runnable onEdit,
                            Runnable onDelete,
+                            Runnable onClick,
                            Runnable onAddToCart) {
 
         setLayout(new BorderLayout(10,10));
@@ -49,6 +50,14 @@ public class ProductItemCard extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         setPreferredSize(new Dimension(400,120));
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        // --- Clickable area ---
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                onClick.run();
+            }
+        });
 
         // --- Imagen ---
         JLabel imageLabel = new JLabel(getPlaceholderIcon());
@@ -60,7 +69,6 @@ public class ProductItemCard extends JPanel {
             loadImageAsync(product.getImage(), imageLabel);
         }
 
-        // --- Info ---
         JPanel infoContainer = new JPanel(new GridLayout(1, 2)); // Divide en dos columnas
         infoContainer.setBackground(UITheme.getSecondaryColor());
 

@@ -14,7 +14,8 @@ public class AdminService {
 
     public ApiResponse<User> registerAdmin(User admin) {
         String json = gson.toJson(admin);
-        return adminRepository.registerAdmin(json);
+        ApiResponse<User> response = adminRepository.registerAdmin(json);
+        return response;
     }
 
     public ApiResponse<String> logoutAdmin() {
@@ -35,5 +36,9 @@ public class AdminService {
 
     public ApiResponse<List<User>> searchAdmins(String name){
         return adminRepository.searchAdmins(name);
+    }
+
+    public ApiResponse<List<User>> searchUsers(String name){
+        return adminRepository.searchUsers(name);
     }
 }

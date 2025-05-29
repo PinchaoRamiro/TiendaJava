@@ -25,7 +25,7 @@ public class AdminRepository extends BaseRepository {
             return sendRequest(request, type);        
             
         } catch ( Exception e) {
-            return new ApiResponse<>(false, null, "Error to register admin: " );
+            return new ApiResponse<>(false, null, "Error to register admin: " + e.getMessage());
         }
 
     }
@@ -96,6 +96,22 @@ public class AdminRepository extends BaseRepository {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(URL_BASE + "admin/search-admin?q=" + name))
+                .header("Authorization", "Bearer " + Session.getInstance().getToken())
+                .GET()
+                .build();
+
+            Type responseType = new TypeToken<ApiResponse<List<User>>>() {
+            }.getType();
+            return sendRequest(request, responseType);
+        } catch (Exception e) {
+        return new ApiResponse<>(false, null, "Error searching products: " + e.getMessage());
+        }
+    }
+
+    public ApiResponse<List<User>> searchUsers(String name){
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(URL_BASE + "admin/search-user?q=" + name))
                 .header("Authorization", "Bearer " + Session.getInstance().getToken())
                 .GET()
                 .build();

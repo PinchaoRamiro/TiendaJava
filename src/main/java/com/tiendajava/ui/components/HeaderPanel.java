@@ -113,7 +113,7 @@ public class HeaderPanel extends JPanel {
     }
 
     private void logout() {
-        new ConfirmationDialog( "Logout Confirmation", "Are you sure you want to logout?", () -> {
+        new ConfirmationDialog( "Logout Confirmation", UITheme.getDangerColor(), "Are you sure you want to logout?", () -> {
             userService.Logout();
             parent.showScreen("login");
         }).setVisible(true);

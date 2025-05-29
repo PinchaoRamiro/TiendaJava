@@ -89,4 +89,20 @@ public class CategoryRepository extends BaseRepository {
             return new ApiResponse<>(false, null, "Error to delete category" );
         }
     }
+
+    public ApiResponse<Category> getCategoryByName(String name) {
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(URL_BASE + "category/get/name/" + name))
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+
+            Type responseType = new TypeToken<ApiResponse<Category>>() {}.getType();
+            return sendRequest(request, responseType);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, null, "Error to get category by name" );
+        }
+    }
+
 }

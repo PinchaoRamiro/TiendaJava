@@ -1,4 +1,4 @@
-package com.tiendajava.ui.screens.user;
+package com.tiendajava.ui.screens.user.products;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -18,6 +19,7 @@ import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.components.ProductItemCard;
 import com.tiendajava.ui.components.SearchBar;
+import com.tiendajava.ui.screens.user.cart.AddCartDialog;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
@@ -26,15 +28,18 @@ import com.tiendajava.ui.utils.UIUtils;
 public class ProductsUserScreen extends JPanel {
 
     private final ProductService productService = new ProductService();
-    private final JPanel productsPanel = new JPanel(new GridLayout(0, 1, 15, 15)); // Espacio entre productos
+    private final JPanel productsPanel = new JPanel(new GridLayout(0, 1, 15, 15)); 
     private final SearchBar searchBar;
+    private final MainUI parent;
+    private List<Product> products;
 
     public ProductsUserScreen(MainUI parent) {
+        this.parent = parent;
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
-        setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20)); // padding general
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20)); 
 
-        // 🔹 Top Panel (Titulo + Barra de Búsqueda)
+        // Top Panel (Titulo + Barra de Búsqueda)
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         topPanel.setBackground(UITheme.getPrimaryColor());
         
@@ -44,13 +49,19 @@ public class ProductsUserScreen extends JPanel {
 
         searchBar = new SearchBar(e -> searchProducts(productsPanel));
 
+        // Create a filter options button
+        JButton filterButton = new JButton("Filter");
+        filterButton.addActionListener(e -> {
+            NotificationHandler.info("Filter options are not implemented yet.");
+        });
+
         topPanel.add(title);
         topPanel.add(searchBar);
+        topPanel.add(filterButton);
 
         add(topPanel, BorderLayout.NORTH);
 
         // 🔹 Productos Panel
-        productsPanel.setBackground(UITheme.getPrimaryColor());
         JScrollPane scrollPane = new JScrollPane(productsPanel);
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
@@ -69,47 +80,65 @@ public class ProductsUserScreen extends JPanel {
             NotificationHandler.error("Failed to load products: " + response.getMessage());
             return;
         }
-        List<Product> products = response.getData();
+        products = response.getData();
         if (products == null || products.isEmpty()) {
             NotificationHandler.warning("No products available.");
             return;
         }
-
         printProducts(products, productsPanel);
-
-
     }
 
     private void printProducts(List<Product> products, JPanel productsPanel) {    
-        
+        productsPanel.removeAll();    
         for (Product product : products) {
             productsPanel.add(new ProductItemCard(
                 product,
                 () -> {},
                 () -> {},
+                () -> onClickProduct(product),
                 () -> addToCart(product)
             ));
-
         }
         productsPanel.revalidate();
         productsPanel.repaint();
     }
 
     private void addToCart(Product product) {
-
-
-        NotificationHandler.info("Added to cart: " + product.getName());
+        try {
+            new AddCartDialog(parent.getCart(), product).setVisible(true);
+            NotificationHandler.success("Product added to cart: " + product.getName());
+        } catch (NumberFormatException e) {
+            NotificationHandler.warning("Please enter a valid quantity.");
+        } catch (IllegalArgumentException e) {
+            NotificationHandler.error("Invalid product: " + e.getMessage());
+        } catch (Exception e) {
+            NotificationHandler.error("An error occurred while adding the product to the cart" );
+            System.err.println("Error adding product to cart: " + e.getMessage());
+        }
     }
 
     private void searchProducts( JPanel productsPanel) {
         String query = searchBar.getText();
+
+        if (query == null || query.trim().isEmpty()) {
+            NotificationHandler.warning("Please enter a search term.");
+            return;
+        }
         ApiResponse<List<Product>> response = productService.getProductsByName(query);
         if (response.isSuccess()) {
-            productsPanel.removeAll(); // Limpiar el panel de productos antes de agregar los nuevos
-            List<Product> products = response.getData();
+            productsPanel.removeAll(); 
+            products = response.getData();
             printProducts(products, productsPanel);
-        } else {
-            NotificationHandler.error("Failed to search products: " + response.getMessage());
+        } else if(response.getMessage() != null) {
+            NotificationHandler.warning("Product not found" + response.getMessage());
+        }else {
+            NotificationHandler.error("Failed to search products");
         }
+    }
+
+    
+    
+    private void onClickProduct(Product product) {
+        new InfoProductDialog(product).setVisible(true);
     }
 }

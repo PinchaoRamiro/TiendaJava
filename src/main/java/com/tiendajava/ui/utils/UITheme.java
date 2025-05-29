@@ -23,7 +23,7 @@ public class UITheme {
     }
 
     public static Color getBackgroundContrast() {
-        return new Color(250, 250, 250); // Para overlays o modales con contraste claro
+        return new Color(124, 134, 189 ); // Para overlays o modales con contraste claro
     }
 
     // === Text ===

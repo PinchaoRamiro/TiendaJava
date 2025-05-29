@@ -43,13 +43,10 @@ public class ProductRepository extends BaseRepository {
           if (success) {
               JsonArray data = json.get("data").getAsJsonArray();
               for (JsonElement el : data) {
-                System.out.println("Json: " + el );
                   Product p = ProductFactory.createProduct(el.getAsJsonObject());
                   products.add(p);
               }
           }
-
-          System.out.println("Prodictos: " + products);
 
           return new ApiResponse<>(success, products, message);
 
@@ -68,18 +65,23 @@ public class ProductRepository extends BaseRepository {
         .GET()
         .build();
 
-    return sendRequest(request, Product.class);
+    Type type = new TypeToken<ApiResponse<Product>>(){}.getType();
+    return sendRequest(request, type);
   }
 
   /**
    * Crea un nuevo producto (requiere token de administrador).
    */
-  public ApiResponse<Product> createProductWithImage(Product prod, File imageFile) throws IOException, InterruptedException {
+  public ApiResponse<Product> createProductWithImage(Product prod, File imageFile, String category) throws IOException, InterruptedException {
+
+    System.err.println("Creating product: " + prod);
+    System.err.println("Image file: " + imageFile);
+    System.err.println("Category: " + category);
     // if image is null, not required to upload
     HttpRequest request;
     if (imageFile == null) {
       request = HttpRequest.newBuilder()
-          .uri(URI.create(URL_BASE + "product/create"))
+          .uri(URI.create(URL_BASE + "product/create/" + category))
           .header("Authorization", "Bearer " + Session.getInstance().getToken())
           .header("Content-Type", "application/json")
           .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(prod)))

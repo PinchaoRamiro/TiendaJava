@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import com.tiendajava.model.Cart;
 import com.tiendajava.model.Session;
 import com.tiendajava.ui.components.FooterPanel;
 import com.tiendajava.ui.components.HeaderPanel;
@@ -17,11 +18,15 @@ import com.tiendajava.ui.screens.ChangePasswordScreen;
 import com.tiendajava.ui.screens.LoginScreen;
 import com.tiendajava.ui.screens.RegisterScreen;
 import com.tiendajava.ui.screens.admin.AdminDashboardScreen;
+import com.tiendajava.ui.screens.admin.PaymentsAdminScreen;
 import com.tiendajava.ui.screens.admin.manageAdmins.ManageAdminsScreen;
 import com.tiendajava.ui.screens.admin.products.ProductsAdminScreen;
 import com.tiendajava.ui.screens.admin.users.ManageUsersScreen;
 import com.tiendajava.ui.screens.user.DashboardUserScreen;
-import com.tiendajava.ui.screens.user.ProductsUserScreen;
+import com.tiendajava.ui.screens.user.cart.FunctionalCartScreen;
+import com.tiendajava.ui.screens.user.order.MyOrdersScreen;
+import com.tiendajava.ui.screens.user.order.OrderScreen;
+import com.tiendajava.ui.screens.user.products.ProductsUserScreen;
 import com.tiendajava.ui.utils.UIUtils;
 
 public final class MainUI extends JFrame {
@@ -29,6 +34,7 @@ public final class MainUI extends JFrame {
     private final JPanel sidebarContainer = new JPanel(new BorderLayout());
     private final HeaderPanel headerPanel = new HeaderPanel(this);
     private final FooterPanel footerPanel = new FooterPanel();
+    private final Cart cart = new Cart();
 
     public MainUI() {
         UIUtils.applyDarkTheme();
@@ -64,29 +70,32 @@ public final class MainUI extends JFrame {
         // Carga la pantalla solo si no se ha creado aún
         if (getScreen(name) == null) {
             switch (name) {
+                case "cart-p" -> contentPanel.add(new FunctionalCartScreen(this,cart), "cart-p");
                 case "dashboard" -> contentPanel.add(new DashboardUserScreen(this), "dashboard");
                 case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
-                // case "orders" -> contentPanel.add(new OrdersScreen(this), "orders");
+                case "payment" -> contentPanel.add(new OrderScreen(this, cart), "payment");
+                case "my-orders" -> contentPanel.add(new MyOrdersScreen(this), "my-orders");
                 case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
                 case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
                 case "add-user" -> contentPanel.add(new RegisterScreen(this), "add-user");
                 case "manage-admins" -> contentPanel.add(new ManageAdminsScreen(this), "manage-admins");
                 case "manage-products" -> contentPanel.add(new ProductsAdminScreen(this), "manage-products");
+                case "manage-orders" -> contentPanel.add(new PaymentsAdminScreen(this), "manage-orders");
                 case "change-password" -> contentPanel.add(new ChangePasswordScreen(this), "change-password");
                 case "account-settings" -> contentPanel.add(new AccountSettingsScreen(this), "account-settings");
             }
         }
 
-        cl.show(contentPanel, name);
-
         if (nameRequiresAuth(name)) loggedScreen();
         else logoutScreen();
+
+        cl.show(contentPanel, name);
     }
 
     private boolean nameRequiresAuth(String name) {
         return switch (name) {
-            case "dashboard", "products-user", "orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products"
-            , "account-settings", "change-password", "add-user"  -> true;
+            case "dashboard", "products-user", "cart", "cart-p", "cart-order", "payment", "my-orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products", "manage-orders"
+            , "account-settings", "change-password", "add-user", "button-test"  -> true;
             default -> false;
         };
     }
@@ -113,6 +122,14 @@ public final class MainUI extends JFrame {
         sidebarContainer.removeAll();
         sidebarContainer.revalidate();
         sidebarContainer.repaint();
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public JPanel getContentPanel() {
+        return contentPanel;
     }
 
     public static void start() {

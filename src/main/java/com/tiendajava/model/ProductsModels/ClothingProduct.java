@@ -12,16 +12,16 @@ public class ClothingProduct extends Product {
     public ClothingProduct() {
     }
 
-    public ClothingProduct(int product_id, String name, String description, BigDecimal price, int stock,
-                        int category_id, String createdAt, String size, String color, String material) {
-        super(product_id, name, description, price, stock, category_id, createdAt);
+    public ClothingProduct( String name, String description, BigDecimal price, int stock,
+                        int category_id, String size, String color, String material) {
+        super( name, description, price, stock, category_id);
         this.Size = size;
         this.Color = color;
         this.Material = material;
     }
 
-    public ClothingProduct(int product_id, String name, String description, BigDecimal price, int stock, int category_id, String createdAt) {
-        super(product_id, name, description, price, stock, category_id, createdAt);
+    public ClothingProduct( String name, String description, BigDecimal price, int stock, int category_id, String createdAt) {
+        super( name, description, price, stock, category_id);
     }
 
 

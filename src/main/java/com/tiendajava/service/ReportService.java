@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.DashboardSummary;
-import com.tiendajava.model.OrderStatusReport;
 import com.tiendajava.model.Product;
+import com.tiendajava.model.orders.OrderStatusReport;
 import com.tiendajava.repository.ReportRepository;
 
 public class ReportService {

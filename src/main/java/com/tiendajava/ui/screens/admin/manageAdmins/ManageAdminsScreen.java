@@ -3,13 +3,15 @@ package com.tiendajava.ui.screens.admin.manageAdmins;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -39,41 +41,51 @@ public class ManageAdminsScreen extends JPanel {
     private final SearchBar searchBar;
     private List<User> admins;
 
+    private static final int TOP_PANEL_PADDING = 20;
+    private static final int TOP_PANEL_HORIZONTAL_GAP = 15;
+    private static final int TOP_PANEL_VERTICAL_GAP = 7;
+
     public ManageAdminsScreen(MainUI parent) {
         this.parent = parent;
         setLayout(new BorderLayout(15,15));
-        setBackground(UITheme.getPrimaryColor());
 
-        // === Panel superior (título + acciones) ===
-        JPanel topPanel = new JPanel();
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        // --- Panel superior ---
+        JPanel topPanel = new JPanel(new GridBagLayout());
         topPanel.setBackground(UITheme.getPrimaryColor());
+        topPanel.setBorder(BorderFactory.createEmptyBorder(0, TOP_PANEL_PADDING, 0, TOP_PANEL_PADDING));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(TOP_PANEL_VERTICAL_GAP, TOP_PANEL_HORIZONTAL_GAP, TOP_PANEL_VERTICAL_GAP, TOP_PANEL_HORIZONTAL_GAP);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridwidth = 2;
 
         JLabel title = new JLabel("Manage Admins", AppIcons.ADMIN_ICON, SwingConstants.CENTER);
         title.setMaximumSize(new Dimension(20,10 ));
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
 
-        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        row1.setOpaque(false);
-        row1.add(title);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        topPanel.add(title, gbc);
 
-        JButton createAdminBtn = ButtonFactory.createPrimaryButton("Add Admin", AppIcons.USER_PLUS_ICON, this::registerAdmin);
-        createAdminBtn.setPreferredSize(new Dimension(150, 40));
+        // --- Panel de botón y búsqueda ---
+        JPanel buttonSearchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, TOP_PANEL_HORIZONTAL_GAP, 0));
+        buttonSearchPanel.setBackground(UITheme.getPrimaryColor());
+
+        JButton createProductBtn = ButtonFactory.createPrimaryButton("Register Admin", AppIcons.ADMIN_ICON, this::registerAdmin);
+        buttonSearchPanel.add(createProductBtn);
 
         searchBar = new SearchBar(e -> searchAdmin());
 
-        JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        row2.setOpaque(false);
-        row2.add(createAdminBtn);
-        row2.add(searchBar);
+        buttonSearchPanel.add(searchBar);
 
-        topPanel.add(row1);
-        topPanel.add(row2);
+        gbc.gridy = 1;
+        topPanel.add(buttonSearchPanel, gbc);
+
         add(topPanel, BorderLayout.NORTH);
 
         // === Panel de admins con scroll ===
-        adminsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        adminsPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
 
         JScrollPane scrollPane = new JScrollPane(adminsPanel);
         scrollPane.setBorder(null);
@@ -90,6 +102,7 @@ public class ManageAdminsScreen extends JPanel {
 
     private void getAdminDataBase(){
         ApiResponse<List<User>> response = adminService.getAllAdmins();
+        System.out.println("Response: " + response);
         admins = response.isSuccess() ? response.getData() : null;
     }
 
@@ -175,15 +188,20 @@ public class ManageAdminsScreen extends JPanel {
     }
 
     private void searchAdmin(){
-        adminsPanel.removeAll(); 
         String keyword = searchBar.getText();
+
+        if(keyword.isEmpty()){
+            NotificationHandler.warning(this, "Please enter a search query.");
+            return;
+        }
+
         ApiResponse<List<User>> response = adminService.searchAdmins(keyword);
         List<User> adminFind = response.isSuccess() ? response.getData() : null;
         if(adminFind == null){
             NotificationHandler.error("No products found with the name: " + keyword);
-            loadAdmins();
             return;
         }
+        adminsPanel.removeAll(); 
         printUserData(adminFind); // Mostrar los administradores filtrados
         adminsPanel.revalidate();
         adminsPanel.repaint();

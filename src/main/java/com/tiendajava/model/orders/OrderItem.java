@@ -1,7 +1,6 @@
-package com.tiendajava.model;
+package com.tiendajava.model.orders;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 public class OrderItem {
 
@@ -11,14 +10,18 @@ public class OrderItem {
     private int quantity;
     private BigDecimal price;
 
-    private List<Product> products;
-
     public OrderItem() {
     }
 
     public OrderItem(int order_item_id, int order_id, int product_id, int quantity, BigDecimal price) {
         this.order_item_id = order_item_id;
         this.order_id = order_id;
+        this.product_id = product_id;
+        this.quantity = quantity;
+        this.price = price;
+    }
+
+    public OrderItem( int product_id, int quantity, BigDecimal price) {
         this.product_id = product_id;
         this.quantity = quantity;
         this.price = price;
@@ -66,11 +69,14 @@ public class OrderItem {
         this.price = price;
     }
 
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<Product> products) {
-        this.products = products;
+    @Override
+    public String toString() {
+        return "OrderItem{" +
+                "order_item_id=" + order_item_id +
+                ", order_id=" + order_id +
+                ", product_id=" + product_id +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                '}';
     }
 }

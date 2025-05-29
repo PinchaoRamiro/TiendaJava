@@ -8,15 +8,15 @@ import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
 import com.tiendajava.model.ApiResponse;
-import com.tiendajava.model.Order;
 import com.tiendajava.model.Session;
+import com.tiendajava.model.orders.Order;
 
 public class OrderRepository extends BaseRepository {
 
     public ApiResponse<Order> createOrder(String json) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "orders"))
+            .uri(URI.create(URL_BASE + "order/create"))
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .POST(BodyPublishers.ofString(json))
@@ -32,7 +32,7 @@ public class OrderRepository extends BaseRepository {
     public ApiResponse<List<Order>> getMyOrders() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "orders"))
+            .uri(URI.create(URL_BASE + "order/me"))
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .GET()
             .build();
@@ -44,10 +44,21 @@ public class OrderRepository extends BaseRepository {
         }
     }
 
+    public ApiResponse<List<Order>> getOrdersByUser(int userId) {
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(URL_BASE + "order/user/" + userId))
+            .header("Authorization", "Bearer " + Session.getInstance().getToken())
+            .GET()
+            .build();
+
+        Type responseType = new TypeToken<ApiResponse<List<Order>>>() {}.getType();
+        return sendRequest(request, responseType);
+    }
+
     public ApiResponse<List<Order>> getAllOrders() {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "orders/all"))
+            .uri(URI.create(URL_BASE + "order/all"))
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .GET()
             .build();
@@ -62,7 +73,7 @@ public class OrderRepository extends BaseRepository {
     public ApiResponse<Order> getOrderById(int id) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "orders/" + id))
+            .uri(URI.create(URL_BASE + "order/" + id))
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .GET()
             .build();   
@@ -77,7 +88,7 @@ public class OrderRepository extends BaseRepository {
     public ApiResponse<Order> updateOrderStatus(int id, String json) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(URL_BASE + "orders/" + id))
+            .uri(URI.create(URL_BASE + "order/" + id))
             .header("Content-Type", "application/json")
             .header("Authorization", "Bearer " + Session.getInstance().getToken())
             .PUT(BodyPublishers.ofString(json))

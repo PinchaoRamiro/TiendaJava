@@ -99,7 +99,11 @@ public class RegisterAdminDialog extends JDialog {
             NotificationHandler.success(this, "Admin registered successfully!");
             notifyAdminRegistered(newAdmin);
             dispose();
-        } else {
+        }
+        else if(response.getStatusCode() == 409) {
+            NotificationHandler.warning(this, "Admin with this email already exists.");
+        }
+         else {
             NotificationHandler.error(this, "Failed to register admin: " + response.getMessage());
         }
     }

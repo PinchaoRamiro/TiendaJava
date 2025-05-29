@@ -31,6 +31,10 @@ public class UserService {
 		return userRepository.getUserByEmail(email);
 	}
 
+	public ApiResponse<User>  findUserById(int id) {
+		return userRepository.getUserById(id);
+	}
+
 	public ApiResponse<User>  UpdateUser(User user) {
 		String json = gson.toJson(user);
 		return userRepository.updateUser(json, user.getId());

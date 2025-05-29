@@ -9,17 +9,19 @@ public class ElectronicsProduct extends Product {
     private String Warranty;
     private String Brand;
 
-    public ElectronicsProduct(int product_id, String name, String description, BigDecimal price, int stock,
-        int category_id, String createdAt, String brand) {
-        super(product_id, name, description, price, stock, category_id, createdAt);
+    public ElectronicsProduct( String name, String description, BigDecimal price, int stock,
+        int category_id, String brand, String voltage, String warranty) {
+        super( name, description, price, stock, category_id);
         this.Brand = brand;
+        this.Voltage = voltage;
+        this.Warranty = warranty;
     }
 
     public ElectronicsProduct() {
     }
 
-    public ElectronicsProduct(int product_id, String name, String description, BigDecimal price, int stock, int category_id, String createdAt) {
-        super(product_id, name, description, price, stock, category_id, createdAt);
+    public ElectronicsProduct( String name, String description, BigDecimal price, int stock, int category_id, String createdAt) {
+        super( name, description, price, stock, category_id);
     }
 
     @Override
