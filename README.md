@@ -4,10 +4,6 @@ TiendaJava es una aplicación de escritorio desarrollada en **Java Swing**, que 
 
 ---
 
-## Versions and Details
-JVM version 23
-Maven version 4.0.0
-
 ## Aplicación ejecutable .jar
 
 si no tienes maven puedes descargar el .jar y mirar la aplicación
@@ -61,11 +57,11 @@ src/
 ```
 
 ## 🧑‍💻 Tecnologías Utilizadas
-* Java 17
+* Java 23
 
-* Swing
+* Java Swing
 
-* Maven
+* Maven 4.0
 
 * Gson (manejo de JSON)
 
@@ -73,7 +69,8 @@ src/
 
 * Node.js + Express (Backend REST API)
 
-* PostgreSQL (Base de datos)
+## Information Backend
+### 🔗Go to the repository [link](https://github.com/PinchaoRamiro/Tienda-Backend)
 
 ## 🚀 Cómo ejecutar la aplicación
 Clonar el repositorio:
@@ -126,21 +123,11 @@ Se cargan con rutas relativas que apuntan a http://localhost:5000/public/....
 
 * Resumen general del sistema (Dashboard)
 
-## ✅ Funcionalidades Pendientes 
-
-* ✔ Filtrado por categoría.
-
-* ✔ Diseño responsive en pantallas de productos.
-
-* 🔲 Agregar soporte para internacionalización (i18n).
-
-* 🔲 Persistencia del carrito con sesión.
-
-* 🔲 Pruebas unitarias.
-
 ### 🧑‍🏫 Desarrollador
 ### 👨‍💻 Ramiro Antonio Pinchao Chachinoy
 ### 📍 Colombia 
+**Cel:** 3217840789
+**Email:** rmrpinchao@gmai.com  
 
 ## 📄 Licencia
 Este proyecto es de código abierto y libre de uso para propósitos educativos o personales.

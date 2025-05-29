@@ -139,7 +139,7 @@ public class ProductItemCard extends JPanel {
     }
 
     private void loadImageAsync(String imagePath, JLabel target) {
-        String url = "http://localhost:5000" + imagePath;
+        String url = "https://tienda-backend-381g.onrender.com" + imagePath;
         if (imageCache.containsKey(url)) {
             target.setIcon(imageCache.get(url));
             return;
@@ -152,7 +152,6 @@ public class ProductItemCard extends JPanel {
                     HttpURLConnection conn = (HttpURLConnection) imageUrl.openConnection();
                     conn.setConnectTimeout(5000);
                     conn.setReadTimeout(5000);
-                    System.out.println("Loading image from: " + url);
                     try (InputStream in = conn.getInputStream()) {
                         byte[] data = in.readAllBytes();
                         ImageIcon raw = new ImageIcon(data);
