@@ -75,7 +75,6 @@ public class UserRepository extends BaseRepository {
         return new ApiResponse<>(false, null, msg);
       }
     } catch (JsonSyntaxException | IOException | InterruptedException e) {
-      System.out.println("Error: " + e.getMessage());
       return new ApiResponse<>(false, null, "Connection error");
     }
   }

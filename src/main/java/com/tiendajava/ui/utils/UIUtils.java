@@ -169,6 +169,10 @@ public class UIUtils {
     
         return new ImageIcon(tintedImage);
     }
+
+    public static String toHex(Color infoColor) {
+        return String.format("#%02x%02x%02x", infoColor.getRed(), infoColor.getGreen(), infoColor.getBlue());
+    }
     
 
 }

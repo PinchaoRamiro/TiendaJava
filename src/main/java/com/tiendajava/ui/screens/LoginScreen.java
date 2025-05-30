@@ -16,6 +16,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import com.tiendajava.model.ApiResponse;
+import com.tiendajava.model.Session;
 import com.tiendajava.model.User;
 import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
@@ -104,7 +105,11 @@ public class LoginScreen extends JPanel {
         NotificationHandler.success(
             this, response.getMessage() != null ? response.getMessage() : "Login successful"
         );
-        parent.showScreen("dashboard");
+        if(Session.getInstance().getRole().equals("admin")) {
+            parent.showScreen("admin-dashboard");
+        } else {
+            parent.showScreen("dashboard");        
+        }
     } else {
         NotificationHandler.error(
             this, response.getMessage() != null ? response.getMessage() : "Login failed"
