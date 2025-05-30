@@ -24,6 +24,7 @@ import javax.swing.SwingConstants;
 import com.tiendajava.model.Cart;
 import com.tiendajava.model.Product;
 import com.tiendajava.service.CartService;
+import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.NotificationHandler;
@@ -197,7 +198,7 @@ public class FunctionalCartScreen extends JPanel {
         
         JLabel initialLabel = new JLabel(
         product.getName().substring(0, 1), SwingConstants.CENTER);
-        initialLabel.setFont(Fonts.TITLE_FONT.deriveFont(24f));
+        initialLabel.setFont(Fonts.TITLE_FONT.deriveFont(44f));
         initialLabel.setForeground(Color.WHITE);
         imagePanel.add(initialLabel);
         
@@ -247,9 +248,11 @@ public class FunctionalCartScreen extends JPanel {
         qtyPanel.setBackground(UITheme.getSecondaryColor().brighter());
         
         qtyPanel.add(new JLabel("Quantity:"));
+
+        int maxStock = getMaxStock(product);
         
         SpinnerNumberModel spinnerModel = new SpinnerNumberModel(
-            product.getStock(), 1, 100, 1
+            product.getStock(), 1, maxStock, 1
         );
         JSpinner qtySpinner = new JSpinner(spinnerModel);
         qtySpinner.setPreferredSize(new Dimension(60, 25));
@@ -302,5 +305,16 @@ public class FunctionalCartScreen extends JPanel {
     
     private void updateTotal() {
         totalLabel.setText("$" + cartService.getTotal());
+    }
+
+    private int getMaxStock(Product product) {
+        ProductService productService = new ProductService();
+        int maxStock = productService.getStockByProductId(product.getProduct_id());
+        if (maxStock > 0) {
+            return maxStock;
+        } else {
+            NotificationHandler.warning("No stock available for " + product.getName());
+            return 0; // Default to 1 if no stock available
+        }
     }
 }

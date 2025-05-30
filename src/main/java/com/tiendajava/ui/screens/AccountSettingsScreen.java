@@ -1,15 +1,24 @@
 package com.tiendajava.ui.screens;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Session;
@@ -18,105 +27,201 @@ import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.NotificationHandler;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
 public class AccountSettingsScreen extends JPanel {
 
-    public MainUI getParentACC() {
-        return parent;
-    }
-
-    private final JTextField nameField = new JTextField(20);
-    private final JTextField lastNameField = new JTextField(20);
-    private final JTextField emailField = new JTextField(20);
-    private final JTextField typeDocument = new JTextField(20);
-    private final JTextField document = new JTextField(20);
-    private final JTextField phone = new JTextField(20);
-    private final JTextField address = new JTextField(20);
-    private final JComboBox<String> statusComboBox = new JComboBox<>(new String[]{"Active", "Inactive"});
-
+    private final MainUI parent;
     private final UserService userService = new UserService();
 
-    private static MainUI parent; // Static reference to the parent MainUI
+    // Campos del formulario
+    private final JTextField nameField = new JTextField();
+    private final JTextField lastNameField = new JTextField();
+    private final JTextField emailField = new JTextField();
+    private final JTextField typeDocumentField = new JTextField();
+    private final JTextField documentField = new JTextField();
+    private final JTextField phoneField = new JTextField();
+    private final JTextField addressField = new JTextField();
+    private final JComboBox<String> statusComboBox = new JComboBox<>(new String[]{"Active", "Inactive"});
 
-    public AccountSettingsScreen( MainUI parent) {
-        AccountSettingsScreen.parent = parent; // Assign the parent MainUI to the static field
+    public AccountSettingsScreen(MainUI parent) {
+        this.parent = parent;
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
-        setBorder(UIUtils.getDefaultPadding());
+        setBorder(new EmptyBorder(30, 30, 30, 30));
 
-        JLabel title = new JLabel("Account Settings");
-        title.setFont(Fonts.TITLE_FONT);
-        title.setForeground(UITheme.getTextColor());
-
-        add(title, BorderLayout.NORTH);
-
-        buildForm();
+        initializeUI();
+        loadCurrentUser();
     }
 
-    private void buildForm() {
+    private void initializeUI() {
+        // Panel de título
+        JPanel titlePanel = createTitlePanel();
+        add(titlePanel, BorderLayout.NORTH);
+
+        // Panel de formulario con dos columnas
+        JPanel formPanel = createTwoColumnFormPanel();
+        JScrollPane scrollPane = new JScrollPane(formPanel);
+        scrollPane.setBorder(null);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.getVerticalScrollBar().setUI(createCustomScrollBarUI());
+        scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
+
+        add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private javax.swing.plaf.basic.BasicScrollBarUI createCustomScrollBarUI() {
+        return new javax.swing.plaf.basic.BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = UITheme.getTertiaryColor();
+                this.trackColor = UITheme.getSecondaryColor();
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                return createZeroButton();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                return button;
+            }
+        };
+    }
+
+    private JPanel createTitlePanel() {
+        JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setOpaque(false);
+        titlePanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        JLabel title = new JLabel("Account Settings", AppIcons.USER_ICON, SwingConstants.LEFT);
+        title.setFont(Fonts.TITLE_FONT.deriveFont(Font.BOLD, 24));
+        title.setForeground(UITheme.getTextColor());
+
+        JPanel titleContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        titleContainer.setOpaque(false);
+        titleContainer.add(title);
+
+        titlePanel.add(titleContainer, BorderLayout.WEST);
+        return titlePanel;
+    }
+
+    private JPanel createTwoColumnFormPanel() {
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(UITheme.getPrimaryColor());
+        formPanel.setOpaque(false);
+        formPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
 
-        int row = 0;
-
-        addLabelAndField(formPanel, gbc, row++, "Name", nameField);
-        addLabelAndField(formPanel, gbc, row++, "Last Name", lastNameField);
-        addLabelAndField(formPanel, gbc, row++, "Email", emailField);
-        addLabelAndField(formPanel, gbc, row++, "Document Type", typeDocument);
-        addLabelAndField(formPanel, gbc, row++, "Document Number", document);
-        addLabelAndField(formPanel, gbc, row++, "Phone", phone);
-        addLabelAndField(formPanel, gbc, row++, "Address", address);
-
-        // addLabelAndField(formPanel, gbc, row++, "Status", statusComboBox);
-
-        JLabel statusLabel = new JLabel("Status");
+        // Primera columna
         gbc.gridx = 0;
+        gbc.gridy = 0;
+        formPanel.add(createFormField("Name:", nameField), gbc);
+
         gbc.gridy++;
-        
-        formPanel.add(statusLabel, gbc);
-        UIUtils.styleComboBox(statusComboBox);
-        statusLabel.setForeground(UITheme.getTextColor());
-        statusLabel.setFont(Fonts.NORMAL_FONT);
+        formPanel.add(createFormField("Email:", emailField), gbc);
+
+        gbc.gridy++;
+        formPanel.add(createFormField("Document Type:", typeDocumentField), gbc);
+
+        gbc.gridy++;
+        formPanel.add(createFormField("Address:", addressField), gbc);
+
+        // Segunda columna
         gbc.gridx = 1;
-        formPanel.add(statusComboBox, gbc);
-        
+        gbc.gridy = 0;
+        formPanel.add(createFormField("Last Name:", lastNameField), gbc);
+
+        gbc.gridy++;
+        formPanel.add(createFormField("Phone:", phoneField), gbc);
+
+        gbc.gridy++;
+        formPanel.add(createFormField("Document No.:", documentField), gbc);
+
+        // Panel para el estado (ocupa ambas columnas)
         gbc.gridx = 0;
-        gbc.gridy++;
-        
-
-
-        // Botón de guardar
-        gbc.gridy++;
+        gbc.gridy += 2;
         gbc.gridwidth = 2;
+        JPanel statusFieldPanel = createStatusField();
+        statusFieldPanel.setPreferredSize(new Dimension(50, 55));
+        formPanel.add(statusFieldPanel, gbc);
+
+        // Botón de guardar (centrado y ocupa ambas columnas)
+        gbc.gridy++;
         gbc.anchor = GridBagConstraints.CENTER;
+        JButton saveButton = ButtonFactory.createPrimaryButton("Save Changes", null, this::saveChanges);
+        saveButton.setPreferredSize(new Dimension(200, 40));
+        formPanel.add(saveButton, gbc);
 
-        JButton saveBtn = ButtonFactory.createPrimaryButton("Save Changes", null, this::saveChanges);
-        saveBtn.setPreferredSize(new java.awt.Dimension(100, 40));
-        formPanel.add(saveBtn, gbc);
-
-        add(formPanel, BorderLayout.CENTER);
-
-        loadCurrentUser();
+        return formPanel;
     }
 
-    private void addLabelAndField(JPanel panel, GridBagConstraints gbc, int row, String labelText, JTextField field) {
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        JLabel label = new JLabel(labelText);
-        label.setForeground(UITheme.getTextColor());
-        label.setFont(Fonts.NORMAL_FONT);
-        panel.add(label, gbc);
+    private JPanel createFormField(String labelText, JTextField textField) {
+        JPanel fieldPanel = new JPanel(new BorderLayout(5, 5));
+        fieldPanel.setOpaque(false);
 
-        gbc.gridx = 1;
-        panel.add(field, gbc);
+        // Etiqueta
+        JLabel label = new JLabel(labelText);
+        label.setFont(Fonts.NORMAL_FONT);
+        label.setForeground(UITheme.getTextColor());
+
+        // Campo de texto
+        textField.setFont(Fonts.NORMAL_FONT);
+        textField.setForeground(UITheme.getTextColor());
+        textField.setBackground(UITheme.getBackgroundContrast());
+        textField.setBorder(new MatteBorder(0, 0, 1, 0, UITheme.getBorderColor()));
+        textField.setPreferredSize(new Dimension(250, 35));
+
+        // Efecto de enfoque
+        textField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                textField.setBorder(new MatteBorder(0, 0, 1, 0, UITheme.getFocusColor()));
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                textField.setBorder(new MatteBorder(0, 0, 1, 0, UITheme.getBorderColor()));
+            }
+        });
+
+        fieldPanel.add(label, BorderLayout.NORTH);
+        fieldPanel.add(textField, BorderLayout.CENTER);
+
+        return fieldPanel;
+    }
+
+    private JPanel createStatusField() {
+        JPanel statusPanel = new JPanel(new BorderLayout(5, 5));
+        statusPanel.setOpaque(false);
+
+        JLabel statusLabel = new JLabel("Status");
+        statusLabel.setFont(Fonts.NORMAL_FONT);
+        statusLabel.setForeground(UITheme.getTextColor());
+
+        UIUtils.styleComboBox(statusComboBox);
+
+        statusPanel.add(statusLabel, BorderLayout.NORTH);
+        statusPanel.add(statusComboBox, BorderLayout.CENTER);
+
+        return statusPanel;
     }
 
     private void loadCurrentUser() {
@@ -125,10 +230,10 @@ public class AccountSettingsScreen extends JPanel {
             nameField.setText(user.getName());
             lastNameField.setText(user.getLastName());
             emailField.setText(user.getEmail());
-            typeDocument.setText(user.getTypeDocument());
-            document.setText(user.getNumDocument());
-            phone.setText(user.getPhone());
-            address.setText(user.getAddress());
+            typeDocumentField.setText(user.getTypeDocument());
+            documentField.setText(user.getNumDocument());
+            phoneField.setText(user.getPhone());
+            addressField.setText(user.getAddress());
             statusComboBox.setSelectedItem(user.getStatus() ? "Active" : "Inactive");
         } else {
             NotificationHandler.error("User not found in session.");
@@ -136,38 +241,33 @@ public class AccountSettingsScreen extends JPanel {
     }
 
     private void saveChanges() {
-        String name = nameField.getText().trim();
-        String lastName = lastNameField.getText().trim();
-        String email = emailField.getText().trim();
-        String typeDoc = typeDocument.getText().trim();
-        String doc = document.getText().trim();
-        String phoneNum = phone.getText().trim();
-        String addressText = address.getText().trim();
-        String status = (String) statusComboBox.getSelectedItem();
-
-        if (name.isEmpty() || lastName.isEmpty() || email.isEmpty() ) {
-            NotificationHandler.warning("All fields must be filled.");
+        // Validar campos obligatorios
+        if (nameField.getText().trim().isEmpty() ||
+            lastNameField.getText().trim().isEmpty() ||
+            emailField.getText().trim().isEmpty()) {
+            NotificationHandler.warning("Name, Last Name and Email are required fields.");
             return;
         }
 
+        // Crear usuario actualizado
         User updatedUser = new User();
         updatedUser.setId(Session.getInstance().getUser().getId());
-        updatedUser.setName(name);
-        updatedUser.setLastName(lastName);
-        updatedUser.setEmail(email);
-        updatedUser.setTypeDocument(typeDoc);
-        updatedUser.setNumDocument(doc);
-        updatedUser.setPhone(phoneNum);
-        updatedUser.setAddress(addressText);
-        updatedUser.setStatus(status.equals("Active"));
+        updatedUser.setName(nameField.getText().trim());
+        updatedUser.setLastName(lastNameField.getText().trim());
+        updatedUser.setEmail(emailField.getText().trim());
+        updatedUser.setTypeDocument(typeDocumentField.getText().trim());
+        updatedUser.setNumDocument(documentField.getText().trim());
+        updatedUser.setPhone(phoneField.getText().trim());
+        updatedUser.setAddress(addressField.getText().trim());
+        updatedUser.setStatus(statusComboBox.getSelectedItem().equals("Active"));
 
+        // Guardar cambios
         ApiResponse<User> response = userService.UpdateUser(updatedUser);
 
         if (response.isSuccess()) {
             NotificationHandler.success("Profile updated successfully!");
-            Session.getInstance().setUser(updatedUser); 
+            Session.getInstance().setUser(updatedUser);
         } else {
-            System.out.println("Error: " + response.toString());
             NotificationHandler.error("Failed to update profile: " + response.getMessage());
         }
     }

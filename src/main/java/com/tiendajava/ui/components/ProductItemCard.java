@@ -139,7 +139,7 @@ public class ProductItemCard extends JPanel {
     }
 
     private void loadImageAsync(String imagePath, JLabel target) {
-        String url = "https://tienda-backend-381g.onrender.com" + imagePath;
+        String url = "http://localhost:5000" + imagePath;
         if (imageCache.containsKey(url)) {
             target.setIcon(imageCache.get(url));
             return;

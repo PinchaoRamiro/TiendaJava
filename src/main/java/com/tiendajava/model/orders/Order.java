@@ -19,13 +19,14 @@ public class Order {
     @SerializedName("OrderItems")
     private List<OrderItem> orderItems;
 
-    public Order(int order_id, int user_id, OrderStatusEnum status, BigDecimal total_amount, String created_at, String shipping_address, List<OrderItem> OrderItems) {
+    public Order(int order_id, int user_id, OrderStatusEnum status, BigDecimal total_amount, String created_at, String shipping_address, String payment_method, List<OrderItem> OrderItems) {
         this.order_id = order_id;
         this.user_id = user_id;
         this.status = status;
         this.total_amount = total_amount;
         this.createdAt = created_at;
         this.shipping_address = shipping_address;
+        this.payment_method = payment_method;
         this.orderItems = OrderItems;
     }
 
@@ -87,10 +88,10 @@ public class Order {
             // Formato esperado: "2023-10-01T12:00:00Z"
             // mejorar el formato si es necesario
         if (createdAt != null) {
-                String[] parts = createdAt.split("T");
-                        if (parts.length > 1) {
-                return parts[0] ;
-            }
+            String[] parts = createdAt.split("T");
+                if (parts.length > 1) {
+                    return parts[0] ;
+                }
         }
 
         return createdAt;

@@ -75,8 +75,34 @@ public class ProductService {
     /*
      * obtener productos ente un rango de precios
      */
-
     public ApiResponse<List<Product>> getProductsByPriceRange(double minPrice, double maxPrice) {
         return productRepository.getProductsByPriceRange(minPrice, maxPrice);
+    }
+
+    /**
+     * Obtener Stock de un producto por su ID
+     */
+    public int getStockByProductId(int productId) {
+        ApiResponse<Product> response = productRepository.getProductById(productId);
+        if (response.isSuccess() && response.getData() != null) {
+            return response.getData().getStock();
+        } else {
+            return 0;
+        }
+    }
+
+    public ApiResponse<List<Product>> getFeaturedProducts() {
+        // obener los productos recien agregados solo 5
+        ApiResponse<List<Product>> response = productRepository.getAllProducts();
+        if (response.isSuccess() && response.getData() != null) {
+            List<Product> products = response.getData();
+            // Limitar a los primeros 5 productos
+            if (products.size() > 5) {
+                products = products.subList(0, 6);
+            }
+            return new ApiResponse<>(true, products, "Productos destacados obtenidos correctamente");
+        } else {
+            return new ApiResponse<>(false, null, "Error al obtener productos destacados");
+        }
     }
 }

@@ -1,4 +1,3 @@
-// DashboardSummary.java
 package com.tiendajava.model;
 
 import java.math.BigDecimal;

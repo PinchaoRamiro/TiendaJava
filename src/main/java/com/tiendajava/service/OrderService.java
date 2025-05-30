@@ -50,4 +50,5 @@ public class OrderService {
         String json = String.format("{\"status\": \"%s\"}", newStatus);
         return repository.updateOrderStatus(id, json);
     }
+
 }

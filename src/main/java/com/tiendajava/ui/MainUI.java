@@ -24,7 +24,7 @@ import com.tiendajava.ui.screens.admin.products.ProductsAdminScreen;
 import com.tiendajava.ui.screens.admin.users.ManageUsersScreen;
 import com.tiendajava.ui.screens.user.DashboardUserScreen;
 import com.tiendajava.ui.screens.user.cart.FunctionalCartScreen;
-import com.tiendajava.ui.screens.user.order.MyOrdersScreen;
+import com.tiendajava.ui.screens.user.order.OrderHistoryScreen;
 import com.tiendajava.ui.screens.user.order.OrderScreen;
 import com.tiendajava.ui.screens.user.products.ProductsUserScreen;
 import com.tiendajava.ui.utils.UIUtils;
@@ -74,7 +74,7 @@ public final class MainUI extends JFrame {
                 case "dashboard" -> contentPanel.add(new DashboardUserScreen(this), "dashboard");
                 case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
                 case "payment" -> contentPanel.add(new OrderScreen(this, cart), "payment");
-                case "my-orders" -> contentPanel.add(new MyOrdersScreen(this), "my-orders");
+                case "order-history" -> contentPanel.add(new OrderHistoryScreen(this), "order-history");
                 case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
                 case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
                 case "add-user" -> contentPanel.add(new RegisterScreen(this), "add-user");
@@ -94,7 +94,7 @@ public final class MainUI extends JFrame {
 
     private boolean nameRequiresAuth(String name) {
         return switch (name) {
-            case "dashboard", "products-user", "cart", "cart-p", "cart-order", "payment", "my-orders", "admin-dashboard", "manage-users", "manage-admins", "manage-products", "manage-orders"
+            case "dashboard", "products-user", "cart", "cart-p", "cart-order", "payment", "my-orders", "order-history", "admin-dashboard", "manage-users", "manage-admins", "manage-products", "manage-orders"
             , "account-settings", "change-password", "add-user", "button-test"  -> true;
             default -> false;
         };
