@@ -69,6 +69,10 @@ public class OrderItem {
         this.price = price;
     }
 
+    public BigDecimal getSubtotal() {
+        return price.multiply(BigDecimal.valueOf(quantity));
+    }
+
     @Override
     public String toString() {
         return "OrderItem{" +

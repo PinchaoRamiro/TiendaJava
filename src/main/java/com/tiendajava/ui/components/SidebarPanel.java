@@ -42,7 +42,7 @@ public class SidebarPanel extends JPanel {
             addSidebarButton("Dashboard", AppIcons.APP_ICON, () -> frame.showScreen("dashboard"));
             addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("products-user"));
             addSidebarButton("Cart", AppIcons.CART_ICON, () -> frame.showScreen("cart-p"));
-            addSidebarButton("Order History", null, () -> frame.showScreen("my-orders"));
+            addSidebarButton("My Orders", null, () -> frame.showScreen("order-history"));
         }
 
         add(Box.createVerticalGlue());

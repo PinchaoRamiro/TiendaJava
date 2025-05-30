@@ -75,8 +75,19 @@ public class ProductService {
     /*
      * obtener productos ente un rango de precios
      */
-
     public ApiResponse<List<Product>> getProductsByPriceRange(double minPrice, double maxPrice) {
         return productRepository.getProductsByPriceRange(minPrice, maxPrice);
+    }
+
+    /**
+     * Obtener Stock de un producto por su ID
+     */
+    public int getStockByProductId(int productId) {
+        ApiResponse<Product> response = productRepository.getProductById(productId);
+        if (response.isSuccess() && response.getData() != null) {
+            return response.getData().getStock();
+        } else {
+            return 0;
+        }
     }
 }

@@ -87,10 +87,10 @@ public class Order {
             // Formato esperado: "2023-10-01T12:00:00Z"
             // mejorar el formato si es necesario
         if (createdAt != null) {
-                String[] parts = createdAt.split("T");
-                        if (parts.length > 1) {
-                return parts[0] ;
-            }
+            String[] parts = createdAt.split("T");
+                if (parts.length > 1) {
+                    return parts[0] ;
+                }
         }
 
         return createdAt;
