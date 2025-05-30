@@ -61,12 +61,6 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault());
 
     private final JTable orderItemsTable = new JTable();
-    private final DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"Product", "Price", "Quantity", "Subtotal"}, 0) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
-    };
 
     public OrderDetailDialog(MainUI parent, Order order, User user) {
         super(parent, "Order #" + order.getOrder_id(), true);

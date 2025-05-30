@@ -142,7 +142,7 @@ public class OrderHistoryScreen extends JPanel {
         // Panel de la tabla con scroll
         JScrollPane scrollPane = new JScrollPane(orderHistoryTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(UITheme.getBorderColor(), 1));
-        scrollPane.getViewport().setBackground(UITheme.getSecondaryColor());
+        scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
         scrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar());
 
         add(scrollPane, BorderLayout.CENTER);
@@ -151,7 +151,7 @@ public class OrderHistoryScreen extends JPanel {
         JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
         actionsPanel.setBackground(UITheme.getSecondaryColor());
         actionsPanel.setOpaque(true);
-        actionsPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
+        actionsPanel.setBorder(new EmptyBorder(0, 20, 0, 20));
 
         JButton viewDetailsButton = ButtonFactory.createPrimaryButton("View Order Details", null, () -> {
             int selectedRow = orderHistoryTable.getSelectedRow();
