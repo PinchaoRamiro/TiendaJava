@@ -38,6 +38,18 @@ public class UIUtils {
         UIManager.put("ComboBox.foreground", UITheme.getTextColor());
         UIManager.put("JTextArea.background", UITheme.getSecondaryColor());
         UIManager.put("JTextArea.foreground", UITheme.getTextColor());
+
+        // a tablas
+        UIManager.put("Table.background", UITheme.getSecondaryColor());
+        UIManager.put("Table.foreground", UITheme.getTextColor());
+        UIManager.put("Table.gridColor", UITheme.getBorderColor());
+        UIManager.put("Table.selectionBackground", UITheme.getPrimaryButtonColor());
+        UIManager.put("Table.selectionForeground", UITheme.getTextColor());
+
+        // scrollPanel
+        UIManager.put("ScrollPane.background", UITheme.getPrimaryColor());
+        UIManager.put("ScrollPane.foreground", UITheme.getTextColor());
+
     }
     
     public static JTextField createTextField(Font font) {

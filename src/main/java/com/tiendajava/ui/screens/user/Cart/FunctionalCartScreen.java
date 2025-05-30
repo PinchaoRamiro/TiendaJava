@@ -198,7 +198,7 @@ public class FunctionalCartScreen extends JPanel {
         
         JLabel initialLabel = new JLabel(
         product.getName().substring(0, 1), SwingConstants.CENTER);
-        initialLabel.setFont(Fonts.TITLE_FONT.deriveFont(24f));
+        initialLabel.setFont(Fonts.TITLE_FONT.deriveFont(44f));
         initialLabel.setForeground(Color.WHITE);
         imagePanel.add(initialLabel);
         

@@ -1,6 +1,7 @@
 package com.tiendajava.ui.screens.user.order;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -16,29 +17,30 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat; 
-import java.util.Date;
 import java.util.Locale;
 
-import javax.swing.BorderFactory; 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField; 
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import com.tiendajava.model.Cart; 
+import com.tiendajava.model.Cart;
 import com.tiendajava.model.Product;
 import com.tiendajava.model.orders.Order;
 import com.tiendajava.service.OrderService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.NotificationHandler;
+import com.tiendajava.ui.components.dialogs.ConfirmationDialog;
+import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
@@ -51,217 +53,190 @@ public class OrderScreen extends JPanel implements Printable {
     private final JTextField addressField = new JTextField(30);
     private final JComboBox<String> paymentMethodCombo = new JComboBox<>(new String[]{"Credit Card", "PayPal", "Cash on Delivery"});
     private final JTable cartItemsTable;
-    private final DefaultTableModel tableModel; 
+    private final DefaultTableModel tableModel;
     private final JLabel totalLabel = new JLabel();
-    private final JLabel orderDateLabel = new JLabel();
-    private final JLabel orderIdLabel = new JLabel();
     private JPanel invoicePanel;
+    private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.of("es", "CO"));
 
     public OrderScreen(MainUI parent, Cart cart) {
         this.parent = parent;
         this.cart = cart;
 
+        // Configuración del modelo de la tabla
         String[] columnNames = {"Product", "Qty", "Price", "Subtotal"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; 
+                return false;
             }
         };
-        cartItemsTable = new JTable(tableModel);
-        cartItemsTable.setFont(Fonts.NORMAL_FONT);
-        cartItemsTable.setForeground(UITheme.getTextColor());
-        cartItemsTable.setBackground(UITheme.getSecondaryColor());
-        cartItemsTable.setSelectionBackground(UITheme.getPrimaryColor()); 
-        cartItemsTable.setGridColor(UITheme.getTertiaryColor().darker()); 
-        cartItemsTable.setRowHeight(25); 
 
-        cartItemsTable.getTableHeader().setFont(Fonts.BOLD_NFONT);
-        cartItemsTable.getTableHeader().setForeground(UITheme.getTextColor());
-        cartItemsTable.getTableHeader().setBackground(UITheme.getPrimaryColor().darker()); 
-        cartItemsTable.getTableHeader().setReorderingAllowed(false); 
-        cartItemsTable.getTableHeader().setResizingAllowed(false); 
+        cartItemsTable = new JTable(tableModel);
+        styleTable();
 
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
-        setBorder(new EmptyBorder(20, 20, 20, 20)); 
+        setBorder(new EmptyBorder(20, 20, 20, 20));
 
         initializeUI();
         refreshCartDetails();
     }
 
     private void initializeUI() {
+        // Crear el panel principal de la factura
         invoicePanel = new JPanel(new BorderLayout());
-        invoicePanel.setBackground(UITheme.getSecondaryColor()); 
+        invoicePanel.setBackground(UITheme.getSecondaryColor());
         invoicePanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(UITheme.getBorderColor(), 1), 
+            BorderFactory.createLineBorder(UITheme.getBorderColor(), 1),
             BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
 
-        JPanel headerPanel = createHeaderPanel();
-        invoicePanel.add(headerPanel, BorderLayout.NORTH);
+        // Añadir componentes
+        invoicePanel.add(createHeaderPanel(), BorderLayout.NORTH);
+        invoicePanel.add(createBodyPanel(), BorderLayout.CENTER);
+        invoicePanel.add(createFooterPanel(), BorderLayout.SOUTH);
 
-        JPanel bodyPanel = createBodyPanel();
-        invoicePanel.add(bodyPanel, BorderLayout.CENTER);
-
-        JPanel footerPanel = createFooterPanel();
-        invoicePanel.add(footerPanel, BorderLayout.SOUTH);
-
-        JScrollPane screenScrollPane = new JScrollPane(invoicePanel);
-        screenScrollPane.setBorder(null);
-        screenScrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
-        screenScrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar()); 
-        add(screenScrollPane, BorderLayout.CENTER);
+        // Añadir scroll al panel principal
+        JScrollPane scrollPane = new JScrollPane(invoicePanel);
+        scrollPane.setBorder(null);
+        scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
+        scrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar());
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     private JPanel createHeaderPanel() {
-        JPanel headerPanel = new JPanel(new BorderLayout(20, 0)); 
-        headerPanel.setOpaque(false); 
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setOpaque(false);
 
-        JLabel title = new JLabel("INVOICE", SwingConstants.CENTER);
-        title.setFont(Fonts.TITLE_FONT.deriveFont(Font.BOLD, 28f));
-        title.setForeground(UITheme.getTertiaryColor().darker()); 
+        // Panel para el título y logo
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        titlePanel.setOpaque(false);
 
-        JPanel storeInfoPanel = new JPanel(new GridLayout(0, 1, 0, 5)); 
-        storeInfoPanel.setOpaque(false);
+        JLabel logoLabel = new JLabel(AppIcons.BOX_ICON);
+        logoLabel.setFont(Fonts.TITLE_FONT.deriveFont(30f));
 
-        JLabel storeName = new JLabel("My Store");
-        storeName.setFont(Fonts.SUBTITLE_FONT);
-        storeName.setForeground(UITheme.getTextColor());
+        JLabel titleLabel = new JLabel("Order Details");
+        titleLabel.setFont(Fonts.TITLE_FONT.deriveFont(Font.BOLD, 24));
+        titleLabel.setForeground(UITheme.getTextColor());
 
-        JLabel storeAddress = new JLabel("123 Main Street, City, Country");
-        storeAddress.setFont(Fonts.NORMAL_FONT);
-        storeAddress.setForeground(UITheme.getTextColor());
+        titlePanel.add(logoLabel);
+        titlePanel.add(titleLabel);
 
-        JLabel storeContact = new JLabel("Phone: (123) 456-7890 | Email: info@mystore.com");
-        storeContact.setFont(Fonts.NORMAL_FONT);
-        storeContact.setForeground(UITheme.getTextColor());
-
-        storeInfoPanel.add(storeName);
-        storeInfoPanel.add(storeAddress);
-        storeInfoPanel.add(storeContact);
-
-        JPanel orderInfoPanel = new JPanel(new GridLayout(0, 1, 0, 5)); 
+        // Panel para información de la orden
+        JPanel orderInfoPanel = new JPanel(new GridLayout(0, 1, 0, 5));
         orderInfoPanel.setOpaque(false);
 
         String orderId = "ORD-" + System.currentTimeMillis();
-        String orderDate = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date());
+        String orderDate = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new java.util.Date());
 
-        orderIdLabel.setText("Order #: " + orderId);
+        JLabel orderIdLabel = new JLabel("Order #: " + orderId);
         orderIdLabel.setFont(Fonts.NORMAL_FONT);
         orderIdLabel.setForeground(UITheme.getTextColor());
-        orderIdLabel.setHorizontalAlignment(SwingConstants.RIGHT); 
+        orderIdLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
-        orderDateLabel.setText("Date: " + orderDate);
+        JLabel orderDateLabel = new JLabel("Date: " + orderDate);
         orderDateLabel.setFont(Fonts.NORMAL_FONT);
         orderDateLabel.setForeground(UITheme.getTextColor());
-        orderDateLabel.setHorizontalAlignment(SwingConstants.RIGHT); 
+        orderDateLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
         orderInfoPanel.add(orderIdLabel);
         orderInfoPanel.add(orderDateLabel);
 
-        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        titlePanel.setOpaque(false);
-        titlePanel.add(title);
-
-        headerPanel.add(titlePanel, BorderLayout.NORTH);
-        headerPanel.add(storeInfoPanel, BorderLayout.WEST);
+        headerPanel.add(titlePanel, BorderLayout.WEST);
         headerPanel.add(orderInfoPanel, BorderLayout.EAST);
 
         return headerPanel;
     }
 
     private JPanel createBodyPanel() {
-        JPanel bodyPanel = new JPanel(new BorderLayout(0, 20)); 
+        JPanel bodyPanel = new JPanel(new BorderLayout(20, 20));
         bodyPanel.setOpaque(false);
 
+        // Panel del formulario
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setOpaque(false);
-        formPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); 
+        formPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 5, 8, 5); 
+        gbc.insets = new Insets(8, 5, 8, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
 
+        // Campo de dirección
         gbc.gridx = 0;
         gbc.gridy = 0;
         formPanel.add(createLabel("Shipping Address:"), gbc);
 
         gbc.gridx = 1;
-        gbc.gridwidth = 2; // Ocupa dos columnas
+        gbc.gridwidth = 2;
         addressField.setBackground(UITheme.getBackgroundContrast());
         addressField.setForeground(UITheme.getTextColor());
-        addressField.setCaretColor(UITheme.getTextColor()); // Color del cursor
         addressField.setBorder(BorderFactory.createLineBorder(UITheme.getBorderColor(), 1));
-        addressField.setPreferredSize(new Dimension(300, 30)); // Altura fija para el campo
+        addressField.setPreferredSize(new Dimension(300, 30));
         formPanel.add(addressField, gbc);
 
         // Método de pago
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 1; // Resetea a una columna
+        gbc.gridwidth = 1;
         formPanel.add(createLabel("Payment Method:"), gbc);
 
         gbc.gridx = 1;
         paymentMethodCombo.setBackground(UITheme.getBackgroundContrast());
         paymentMethodCombo.setForeground(UITheme.getTextColor());
         paymentMethodCombo.setBorder(BorderFactory.createLineBorder(UITheme.getBorderColor(), 1));
-        paymentMethodCombo.setPreferredSize(new Dimension(200, 30)); // Altura fija
-        // Si necesitas un renderer personalizado, implementa uno aquí.
+        paymentMethodCombo.setPreferredSize(new Dimension(200, 30));
         formPanel.add(paymentMethodCombo, gbc);
 
-        bodyPanel.add(formPanel, BorderLayout.NORTH);
-
-        // Detalles del carrito (centro del body) - Ahora usando JTable
+        // Panel de items del carrito
         JPanel itemsPanel = new JPanel(new BorderLayout());
         itemsPanel.setOpaque(false);
-        // itemsPanel.setBorder(BorderFactory.createLineBorder(Color.YELLOW)); // Debugging border
+        itemsPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
 
-        JLabel orderDetailsLabel = createLabel("Order Details:");
-        orderDetailsLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0)); // Espacio inferior
-        itemsPanel.add(orderDetailsLabel, BorderLayout.NORTH);
+        JLabel itemsTitle = createLabel("Order Items:");
+        itemsTitle.setBorder(new EmptyBorder(0, 0, 10, 0));
+        itemsPanel.add(itemsTitle, BorderLayout.NORTH);
 
         JScrollPane itemsScrollPane = new JScrollPane(cartItemsTable);
-        itemsScrollPane.setBorder(BorderFactory.createLineBorder(UITheme.getBorderColor(), 1)); // Borde para la tabla
-        itemsScrollPane.getViewport().setBackground(UITheme.getBackgroundContrast()); // Fondo del viewport
-        itemsScrollPane.getVerticalScrollBar().setUI(com.tiendajava.ui.utils.UIUtils.createDarkScrollBar()); // Estilo de scrollbar
+        itemsScrollPane.setBorder(BorderFactory.createLineBorder(UITheme.getBorderColor(), 1));
+        itemsScrollPane.getViewport().setBackground(UITheme.getBackgroundContrast());
+        itemsScrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar());
         itemsPanel.add(itemsScrollPane, BorderLayout.CENTER);
 
-        bodyPanel.add(itemsPanel, BorderLayout.CENTER);
-
-        // Total (abajo del body)
+        // Panel del total
         JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         totalPanel.setOpaque(false);
-        totalPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0)); // Espacio superior
+        totalPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         totalLabel.setForeground(UITheme.getSuccessColor());
-        totalLabel.setFont(Fonts.SUBTITLE_FONT.deriveFont(Font.BOLD, 20f)); // Tamaño de fuente un poco más grande
+        totalLabel.setFont(Fonts.SUBTITLE_FONT.deriveFont(Font.BOLD, 20));
         totalPanel.add(totalLabel);
 
-        bodyPanel.add(totalPanel, BorderLayout.SOUTH);
+        itemsPanel.add(totalPanel, BorderLayout.SOUTH);
+
+        bodyPanel.add(formPanel, BorderLayout.NORTH);
+        bodyPanel.add(itemsPanel, BorderLayout.CENTER);
 
         return bodyPanel;
     }
 
     private JPanel createFooterPanel() {
         JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
-        footerPanel.setBackground(UITheme.getPrimaryColor().darker()); // Un tono más oscuro para el pie de página
-        footerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-        // footerPanel.setBorder(BorderFactory.createLineBorder(Color.ORANGE)); // Debugging border
+        footerPanel.setBackground(UITheme.getPrimaryColor().darker());
+        footerPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
 
         // Botón para confirmar orden
         JButton confirmOrderBtn = ButtonFactory.createPrimaryButton("Confirm Order",
             null, this::submitOrder);
-        confirmOrderBtn.setPreferredSize(new Dimension(150, 40)); // Tamaño fijo
+        confirmOrderBtn.setPreferredSize(new Dimension(150, 40));
 
         // Botón para exportar a PDF
         JButton exportPdfBtn = ButtonFactory.createSecondaryButton("Export to PDF",
             null, this::exportToPDF);
-        exportPdfBtn.setPreferredSize(new Dimension(150, 40)); // Tamaño fijo
+        exportPdfBtn.setPreferredSize(new Dimension(150, 40));
 
-        footerPanel.add(confirmOrderBtn);
         footerPanel.add(exportPdfBtn);
+        footerPanel.add(confirmOrderBtn);
 
         return footerPanel;
     }
@@ -270,21 +245,58 @@ public class OrderScreen extends JPanel implements Printable {
         JLabel label = new JLabel(text);
         label.setFont(Fonts.NORMAL_FONT);
         label.setForeground(UITheme.getTextColor());
-        label.setBackground(UITheme.getSecondaryColor());
         return label;
+    }
+
+    private void styleTable() {
+        cartItemsTable.setFont(Fonts.NORMAL_FONT);
+        cartItemsTable.setForeground(UITheme.getTextColor());
+        cartItemsTable.setBackground(UITheme.getBackgroundContrast());
+        cartItemsTable.setSelectionBackground(UITheme.getPrimaryColor());
+        cartItemsTable.setSelectionForeground(UITheme.getTextColor());
+        cartItemsTable.setGridColor(UITheme.getBorderColor());
+        cartItemsTable.setRowHeight(30);
+
+        // Estilo del encabezado
+        cartItemsTable.getTableHeader().setFont(Fonts.BOLD_NFONT);
+        cartItemsTable.getTableHeader().setForeground(UITheme.getTextColor());
+        cartItemsTable.getTableHeader().setBackground(UITheme.getPrimaryColor().darker());
+        cartItemsTable.getTableHeader().setReorderingAllowed(false);
+        cartItemsTable.getTableHeader().setResizingAllowed(false);
+
+        // Renderizador para centrar contenido
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                setHorizontalAlignment(SwingConstants.CENTER);
+                setBorder(new EmptyBorder(5, 5, 5, 5));
+
+                if (isSelected) {
+                    setBackground(UITheme.getPrimaryColor());
+                    setForeground(UITheme.getTextColor());
+                } else {
+                    setBackground(row % 2 == 0 ? UITheme.getSecondaryColor() : UITheme.getSecondaryColor().darker());
+                    setForeground(UITheme.getTextColor());
+                }
+
+                return this;
+            }
+        };
+
+        for (int i = 0; i < cartItemsTable.getColumnCount(); i++) {
+            cartItemsTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
     }
 
     private void refreshCartDetails() {
         cart = parent.getCart();
-
-        // Limpiar la tabla
         tableModel.setRowCount(0);
-
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.of("es", "CO"));
 
         if (cart.isEmpty()) {
             tableModel.addRow(new Object[]{"Your cart is empty.", "", "", ""});
-            cartItemsTable.setEnabled(false); 
+            cartItemsTable.setEnabled(false);
         } else {
             cartItemsTable.setEnabled(true);
             for (Product p : cart.getItems()) {
@@ -327,11 +339,15 @@ public class OrderScreen extends JPanel implements Printable {
         var resp = orderService.createOrder(order);
         if (resp.isSuccess()) {
             NotificationHandler.success("Order placed successfully!");
-            cart.clearCart(); 
-            refreshCartDetails(); 
-            addressField.setText(""); 
-            orderIdLabel.setText("Order #: " + "ORD-" + System.currentTimeMillis());
-            orderDateLabel.setText("Date: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+            new ConfirmationDialog(
+                "Do you want to print the invoice?",
+                UITheme.getPrimaryButtonColor(),
+                "Print",
+                this::exportToPDF
+            ).setVisible(true);
+            cart.clearCart();
+            refreshCartDetails();
+            addressField.setText("");
         } else {
             NotificationHandler.error("Failed to place order: " + resp.getMessage());
         }
@@ -353,19 +369,33 @@ public class OrderScreen extends JPanel implements Printable {
     @Override
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) {
         if (pageIndex > 0) {
-            return NO_SUCH_PAGE;
+            return Printable.NO_SUCH_PAGE;
         }
 
         Graphics2D g2d = (Graphics2D) graphics;
-        g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+        g2d.setColor(UITheme.getPrimaryColor());
+        g2d.fillRect(
+            (int) pageFormat.getImageableX(),
+            (int) pageFormat.getImageableY(),
+            (int) pageFormat.getImageableWidth(),
+            (int) pageFormat.getImageableHeight()
+        );
 
+        // Escalar el contenido para que quepa en la página
         double scaleX = pageFormat.getImageableWidth() / invoicePanel.getWidth();
         double scaleY = pageFormat.getImageableHeight() / invoicePanel.getHeight();
         double scale = Math.min(scaleX, scaleY);
+
+        g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
         g2d.scale(scale, scale);
+
+        // Centrar el contenido
+        int xOffset = (int) ((pageFormat.getImageableWidth() / scale - invoicePanel.getWidth()) / 2);
+        int yOffset = (int) ((pageFormat.getImageableHeight() / scale - invoicePanel.getHeight()) / 2);
+        g2d.translate(xOffset, yOffset);
 
         invoicePanel.printAll(g2d);
 
-        return PAGE_EXISTS;
+        return Printable.PAGE_EXISTS;
     }
 }

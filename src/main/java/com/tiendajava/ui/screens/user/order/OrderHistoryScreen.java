@@ -27,6 +27,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import com.tiendajava.model.ApiResponse;
+import com.tiendajava.model.Session;
 import com.tiendajava.model.orders.Order;
 import com.tiendajava.service.OrderService;
 import com.tiendajava.ui.MainUI;
@@ -44,7 +45,6 @@ public class OrderHistoryScreen extends JPanel {
     private final DefaultTableModel tableModel;
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.of("es", "CO"));
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private final Color DEFAULT_COLOR = UITheme.getBackgroundContrast();
 
     public OrderHistoryScreen(MainUI parent) {
         this.parent = parent;
@@ -64,20 +64,8 @@ public class OrderHistoryScreen extends JPanel {
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component c = super.prepareRenderer(renderer, row, column);
 
-                // Cambiar color de fondo según el estado
-                String status = (String) getValueAt(row, 3).toString(); // Columna de estado
-
-                if (status != null) {
-                    switch (status.toLowerCase()) {
-                        case "approved" -> c.setBackground(UITheme.getSuccessColor());
-                        case "rejected" -> c.setBackground(UITheme.getErrorColor());
-                        case "pending" -> c.setBackground(UITheme.getWarningColor());
-                        default -> c.setBackground(DEFAULT_COLOR);
-                    }
-                } else {
-                    c.setBackground(DEFAULT_COLOR);
-                }
-
+                c.setBackground(UITheme.getSecondaryColor());
+                c.setForeground(UITheme.getTextColor());
                 // Alternar colores para mejor legibilidad
                 if (!isRowSelected(row)) {
                     c.setBackground(new Color(
@@ -161,13 +149,9 @@ public class OrderHistoryScreen extends JPanel {
 
         // Panel de acciones
         JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 10));
-        actionsPanel.setBackground(UITheme.getPrimaryColor().darker());
+        actionsPanel.setBackground(UITheme.getSecondaryColor());
+        actionsPanel.setOpaque(true);
         actionsPanel.setBorder(new EmptyBorder(10, 20, 10, 20));
-
-        JButton backButton = ButtonFactory.createSecondaryButton("Back to Dashboard", null, () -> {
-            parent.showScreen("dashboard");
-        });
-        backButton.setPreferredSize(new Dimension(180, 40));
 
         JButton viewDetailsButton = ButtonFactory.createPrimaryButton("View Order Details", null, () -> {
             int selectedRow = orderHistoryTable.getSelectedRow();
@@ -177,8 +161,7 @@ public class OrderHistoryScreen extends JPanel {
                     ApiResponse<Order> response = orderService.getOrderById(orderId);
                     if (response.isSuccess() && response.getData() != null) {
                         Order order = response.getData();
-                        OrderDetailDialog dialog = new OrderDetailDialog(parent, order);
-                        dialog.setVisible(true);
+                        new OrderDetailDialog(parent, order, Session.getInstance().getUser()).setVisible(true);
                     } else {
                         NotificationHandler.error("Failed to load order details: " + response.getMessage());
                     }
@@ -192,7 +175,6 @@ public class OrderHistoryScreen extends JPanel {
         viewDetailsButton.setPreferredSize(new Dimension(180, 40));
 
         actionsPanel.add(viewDetailsButton);
-        actionsPanel.add(backButton);
 
         add(actionsPanel, BorderLayout.SOUTH);
     }
