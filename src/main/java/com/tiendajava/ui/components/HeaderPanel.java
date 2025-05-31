@@ -127,4 +127,12 @@ public class HeaderPanel extends JPanel {
         item.addActionListener(e -> action.run());
         return item;
     }
+
+    public void setLoggedInState(boolean loggedIn) {
+        if (loggedIn) {
+            userLogged();
+        } else {
+            deleteWelcomeMessage();
+        }
+    }
 }

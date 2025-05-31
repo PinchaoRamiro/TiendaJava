@@ -98,23 +98,29 @@ public class LoginScreen extends JPanel {
         return;
     }
 
-    ApiResponse<User> response = userService.login(email, password);
+    parent.showLoading("Logging in...");
 
-    if (response.isSuccess()) {
-      System.out.println("Login successful: " + response.getData().toString());
-        NotificationHandler.success(
-            this, response.getMessage() != null ? response.getMessage() : "Login successful"
-        );
-        if(Session.getInstance().getRole().equals("admin")) {
-            parent.showScreen("admin-dashboard");
+    // Simular operación en background
+    SwingUtilities.invokeLater(() -> {
+        ApiResponse<User> response = userService.login(email, password);
+        parent.hideLoading();
+
+        if (response.isSuccess()) {
+            System.out.println("Login successful: " + response.getData().toString());
+            NotificationHandler.success(
+                this, response.getMessage() != null ? response.getMessage() : "Login successful"
+            );
+            if(Session.getInstance().getRole().equals("admin")) {
+                parent.showScreen("admin-dashboard");
+            } else {
+                parent.showScreen("dashboard");        
+            }
         } else {
-            parent.showScreen("dashboard");        
+            NotificationHandler.error(
+                this, response.getMessage() != null ? response.getMessage() : "Login failed"
+            );
         }
-    } else {
-        NotificationHandler.error(
-            this, response.getMessage() != null ? response.getMessage() : "Login failed"
-        );
-    }
+    });
 }
 
 }

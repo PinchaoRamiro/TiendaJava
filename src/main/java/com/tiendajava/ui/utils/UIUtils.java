@@ -173,6 +173,18 @@ public class UIUtils {
     public static String toHex(Color infoColor) {
         return String.format("#%02x%02x%02x", infoColor.getRed(), infoColor.getGreen(), infoColor.getBlue());
     }
+
+    public static Border createTitledBorder(String your_Statistics) {
+        return BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(UITheme.getBorderColor()),
+            your_Statistics,
+            javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+            javax.swing.border.TitledBorder.DEFAULT_POSITION,
+            Fonts.NORMAL_FONT,
+            UITheme.getTextColor()
+            
+        );
+    }
     
 
 }

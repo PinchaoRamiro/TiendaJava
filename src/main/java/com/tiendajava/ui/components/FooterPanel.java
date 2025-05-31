@@ -65,4 +65,8 @@ public class FooterPanel extends JPanel {
         });
         return label;
     }
+
+    public void updateForScreen(String screenName) {
+        
+    }
 }

@@ -11,7 +11,7 @@ import com.google.gson.JsonSyntaxException;
 import com.tiendajava.model.ApiResponse;
 
 public abstract class BaseRepository {
-    protected static final String URL_BASE = "http://localhost:5000/api/";
+    protected static final String URL_BASE = "https://tienda-backend-381g.onrender.com/api/";
     protected final HttpClient client = HttpClient.newHttpClient();
     protected final Gson gson = new Gson();
 
@@ -26,9 +26,6 @@ public abstract class BaseRepository {
                         "Error: " + response.statusCode() + " - " + response.body());
             }
             ApiResponse<T> apiResponse = gson.fromJson(response.body(), responseType);
-
-            System.out.println("Http response " + response);
-            System.out.println("Response: " + apiResponse);
             String body = response.body().trim();
     
             if (body.startsWith("\"") && body.endsWith("\"")) {

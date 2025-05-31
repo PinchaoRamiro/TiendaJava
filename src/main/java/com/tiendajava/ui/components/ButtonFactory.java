@@ -11,6 +11,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
@@ -90,4 +91,33 @@ public class ButtonFactory {
         return button;
     }
 
+    public static class ActionButton extends JButton {
+        public ActionButton(String text, ImageIcon icon, Runnable action) {
+            super(text, icon);
+            setFont(Fonts.NORMAL_FONT);
+            setBackground(UITheme.getSecondaryColor());
+            setForeground(UITheme.getTextColor());
+            setHorizontalAlignment(SwingConstants.LEFT);
+            setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(UITheme.getTertiaryColor(), 1),
+                BorderFactory.createEmptyBorder(12, 30, 12, 30)
+            ));
+            setMinimumSize(new Dimension(160, 45));
+            setPreferredSize(new Dimension(200, 50));
+            
+            addActionListener(e -> action.run());
+            
+            // Efecto hover
+            addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    setBackground(UITheme.getTertiaryColor());
+                }
+                @Override
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    setBackground(UITheme.getSecondaryColor());
+                }
+            });
+        }
+    }
 }

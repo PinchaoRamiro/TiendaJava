@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
@@ -127,24 +128,30 @@ public class PaymentsAdminScreen extends JPanel {
     private void loadPayments() {
         paymentsContainer.removeAll();
 
-        ApiResponse<List<Order>> response = orderService.getAllOrders();
-        if (!response.isSuccess()) {
-            NotificationHandler.error("Failed to load payments: " + response.getMessage());
-            return;
-        }
+        parent.showLoading("Loading payments...");
 
-        orders = response.getData();
-        if (orders == null || orders.isEmpty()) {
-            paymentsContainer.add(createEmptyStatePanel());
-        } else {
-            for (Order order : orders) {
-                paymentsContainer.add(createPaymentCard(order));
-                paymentsContainer.add(Box.createRigidArea(new Dimension(0, 15)));
+        SwingUtilities.invokeLater(() -> {
+            ApiResponse<List<Order>> response = orderService.getAllOrders();
+            parent.hideLoading();
+            if (!response.isSuccess()) {
+                NotificationHandler.error("Failed to load payments: " + response.getMessage());
+                return;
             }
-        }
 
-        paymentsContainer.revalidate();
-        paymentsContainer.repaint();
+            orders = response.getData();
+            if (orders == null || orders.isEmpty()) {
+                paymentsContainer.add(createEmptyStatePanel());
+            } else {
+                for (Order order : orders) {
+                    paymentsContainer.add(createPaymentCard(order));
+                    paymentsContainer.add(Box.createRigidArea(new Dimension(0, 15)));
+                }
+            }
+
+            paymentsContainer.revalidate();
+            paymentsContainer.repaint();
+        });
+
     }
 
     private JPanel createEmptyStatePanel() {

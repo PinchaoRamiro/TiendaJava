@@ -46,6 +46,8 @@ public class OrderHistoryScreen extends JPanel {
     private final NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.of("es", "CO"));
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
+    private List<Order> orders;
+
     public OrderHistoryScreen(MainUI parent) {
         this.parent = parent;
         this.orderService = new OrderService();
@@ -158,12 +160,15 @@ public class OrderHistoryScreen extends JPanel {
             if (selectedRow != -1) {
                 try {
                     int orderId = (int) tableModel.getValueAt(selectedRow, 0);
-                    ApiResponse<Order> response = orderService.getOrderById(orderId);
-                    if (response.isSuccess() && response.getData() != null) {
-                        Order order = response.getData();
-                        new OrderDetailDialog(parent, order, Session.getInstance().getUser()).setVisible(true);
+                    // only serch into orders list
+                    Order selectedOrder = orders.stream()
+                            .filter(order -> order.getOrder_id() == orderId)
+                            .findFirst()
+                            .orElse(null);
+                    if (selectedOrder != null) {
+                        new OrderDetailDialog(parent, selectedOrder, Session.getInstance().getUser()).setVisible(true);
                     } else {
-                        NotificationHandler.error("Failed to load order details: " + response.getMessage());
+                        NotificationHandler.error("Failed to load order details");
                     }
                 } catch (Exception e) {
                     NotificationHandler.error("Error viewing order details: " + e.getMessage());
@@ -188,7 +193,7 @@ public class OrderHistoryScreen extends JPanel {
             return;
         }
 
-        List<Order> orders = response.getData();
+        orders = response.getData();
 
         if (orders == null || orders.isEmpty()) {
             tableModel.addRow(new Object[]{"No orders found", "", "", "", ""});
