@@ -329,11 +329,13 @@ public class OrderScreen extends JPanel implements Printable {
     var resp = orderService.createOrder(order);
     if (resp.isSuccess()) {
       NotificationHandler.success("Order placed successfully!");
-      new ConfirmationDialog(
+      try{
+        new ConfirmationDialog(
           "Do you want to print the invoice?",
           UITheme.getPrimaryButtonColor(),
           "Print",
           this::exportToPDF).setVisible(true);
+      }catch(Exception e){}
       cart.clearCart();
       refreshCartDetails();
       addressField.setText("");

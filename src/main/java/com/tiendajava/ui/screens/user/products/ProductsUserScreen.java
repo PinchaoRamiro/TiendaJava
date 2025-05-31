@@ -77,7 +77,7 @@ public class ProductsUserScreen extends JPanel {
     }
 
     private void loadProducts(JPanel productsPanel) {
-        ApiResponse<List<Product>> response = productService.getAllProducts();
+        ApiResponse<List<Product>> response = productService.getUserProducts();
         if (!response.isSuccess()) {
             NotificationHandler.error("Failed to load products: " + response.getMessage());
             return;
