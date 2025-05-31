@@ -4,7 +4,7 @@ TiendaJava es una aplicación de escritorio desarrollada en **Java Swing**, que 
 
 ---
 
-![User Dashboard](src\main\resources\main.png)
+![User Dashboard](src/main/resources/main.png)
 
 ---
 
@@ -25,7 +25,7 @@ Si quieres acceder como admistrador, las credenciales iniciales son las siguient
 **Password:** 123
 
 ---
-![Admin Dashboard](src\main\resources\main_admin.png)
+![Admin Dashboard](src/main/resources/main_admin.png)
 
 ---
 
