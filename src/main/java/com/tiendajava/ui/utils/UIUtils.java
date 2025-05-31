@@ -39,14 +39,12 @@ public class UIUtils {
         UIManager.put("JTextArea.background", UITheme.getSecondaryColor());
         UIManager.put("JTextArea.foreground", UITheme.getTextColor());
 
-        // a tablas
         UIManager.put("Table.background", UITheme.getSecondaryColor());
         UIManager.put("Table.foreground", UITheme.getTextColor());
         UIManager.put("Table.gridColor", UITheme.getBorderColor());
         UIManager.put("Table.selectionBackground", UITheme.getPrimaryButtonColor());
         UIManager.put("Table.selectionForeground", UITheme.getTextColor());
 
-        // scrollPanel
         UIManager.put("ScrollPane.background", UITheme.getPrimaryColor());
         UIManager.put("ScrollPane.foreground", UITheme.getTextColor());
 
@@ -95,12 +93,9 @@ public class UIUtils {
         };
     }
 
-    // Padding alrededor del scroll
     public static Border getScrollPaneBorder() {
         return BorderFactory.createEmptyBorder(10, 10, 10, 10); // Espaciado alrededor del scroll
     }
-
-    // create Style form field beautiful
 
     public static void styleFormFields(JPanel panel) {
         for (Component component : panel.getComponents()) {

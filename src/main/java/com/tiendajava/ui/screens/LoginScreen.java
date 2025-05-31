@@ -100,7 +100,6 @@ public class LoginScreen extends JPanel {
 
     parent.showLoading("Logging in...");
 
-    // Simular operación en background
     SwingUtilities.invokeLater(() -> {
         ApiResponse<User> response = userService.login(email, password);
         parent.hideLoading();
@@ -115,6 +114,7 @@ public class LoginScreen extends JPanel {
             } else {
                 parent.showScreen("dashboard");        
             }
+            parent.updateSidebarVisibility();
         } else {
             NotificationHandler.error(
                 this, response.getMessage() != null ? response.getMessage() : "Login failed"

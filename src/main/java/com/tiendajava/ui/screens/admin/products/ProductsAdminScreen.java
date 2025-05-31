@@ -37,21 +37,19 @@ public class ProductsAdminScreen extends JPanel {
 
     private final MainUI parent;
     private final ProductService productService = new ProductService();
-    private final JPanel productsPanel; // Cambiado a inicialización en el constructor
+    private final JPanel productsPanel;
     private final SearchBar searchBar;
     private List<Product> products = null;
 
-    // Constantes para el diseño
     private static final int TOP_PANEL_VERTICAL_GAP = 15;
     private static final int TOP_PANEL_HORIZONTAL_GAP = 20;
     private static final int PRODUCTS_PANEL_VERTICAL_PADDING = 10;
     private static final int PRODUCTS_PANEL_HORIZONTAL_PADDING = 20;
     private static final int CREATE_BUTTON_WIDTH = 170;
     private static final int CREATE_BUTTON_HEIGHT = 40;
-    private static final int PRODUCT_CARD_H_GAP = 10; // Espacio horizontal entre tarjetas
-    private static final int PRODUCT_CARD_V_GAP = 10; // Espacio vertical entre tarjetas
-    private static final int GRID_COLS = 1; // Número de columnas para el GridLayout de productos
-
+    private static final int PRODUCT_CARD_H_GAP = 10;
+    private static final int PRODUCT_CARD_V_GAP = 10; 
+    private static final int GRID_COLS = 1; 
     public ProductsAdminScreen(MainUI parent) {
         this.parent = parent;
         this.searchBar = new SearchBar(e -> searchProducts());
@@ -59,22 +57,19 @@ public class ProductsAdminScreen extends JPanel {
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
 
-        // --- Panel superior ---
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBackground(UITheme.getPrimaryColor());
         topPanel.setBorder(BorderFactory.createEmptyBorder(TOP_PANEL_VERTICAL_GAP, TOP_PANEL_HORIZONTAL_GAP, PRODUCTS_PANEL_VERTICAL_PADDING, TOP_PANEL_HORIZONTAL_GAP)); // Ajustado el padding
 
-        // Sub-panel para título centrado
-        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Usar FlowLayout para centrar
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); 
         titlePanel.setBackground(UITheme.getPrimaryColor());
-        JLabel title = new JLabel("Manage Products", AppIcons.BOX_ICON, SwingConstants.CENTER); // Centrar el texto dentro del JLabel
+        JLabel title = new JLabel("Manage Products", AppIcons.BOX_ICON, SwingConstants.CENTER); 
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
-        title.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0)); // Espacio inferior del título
-        titlePanel.add(title); // Añadir el JLabel al JPanel con FlowLayout
+        title.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0)); 
+        titlePanel.add(title); 
         topPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // Sub-panel para botón + barra de búsqueda
         JPanel actionPanel = new JPanel(new BorderLayout(15, 0));
         actionPanel.setBackground(UITheme.getPrimaryColor());
 
@@ -86,30 +81,28 @@ public class ProductsAdminScreen extends JPanel {
         topPanel.add(actionPanel, BorderLayout.CENTER);
         add(topPanel, BorderLayout.NORTH);
 
-        // --- Panel de productos ---
-        // Usamos GridLayout para una disposición de cuadrícula de las tarjetas de productos
-        productsPanel = new JPanel(new GridLayout(0, GRID_COLS, PRODUCT_CARD_H_GAP, PRODUCT_CARD_V_GAP)); // 0 filas, GRID_COLS columnas, con espaciado
+        productsPanel = new JPanel(new GridLayout(0, GRID_COLS, PRODUCT_CARD_H_GAP, PRODUCT_CARD_V_GAP));
         productsPanel.setBorder(BorderFactory.createEmptyBorder(PRODUCTS_PANEL_VERTICAL_PADDING, PRODUCTS_PANEL_HORIZONTAL_PADDING, PRODUCTS_PANEL_VERTICAL_PADDING, PRODUCTS_PANEL_HORIZONTAL_PADDING));
-        productsPanel.setBackground(UITheme.getPrimaryColor()); // Asegurarse de que el fondo sea consistente
+        productsPanel.setBackground(UITheme.getPrimaryColor()); 
 
         JScrollPane scrollPane = new JScrollPane(productsPanel);
-        scrollPane.setBorder(null); // Quitar el borde del JScrollPane
-        scrollPane.getViewport().setBackground(UITheme.getPrimaryColor()); // Fondo del viewport
+        scrollPane.setBorder(null); 
+        scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
         scrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar());
         scrollPane.getHorizontalScrollBar().setUI(UIUtils.createDarkScrollBar());
 
         add(scrollPane, BorderLayout.CENTER);
 
-        // Cargar productos al iniciar
         getProductsDataBase();
         loadProducts();
     }
 
     private void loadProducts() {
-        // Asegurarse de que las actualizaciones de UI se ejecuten en el EDT
+        parent.showLoading("Loading products...");
         SwingUtilities.invokeLater(() -> {
             productsPanel.removeAll();
             if (products != null && !products.isEmpty()) {
+                parent.hideLoading();
                 printProducts(products);
             } else {
                 JLabel noData = new JLabel("No products available", SwingConstants.CENTER);
@@ -231,7 +224,7 @@ public class ProductsAdminScreen extends JPanel {
     }
 
     private void onClickProduct(Product product) {
-        new InfoProductDialog(product).setVisible(true);
+        new InfoProductDialog( parent, product).setVisible(true);
     }
 
     public MainUI getParentPA() {

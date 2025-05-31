@@ -27,14 +27,12 @@ public class LoadingPanel extends JPanel {
     
     public LoadingPanel(String message) {
         setLayout(new BorderLayout());
-        setBackground(new Color(0, 0, 0, 150)); // Fondo semi-transparente
+        setBackground(new Color(0, 0, 0, 150)); 
         setOpaque(true);
         
-        // Panel central para el spinner y mensaje
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setOpaque(false);
         
-        // Área del spinner (personalizada)
         JPanel spinnerPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -45,7 +43,6 @@ public class LoadingPanel extends JPanel {
         spinnerPanel.setOpaque(false);
         spinnerPanel.setPreferredSize(new Dimension(60, 60));
         
-        // Mensaje de carga
         messageLabel = new JLabel(message != null ? message : "Cargando...", SwingConstants.CENTER);
         messageLabel.setFont(Fonts.NORMAL_FONT);
         messageLabel.setForeground(Color.WHITE);
@@ -56,7 +53,6 @@ public class LoadingPanel extends JPanel {
         
         add(centerPanel, BorderLayout.CENTER);
         
-        // Timer para la animación del spinner
         timer = new Timer(40, (ActionEvent e) -> {
             angle = (angle + 10) % 360;
             repaint();
@@ -73,13 +69,11 @@ public class LoadingPanel extends JPanel {
         int centerY = height / 2;
         int radius = 20;
         
-        // Dibujar círculos del spinner
         for (int i = 0; i < 8; i++) {
             double theta = Math.toRadians(angle + i * 45);
             int x = (int) (centerX + radius * Math.cos(theta));
             int y = (int) (centerY + radius * Math.sin(theta));
             
-            // Opacidad decreciente para crear efecto de movimiento
             int alpha = 255 - (i * 30);
             if (alpha < 50) alpha = 50;
             

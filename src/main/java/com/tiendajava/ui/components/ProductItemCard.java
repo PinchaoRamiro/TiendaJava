@@ -83,7 +83,6 @@ public class ProductItemCard extends JPanel {
         infoLeft.add(createLabel("Stock: " + product.getStock(), Fonts.SMALL_FONT, UITheme.getTextColor()));
         infoLeft.add(createLabel("Description: " + product.getDescription(), Fonts.SMALL_FONT, UITheme.getTextColor()));
 
-        // --- Columna 2: atributos específicos ---
         JPanel infoRight = new JPanel();
         infoRight.setLayout(new BoxLayout(infoRight, BoxLayout.Y_AXIS));
         infoRight.setBackground(UITheme.getSecondaryColor());
@@ -112,9 +111,6 @@ public class ProductItemCard extends JPanel {
 
         add(infoContainer, BorderLayout.CENTER);
 
-
-
-        // --- Acciones ---
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.CENTER,10,0));
         actions.setBackground(UITheme.getSecondaryColor());
         if ("admin".equalsIgnoreCase(Session.getInstance().getRole())) {

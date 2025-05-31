@@ -22,7 +22,6 @@ public class CreateFurnitureProductDialog extends IProductDialog {
     private final JTextField materialField = new JTextField(20);
     private final JTextField woodTypeField = new JTextField(20);
 
-    // Panel para los botones de acción, se agregará en BorderLayout.SOUTH del diálogo
     private JPanel actionButtonPanel;
 
     public CreateFurnitureProductDialog(String category) {
@@ -43,7 +42,6 @@ public class CreateFurnitureProductDialog extends IProductDialog {
         addLabelAndField(formPanel, gbc, "Material", materialField);
         addLabelAndField(formPanel, gbc, "Wood Type", woodTypeField);
 
-        // Inicializar y añadir el panel de botones de acción si no se ha hecho
         if (actionButtonPanel == null) {
             actionButtonPanel = new JPanel(new BorderLayout());
             actionButtonPanel.setBackground(UITheme.getPrimaryColor());
@@ -51,13 +49,12 @@ public class CreateFurnitureProductDialog extends IProductDialog {
             JButton cancelBtn = ButtonFactory.createSecondaryButton("Cancel", null, this::dispose);
             actionButtonPanel.add(cancelBtn, BorderLayout.WEST);
             actionButtonPanel.add(createBtn, BorderLayout.CENTER);
-            add(actionButtonPanel, BorderLayout.SOUTH); // Añadir al diálogo
+            add(actionButtonPanel, BorderLayout.SOUTH); 
         }
     }
 
     @Override
     protected void onSave() {
-        // Validar y obtener los datos de los campos
         String name = nameField.getText().trim();
         String priceStr = priceField.getText().trim();
         String stockStr = stockField.getText().trim();
@@ -82,15 +79,12 @@ public class CreateFurnitureProductDialog extends IProductDialog {
             return;
         }
 
-        // 'category' es un campo protegido de IProductDialog
         if (category == null) {
             NotificationHandler.error("Category data not loaded. Please try again.");
             return;
         }
 
         int categoryId = category.getCategory_id();
-
-        // Crear el objeto FurnitureProduct
         super.product = new FurnitureProduct(
             name,
             description,
@@ -102,17 +96,14 @@ public class CreateFurnitureProductDialog extends IProductDialog {
             woodType
         );
 
-        // Ejecutar la operación de creación en un hilo secundario para no bloquear el EDT
         new Thread(() -> {
-            // 'productService' es un campo protegido de IProductDialog
             ApiResponse<Product> resp = productService.createProductWithImage(super.product, imageFile, "furniture");
-            SwingUtilities.invokeLater(() -> { // Volver al EDT para actualizar la UI
+            SwingUtilities.invokeLater(() -> { 
                 if (resp.isSuccess()) {
                     NotificationHandler.success("Product created successfully!");
-                    dispose(); // Cerrar el diálogo. 'dispose()' es un método de JDialog, accesible.
-                    // 'onRunnable' es un campo protegido de IProductDialog
+                    dispose(); 
                     if (onRunnable != null) {
-                        onRunnable.run(); // Ejecutar la acción de refresco de la pantalla padre
+                        onRunnable.run();
                     }
                 } else {
                     NotificationHandler.error("Failed to create product: " + resp.getMessage());

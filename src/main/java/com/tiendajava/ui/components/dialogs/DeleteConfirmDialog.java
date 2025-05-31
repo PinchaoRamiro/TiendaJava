@@ -73,22 +73,3 @@ public class DeleteConfirmDialog extends JDialog {
         dispose();
     }
 }
-
-
-/*
- * private void deleteProduct(Product product) {
-    new DeleteConfirmDialog(product.getName(), () -> {
-        productService.deleteProduct(product.getProductId());
-        loadProducts(); // recargar productos
-    }).setVisible(true);
-    }
-
-    private void deleteUser(User user) {
-    new DeleteConfirmDialog(user.getEmail(), () -> {
-        userService.deleteUser(user.getId());
-        loadUsers(); // recargar usuarios
-    }).setVisible(true);
-    }
-
-
- */

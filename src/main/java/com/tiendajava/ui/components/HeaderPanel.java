@@ -29,7 +29,7 @@ public class HeaderPanel extends JPanel {
     private final JPopupMenu settingsMenu = new JPopupMenu();
 
     public HeaderPanel(MainUI parent) {
-        this.parent = parent; // Assigning the constructor parameter to the final field
+        this.parent = parent;
 
         setLayout(new BorderLayout());
         setBackground(UITheme.getSecondaryColor());

@@ -48,7 +48,6 @@ public final class MainUI extends JFrame {
     private final SidebarPanel sidebarPanel = new SidebarPanel(this);
     private final Cart cart = new Cart();
     
-    // Sistema de loading optimizado
     private final GlassPane glassPane = new GlassPane();
     private boolean isLoading = false;
 
@@ -65,25 +64,21 @@ public final class MainUI extends JFrame {
         setPreferredSize(new Dimension(1000, 600));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setGlassPane(glassPane); // Usamos el glass pane nativo de JFrame
+        setGlassPane(glassPane); 
     }
     
     private void setupMainStructure() {
-        // Panel principal con estructura clara
         mainContentPanel.setBackground(UITheme.getPrimaryColor());
         
-        // Configurar áreas
         JPanel contentWrapper = new JPanel(new BorderLayout());
         contentWrapper.add(contentPanel, BorderLayout.CENTER);
         contentWrapper.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        // Añadir componentes al layout principal
         mainContentPanel.add(headerPanel, BorderLayout.NORTH);
         mainContentPanel.add(sidebarPanel, BorderLayout.WEST);
         mainContentPanel.add(contentWrapper, BorderLayout.CENTER);
         mainContentPanel.add(footerPanel, BorderLayout.SOUTH);
-        
-        // Control de visibilidad del sidebar
+
         updateSidebarVisibility();
         
         add(mainContentPanel);
@@ -117,61 +112,64 @@ public final class MainUI extends JFrame {
     }
     
     private void prepareScreen(String name) {
-        // Carga perezosa de pantallas
-        if (getScreen(name) == null && nameRequiresAuth(name)) {
-            createScreen(name);
-        }
+        SwingUtilities.invokeLater(() -> {
+            if (getScreen(name) == null && nameRequiresAuth(name)) {
+                createScreen(name);
+            }
+        });
     }
     
     private void createScreen(String name) {
-        SwingUtilities.invokeLater(() -> {
-            switch (name) {
-                case "cart-p" -> contentPanel.add(new FunctionalCartScreen(this, cart), "cart-p");
-                case "dashboard" -> contentPanel.add(new DashboardUserScreen(this), "dashboard");
-                case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
-                case "payment" -> contentPanel.add(new OrderScreen(this, cart), "payment");
-                case "order-history" -> contentPanel.add(new OrderHistoryScreen(this), "order-history");
-                case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
-                case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
-                case "add-user" -> contentPanel.add(new RegisterScreen(this), "add-user");
-                case "manage-admins" -> contentPanel.add(new ManageAdminsScreen(this), "manage-admins");
-                case "manage-products" -> contentPanel.add(new ProductsAdminScreen(this), "manage-products");
-                case "manage-orders" -> contentPanel.add(new PaymentsAdminScreen(this), "manage-orders");
-                case "change-password" -> contentPanel.add(new ChangePasswordScreen(this), "change-password");
-                case "account-settings" -> contentPanel.add(new AccountSettingsScreen(this), "account-settings");
-            }
-        });
+        switch (name) {
+            case "cart-p" -> contentPanel.add(new FunctionalCartScreen(this, cart), "cart-p");
+            case "dashboard" -> contentPanel.add(new DashboardUserScreen(this), "dashboard");
+            case "products-user" -> contentPanel.add(new ProductsUserScreen(this), "products-user");
+            case "payment" -> contentPanel.add(new OrderScreen(this, cart), "payment");
+            case "order-history" -> contentPanel.add(new OrderHistoryScreen(this), "order-history");
+            case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
+            case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
+            case "add-user" -> contentPanel.add(new RegisterScreen(this), "add-user"); // Reutilizar RegisterScreen para añadir usuarios
+            case "manage-admins" -> contentPanel.add(new ManageAdminsScreen(this), "manage-admins");
+            case "manage-products" -> contentPanel.add(new ProductsAdminScreen(this), "manage-products");
+            case "manage-orders" -> contentPanel.add(new PaymentsAdminScreen(this), "manage-orders");
+            case "change-password" -> contentPanel.add(new ChangePasswordScreen(this), "change-password");
+            case "account-settings" -> contentPanel.add(new AccountSettingsScreen(this), "account-settings");
+        }
     }
     
     private void performScreenChange(String name) {
         if (nameRequiresAuth(name) && Session.getInstance().getUser() == null) {
             System.err.println("Access denied: " + name);
+            showScreen("login"); 
             return;
         }
 
         CardLayout cl = (CardLayout) contentPanel.getLayout();
         cl.show(contentPanel, name);
-        
-        updateUIState(name);
+        updateUIState(name); 
     }
     
     private void updateUIState(String screenName) {
         boolean isLoggedIn = Session.getInstance().getUser() != null;
         headerPanel.setLoggedInState(isLoggedIn);
-        updateSidebarVisibility();
-        footerPanel.updateForScreen(screenName);
         
-        // Forzar redibujado de los componentes
+        updateSidebarVisibility(); 
+        if (isLoggedIn) {
+            sidebarPanel.clearAndAddButtons(); 
+        } 
+
+        footerPanel.updateForScreen(screenName);
         revalidate();
         repaint();
     }
-    
-    private void updateSidebarVisibility() {
+
+    public void updateSidebarVisibility() { 
         boolean shouldShowSidebar = Session.getInstance().getUser() != null;
         sidebarPanel.setVisible(shouldShowSidebar);
+        mainContentPanel.revalidate(); 
+        mainContentPanel.repaint();
     }
 
-    // Métodos optimizados para loading
     public void showLoading(String message) {
         if (!isLoading) {
             glassPane.setMessage(message);
@@ -189,7 +187,6 @@ public final class MainUI extends JFrame {
         }
     }
     
-    // Clase optimizada para GlassPane
     private static class GlassPane extends JComponent {
         private final JLabel messageLabel = new JLabel("", SwingConstants.CENTER);
         
@@ -214,11 +211,9 @@ public final class MainUI extends JFrame {
         }
         
         public void startAnimation() {
-            // Puedes añadir aquí animaciones simples
         }
         
         public void stopAnimation() {
-            // Detener cualquier animación
         }
         
         @Override
@@ -229,7 +224,6 @@ public final class MainUI extends JFrame {
         }
     }
     
-    // Resto de métodos auxiliares...
     private String getScreenDisplayName(String name) {
         return switch (name) {
             case "dashboard" -> "Dashboard";
@@ -239,8 +233,14 @@ public final class MainUI extends JFrame {
             case "order-history" -> "Order History";
             case "admin-dashboard" -> "Admin Dashboard";
             case "manage-users" -> "Manage Users";
+            case "add-user" -> "Add User"; 
+            case "manage-admins" -> "Manage Admins";
             case "manage-products" -> "Manage Products";
+            case "manage-orders" -> "Manage Orders";
+            case "change-password" -> "Change Password";
             case "account-settings" -> "Account Settings";
+            case "login" -> "Login"; 
+            case "register" -> "Register"; 
             default -> "Unknown Screen: " + name;
         };
     }

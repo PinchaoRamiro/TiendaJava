@@ -44,11 +44,11 @@ public class DashboardUserScreen extends JPanel {
     private JLabel loadingLabel;
 
     private JPanel scrollableContentPanel;
-    private JPanel statsPanel; // Ahora es una variable de instancia para accederla en updateStatsLayout
-    private JPanel contentPanel; // Ahora es una variable de instancia para accederla
+    private JPanel statsPanel; 
+    private JPanel contentPanel; 
 
     private boolean isSmallScreen = false;
-    private static final int SMALL_SCREEN_THRESHOLD = 700; // Define el ancho en el que se considera "pantalla pequeña"
+    private static final int SMALL_SCREEN_THRESHOLD = 600; 
 
     public DashboardUserScreen(MainUI parent) {
         this.parent = parent;
@@ -59,7 +59,6 @@ public class DashboardUserScreen extends JPanel {
         initUI();
         loadData();
 
-        // Añadir ComponentListener para detectar cambios de tamaño de la ventana
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -75,8 +74,7 @@ public class DashboardUserScreen extends JPanel {
         scrollableContentPanel.setLayout(new BoxLayout(scrollableContentPanel, BoxLayout.Y_AXIS));
         scrollableContentPanel.setBackground(UITheme.getPrimaryColor());
         
-        // Se crea el contenido principal, pero el layout se establecerá en checkScreenSizeAndApplyLayout()
-        createMainContentPanels(); // Nuevo método para crear los paneles sin aplicar layout aún
+        createMainContentPanels();
 
         JScrollPane mainScrollPane = new JScrollPane(scrollableContentPanel);
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -101,11 +99,11 @@ public class DashboardUserScreen extends JPanel {
         title.setHorizontalAlignment(SwingConstants.CENTER);
 
         User user = Session.getInstance().getUser();
-        String welcomeText = String.format("Welcome back, %s %s!", user.getName(), user.getLastName());
+        String welcomeText = String.format("Welcome, %s %s!", user.getName(), user.getLastName());
         TypingLabel welcomeLabel = new TypingLabel(welcomeText, 50);
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         welcomeLabel.setFont(Fonts.SUBTITLE_FONT);
-        welcomeLabel.setForeground(UITheme.getTextColor());
+        welcomeLabel.setForeground(UITheme.getSuccessColor());
 
         header.add(title, BorderLayout.NORTH);
         header.add(welcomeLabel, BorderLayout.CENTER);
@@ -143,10 +141,9 @@ public class DashboardUserScreen extends JPanel {
 
         if (newIsSmallScreen != isSmallScreen) {
             isSmallScreen = newIsSmallScreen;
-            updateStatsLayout();        // Actualizar layout de estadísticas
-            updateMainContentLayout();  // Actualizar layout de quick actions y productos
+            updateStatsLayout();    
+            updateMainContentLayout();  
             
-            // Revalidar y repintar los paneles afectados
             scrollableContentPanel.revalidate();
             scrollableContentPanel.repaint();
         }
@@ -154,16 +151,15 @@ public class DashboardUserScreen extends JPanel {
 
     private void updateStatsLayout() {
         if (statsPanel != null) {
-            statsPanel.removeAll(); // Eliminar componentes existentes para redibujar
+            statsPanel.removeAll(); 
             
-            // Recrear las tarjetas de estadísticas
-            StatCard ordersCard = new StatCard("Orders", "15", null, 
+            StatCard ordersCard = new StatCard("Orders", "15", 
                 UITheme.getInfoColor(), "Total orders placed");
             
-            StatCard favoritesCard = new StatCard("Favorites", "8", null, 
+            StatCard favoritesCard = new StatCard("Favorites", "8", 
                 UITheme.getDangerColor(), "Saved favorite items");
             
-            StatCard pointsCard = new StatCard("Points", "350", null, 
+            StatCard pointsCard = new StatCard("Points", "350", 
                 UITheme.getWarningColor(), "Loyalty points available");
             
             if (isSmallScreen) {
@@ -183,12 +179,10 @@ public class DashboardUserScreen extends JPanel {
                 statsPanel.add(favoritesCard);
                 statsPanel.add(pointsCard);
             }
-            statsPanel.revalidate(); // Asegura que el layout se recalcule
-            statsPanel.repaint();   // Asegura que el panel se redibuje
+            statsPanel.revalidate();
+            statsPanel.repaint();   
         }
     }
-
-    // Nuevo método para manejar el layout de Quick Actions y Featured Products
     private void updateMainContentLayout() {
         if (contentPanel != null) {
 
@@ -219,7 +213,7 @@ public class DashboardUserScreen extends JPanel {
         panel.setBackground(UITheme.getPrimaryColor());
         panel.setBorder(UIUtils.createTitledBorder("Quick Actions"));
 
-        Dimension buttonSize = new Dimension(200, 45); // Un tamaño base
+        Dimension buttonSize = new Dimension(200, 45); 
         int buttonSpacing = 10;
 
         ButtonFactory.ActionButton productsBtn = new ButtonFactory.ActionButton(
@@ -267,7 +261,7 @@ public class DashboardUserScreen extends JPanel {
         panel.setBorder(UIUtils.createTitledBorder("Featured Products"));
 
         featuredProductsPanel = new JPanel();
-        featuredProductsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); // Las tarjetas de productos siempre en FlowLayout
+        featuredProductsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); 
         featuredProductsPanel.setBackground(UITheme.getSecondaryColor());
         featuredProductsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -339,6 +333,7 @@ public class DashboardUserScreen extends JPanel {
                     } else {
                         for (Product product : products) {
                             ProductCard card = new ProductCard(product);
+                            card.setPreferredSize(new Dimension(10, 10));
                             featuredProductsPanel.add(card);
                         }
                     }
@@ -355,20 +350,15 @@ public class DashboardUserScreen extends JPanel {
         }.execute();
     }
 
-    // Componentes personalizados reutilizables (sin cambios)
     private static class StatCard extends JPanel {
-        public StatCard(String title, String value, ImageIcon icon, Color color, String tooltip) {
+        public StatCard(String title, String value, Color color, String tooltip) {
             setLayout(new BorderLayout(10, 10));
             setBackground(UITheme.getSecondaryColor());
             setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(color, 2),
+                    BorderFactory.createLineBorder(color,  1),
                     BorderFactory.createEmptyBorder(15, 15, 15, 15)
             ));
             setToolTipText(tooltip);
-
-            JLabel iconLabel = new JLabel(icon);
-            iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            add(iconLabel, BorderLayout.NORTH);
 
             JLabel valueLabel = new JLabel(value, SwingConstants.CENTER);
             valueLabel.setFont(Fonts.TITLE_FONT.deriveFont(24f));

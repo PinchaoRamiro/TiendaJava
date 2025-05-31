@@ -49,7 +49,6 @@ public class ManageAdminsScreen extends JPanel {
         this.parent = parent;
         setLayout(new BorderLayout(15,15));
 
-        // --- Panel superior ---
         JPanel topPanel = new JPanel(new GridBagLayout());
         topPanel.setBackground(UITheme.getPrimaryColor());
         topPanel.setBorder(BorderFactory.createEmptyBorder(0, TOP_PANEL_PADDING, 0, TOP_PANEL_PADDING));
@@ -68,7 +67,6 @@ public class ManageAdminsScreen extends JPanel {
         gbc.gridy = 0;
         topPanel.add(title, gbc);
 
-        // --- Panel de botón y búsqueda ---
         JPanel buttonSearchPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, TOP_PANEL_HORIZONTAL_GAP, 0));
         buttonSearchPanel.setBackground(UITheme.getPrimaryColor());
 
@@ -84,7 +82,6 @@ public class ManageAdminsScreen extends JPanel {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // === Panel de admins con scroll ===
         adminsPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
 
         JScrollPane scrollPane = new JScrollPane(adminsPanel);
@@ -95,7 +92,6 @@ public class ManageAdminsScreen extends JPanel {
 
         add(scrollPane, BorderLayout.CENTER);
 
-        // === Carga de datos ===
         getAdminDataBase();
         loadAdmins();
     }
@@ -160,13 +156,11 @@ public class ManageAdminsScreen extends JPanel {
         JPanel actionsPanel = new JPanel();
         actionsPanel.setBackground(UITheme.getSecondaryColor());
 
-        // Botón para ver info admin
         JLabel infoBtn = ButtonFactory.createIconButton(AppIcons.USER_ICON, "Information User", () -> infoComplete(admin));
         infoBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
         actionsPanel.add(infoBtn, BorderLayout.WEST);
 
-        // Botón para eliminar admin  
         ImageIcon deleteIcon = AppIcons.DELETE_ICON;
         ImageIcon iconDanger = UIUtils.tintImage(deleteIcon, UITheme.getDangerColor());
         JLabel deleteBtn = ButtonFactory.createIconButton(iconDanger, "Delete", () -> {
@@ -202,7 +196,7 @@ public class ManageAdminsScreen extends JPanel {
             return;
         }
         adminsPanel.removeAll(); 
-        printUserData(adminFind); // Mostrar los administradores filtrados
+        printUserData(adminFind); 
         adminsPanel.revalidate();
         adminsPanel.repaint();
         System.out.println("Searching: " + keyword);

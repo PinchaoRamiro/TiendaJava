@@ -52,7 +52,6 @@ public class OrderHistoryScreen extends JPanel {
         this.parent = parent;
         this.orderService = new OrderService();
 
-        // Configuración del modelo y la tabla
         String[] columnNames = {"Order ID", "Date", "Total", "Status", "Shipping Address"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -68,7 +67,6 @@ public class OrderHistoryScreen extends JPanel {
 
                 c.setBackground(UITheme.getSecondaryColor());
                 c.setForeground(UITheme.getTextColor());
-                // Alternar colores para mejor legibilidad
                 if (!isRowSelected(row)) {
                     c.setBackground(new Color(
                         Math.min(255, c.getBackground().getRed() + 10),
@@ -81,10 +79,8 @@ public class OrderHistoryScreen extends JPanel {
             }
         };
 
-        // Configuración del renderizador de celdas
         configureTableAppearance();
 
-        // Layout principal
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
         setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -94,13 +90,11 @@ public class OrderHistoryScreen extends JPanel {
     }
 
     private void configureTableAppearance() {
-        // Configuración básica de la tabla
         orderHistoryTable.setFont(Fonts.NORMAL_FONT);
         orderHistoryTable.setRowHeight(30);
         orderHistoryTable.setAutoCreateRowSorter(true);
         orderHistoryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        // Renderizador personalizado para las celdas
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
@@ -111,25 +105,21 @@ public class OrderHistoryScreen extends JPanel {
             }
         };
 
-        // Aplicar renderizador a todas las columnas
         for (int i = 0; i < orderHistoryTable.getColumnCount(); i++) {
             orderHistoryTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
 
-        // Estilo del encabezado
         orderHistoryTable.getTableHeader().setFont(Fonts.BOLD_NFONT);
         orderHistoryTable.getTableHeader().setForeground(UITheme.getTextColor());
         orderHistoryTable.getTableHeader().setBackground(UITheme.getPrimaryColor().darker());
         orderHistoryTable.getTableHeader().setReorderingAllowed(false);
         orderHistoryTable.getTableHeader().setResizingAllowed(false);
 
-        // Color de selección
         orderHistoryTable.setSelectionBackground(UITheme.getPrimaryColor().brighter());
         orderHistoryTable.setSelectionForeground(UITheme.getTextColor());
     }
 
     private void initializeUI() {
-        // Panel de título
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
 
@@ -160,7 +150,6 @@ public class OrderHistoryScreen extends JPanel {
             if (selectedRow != -1) {
                 try {
                     int orderId = (int) tableModel.getValueAt(selectedRow, 0);
-                    // only serch into orders list
                     Order selectedOrder = orders.stream()
                             .filter(order -> order.getOrder_id() == orderId)
                             .findFirst()

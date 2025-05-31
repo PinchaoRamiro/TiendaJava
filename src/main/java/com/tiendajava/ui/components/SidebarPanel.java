@@ -17,7 +17,6 @@ import com.tiendajava.ui.utils.UITheme;
 
 public class SidebarPanel extends JPanel {
 
-    // private final UserService userService = new UserService();
     private final MainUI frame;
 
     public SidebarPanel(MainUI frame) {
@@ -28,23 +27,28 @@ public class SidebarPanel extends JPanel {
         setBorder(BorderFactory.createMatteBorder(0, 1, 0, 1, UITheme.getTertiaryColor()));
 
         add(Box.createVerticalStrut(40));
+        add(Box.createVerticalGlue()); 
+    }
 
+    public void clearAndAddButtons() {
+        removeAll(); 
         String role = Session.getInstance().getRole();
 
-        if ("admin".equalsIgnoreCase(role)) {
+        if (role != null && role.equals("admin")) {
             addSidebarButton("Admin Dashboard", null, () -> frame.showScreen("admin-dashboard"));
             addSidebarButton("Users", AppIcons.USERS_ICON, () -> frame.showScreen("manage-users"));
             addSidebarButton("Admins", AppIcons.ADMIN_ICON, () -> frame.showScreen("manage-admins"));
             addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("manage-products"));
-            addSidebarButton("Orders", null, () -> frame.showScreen("manage-orders"));
-            
-        } else {
+            addSidebarButton("Orders", null, () -> frame.showScreen("manage-orders")); 
+        } else if (role != null && role.equals("user")) {
             addSidebarButton("Dashboard", AppIcons.APP_ICON, () -> frame.showScreen("dashboard"));
             addSidebarButton("Products", AppIcons.PRODUCTS_ICON, () -> frame.showScreen("products-user"));
             addSidebarButton("Cart", AppIcons.CART_ICON, () -> frame.showScreen("cart-p"));
             addSidebarButton("My Orders", null, () -> frame.showScreen("order-history"));
         }
-
+        
+        revalidate();
+        repaint();
         add(Box.createVerticalGlue());
     }
 

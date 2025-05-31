@@ -3,7 +3,7 @@ package com.tiendajava.ui.utils;
 import java.awt.Font;
 
 public class Fonts {
-    private static final String FONT_FAMILY = "Roboto"; // Puedes usar también "Poppins", "Roboto", etc.
+    private static final String FONT_FAMILY = "Roboto"; 
 
     // === TITULARES Y SECCIONES ===
     public static final Font TITLE_FONT = new Font(FONT_FAMILY, Font.BOLD, 22);
@@ -12,7 +12,7 @@ public class Fonts {
 
     // === TEXTO GENERAL ===
     public static final Font NORMAL_FONT = new Font(FONT_FAMILY, Font.BOLD, 14);
-    public static final Font SMALL_FONT = new Font(FONT_FAMILY, Font.PLAIN, 12);
+    public static final Font SMALL_FONT = new Font(FONT_FAMILY, Font.BOLD, 12);
 
     // === BOTONES Y ACCIONES ===
     public static final Font BUTTON_FONT = new Font(FONT_FAMILY, Font.BOLD, 15);

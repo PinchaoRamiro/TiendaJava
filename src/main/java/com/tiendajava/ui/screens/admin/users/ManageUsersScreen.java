@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
@@ -86,7 +87,6 @@ public class ManageUsersScreen extends JPanel {
         topPanel.add(row1);
         add(topPanel, BorderLayout.NORTH);
 
-        // === Panel de usuarios con scroll ===
         usersPanel.setBackground(UITheme.getPrimaryColor());
         usersPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
 
@@ -98,7 +98,6 @@ public class ManageUsersScreen extends JPanel {
 
         add(scrollPane, BorderLayout.CENTER);
 
-        // === Cargar usuarios ===
         loadUsers();
     }
 
@@ -206,20 +205,26 @@ public class ManageUsersScreen extends JPanel {
             return;
         }
 
-        ApiResponse<List<User>> response = adminService.searchUsers(query);
-        List<User> users = response.isSuccess() ? response.getData() : null;
+        parent.showLoading("Searching users...");
 
-        if (users != null && !users.isEmpty()) {
-            usersPanel.removeAll();
-            for (User user : users) {
-                usersPanel.add(createUserCard(user));
+        SwingUtilities.invokeLater(() -> {
+            ApiResponse<List<User>> response = adminService.searchUsers(query);
+            List<User> users = response.isSuccess() ? response.getData() : null;
+            parent.hideLoading();
+    
+            if (users != null && !users.isEmpty()) {
+                usersPanel.removeAll();
+                for (User user : users) {
+                    usersPanel.add(createUserCard(user));
+                }
+            } else {
+                NotificationHandler.error("No users found with the name: " + query);
             }
-        } else {
-            NotificationHandler.error("No users found with the name: " + query);
-        }
+    
+            usersPanel.revalidate();
+            usersPanel.repaint();
+        });
 
-        usersPanel.revalidate();
-        usersPanel.repaint();
     }
 
     public MainUI getParentMU() {

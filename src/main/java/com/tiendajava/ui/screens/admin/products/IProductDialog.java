@@ -27,45 +27,37 @@ import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 
-// Eliminamos 'final' de la declaración de la clase
 public abstract class IProductDialog extends JDialog {
 
-    // Componentes de UI - cambiados a protected para acceso en subclases
     protected final JTextField nameField = new JTextField(20);
     protected final JTextField priceField = new JTextField(20);
     protected final JTextField stockField = new JTextField(20);
     protected final JTextField descriptionField = new JTextField(20);
     protected final JTextField imageField = new JTextField(20);
-    protected final JButton selectImageBtn = new JButton("Select Image"); // Inicializado aquí
+    protected final JButton selectImageBtn = new JButton("Select Image"); 
 
-    protected final JPanel formPanel = new JPanel(new GridBagLayout()); // Cambiado a protected
-    protected GridBagConstraints gbc = new GridBagConstraints(); // Mantenido protected
+    protected final JPanel formPanel = new JPanel(new GridBagLayout()); 
+    protected GridBagConstraints gbc = new GridBagConstraints();
 
-    // Servicios - cambiados a protected
     protected final ProductService productService = new ProductService();
-    private final CategoryService categoryService = new CategoryService(); // Private, ya que se usa internamente aquí
+    private final CategoryService categoryService = new CategoryService(); 
 
-    // Datos del producto y categoría - cambiados a protected
     public Product product;
     protected Category category;
     protected final String categoryName;
     protected final Runnable onRunnable;
 
-    // Archivo de imagen seleccionado - cambiado a protected
     protected File imageFile;
 
-    // Constantes de Diseño
     private static final int DIALOG_WIDTH = 450;
     private static final int DIALOG_HEIGHT = 500;
     private static final Insets FIELD_INSETS = new Insets(8, 8, 8, 8);
     private static final Dimension FIELD_PREFERRED_SIZE = new Dimension(200, 30);
     private static final int GBC_WEIGHTX = 1;
 
-    // Variable para mantener la fila actual en el GridBagLayout
     protected int currentRow = 0;
 
     public IProductDialog(Product product, String categoryName, Runnable onRunnable) {
-        // Inicialización de propiedades
         this.product = product;
         this.categoryName = categoryName;
         this.onRunnable = onRunnable;
@@ -75,7 +67,6 @@ public abstract class IProductDialog extends JDialog {
         getContentPane().setBackground(UITheme.getPrimaryColor());
         setLayout(new BorderLayout()); 
 
-        // Configurar los campos de texto
         nameField.setPreferredSize(FIELD_PREFERRED_SIZE);
         priceField.setPreferredSize(FIELD_PREFERRED_SIZE);
         stockField.setPreferredSize(FIELD_PREFERRED_SIZE);
@@ -83,7 +74,6 @@ public abstract class IProductDialog extends JDialog {
         imageField.setPreferredSize(FIELD_PREFERRED_SIZE);
         imageField.setEditable(false); 
 
-        // Inicializar GridBagConstraints comunes
         gbc.insets = FIELD_INSETS;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = GBC_WEIGHTX;
@@ -210,7 +200,6 @@ public abstract class IProductDialog extends JDialog {
         }
     }
 
-    // Métodos abstractos que las subclases deben implementar
     protected abstract void onSave();
     protected abstract String getDialogTitle();
 }

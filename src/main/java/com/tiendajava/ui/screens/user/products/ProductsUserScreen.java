@@ -4,9 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -29,6 +30,7 @@ public class ProductsUserScreen extends JPanel {
 
     private final ProductService productService = new ProductService();
     private final JPanel productsPanel = new JPanel(new GridLayout(0, 1, 15, 15)); 
+    private final JComboBox<String> filterOptions = new JComboBox<>(new String[] {"All", "Clothing", "Electronics", "Furniture"});
     private final SearchBar searchBar;
     private final MainUI parent;
     private List<Product> products;
@@ -39,7 +41,6 @@ public class ProductsUserScreen extends JPanel {
         setBackground(UITheme.getPrimaryColor());
         setBorder(BorderFactory.createEmptyBorder(20, 20, 0, 20)); 
 
-        // Top Panel (Titulo + Barra de Búsqueda)
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 10));
         topPanel.setBackground(UITheme.getPrimaryColor());
         
@@ -48,20 +49,22 @@ public class ProductsUserScreen extends JPanel {
         title.setForeground(UITheme.getTextColor());
 
         searchBar = new SearchBar(e -> searchProducts(productsPanel));
+        searchBar.setPreferredSize(new java.awt.Dimension(400, 40));
 
-        // Create a filter options button
-        JButton filterButton = new JButton("Filter");
-        filterButton.addActionListener(e -> {
-            NotificationHandler.info("Filter options are not implemented yet.");
+        filterOptions.setForeground(UITheme.getTextColor());
+        filterOptions.setBackground(UITheme.getSecondaryColor());
+        filterOptions.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        filterOptions.addActionListener(e -> {
+            filterProducts();
         });
 
         topPanel.add(title);
         topPanel.add(searchBar);
-        topPanel.add(filterButton);
+        topPanel.add(filterOptions);
 
         add(topPanel, BorderLayout.NORTH);
 
-        // 🔹 Productos Panel
         JScrollPane scrollPane = new JScrollPane(productsPanel);
         scrollPane.setBorder(null);
         scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
@@ -70,7 +73,6 @@ public class ProductsUserScreen extends JPanel {
 
         add(scrollPane, BorderLayout.CENTER);
 
-        // 🔹 Cargar productos
         loadProducts( productsPanel);
     }
 
@@ -106,7 +108,6 @@ public class ProductsUserScreen extends JPanel {
     private void addToCart(Product product) {
         try {
             new AddCartDialog(parent.getCart(), product).setVisible(true);
-            NotificationHandler.success("Product added to cart: " + product.getName());
         } catch (NumberFormatException e) {
             NotificationHandler.warning("Please enter a valid quantity.");
         } catch (IllegalArgumentException e) {
@@ -136,9 +137,24 @@ public class ProductsUserScreen extends JPanel {
         }
     }
 
-    
+    private void filterProducts() {
+        String selectedOption = (String) filterOptions.getSelectedItem();
+
+        if (selectedOption.equals("All")) {
+            printProducts(products, productsPanel);
+        }
+
+        else {
+            List<Product> filteredProducts = products.stream()
+                .filter(product -> product.getCategory().getCategory_name().equals(selectedOption))
+                .collect(Collectors.toList());
+            printProducts(filteredProducts, productsPanel);
+        }
+
+
+    }
     
     private void onClickProduct(Product product) {
-        new InfoProductDialog(product).setVisible(true);
+        new InfoProductDialog(parent, product).setVisible(true);
     }
 }

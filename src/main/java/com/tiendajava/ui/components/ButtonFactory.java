@@ -65,7 +65,6 @@ public class ButtonFactory {
         return button;
     }
 
-    // create a button with icon only
     public static JLabel createIconButton(ImageIcon icon, String tooltip, Runnable onClick) {
         JLabel button = new JLabel(icon);
         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

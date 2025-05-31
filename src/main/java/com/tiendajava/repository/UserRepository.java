@@ -62,6 +62,8 @@ public class UserRepository extends BaseRepository {
 
       if (response.statusCode() == 200) {
         LoginResponse loginResponse = gson.fromJson(response.body(), LoginResponse.class);
+        System.out.println("Login successful: " + loginResponse.getMsg());
+        System.out.println("User: " + loginResponse.getUser().getRole());
         User user = loginResponse.getUser();
         String token = loginResponse.getToken();
 

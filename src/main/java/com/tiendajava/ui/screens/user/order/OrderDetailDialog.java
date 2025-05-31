@@ -71,12 +71,10 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
         setLocationRelativeTo(parent);
         setResizable(true);
 
-        // Configuración del panel principal
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(UITheme.getPrimaryColor());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Añadir contenido
         mainPanel.add(createHeaderPanel(), BorderLayout.NORTH);
         mainPanel.add(createContentPanel(), BorderLayout.CENTER);
         mainPanel.add(createFooterPanel(), BorderLayout.SOUTH);
@@ -86,10 +84,9 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
 
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(30, 30, 30)); // Fondo oscuro para el header
+        headerPanel.setBackground(new Color(30, 30, 30)); 
         headerPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        // Panel izquierdo con logo y título
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
 
@@ -108,12 +105,11 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
 
         titlePanel.add(logoTitlePanel, BorderLayout.WEST);
 
-        // Panel derecho con botón de cierre
-        JButton closeButton = new JButton(AppIcons.CANCEL_ICON);
-        closeButton.setContentAreaFilled(false);
-        closeButton.setBorder(BorderFactory.createEmptyBorder());
-        closeButton.setFocusPainted(false);
-        closeButton.addActionListener(e -> dispose());
+        JLabel closeButton = ButtonFactory.createIconButton(
+            AppIcons.CANCEL_ICON,
+            "Close",
+            this::dispose
+        );
 
         JPanel closeButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         closeButtonPanel.setOpaque(false);
@@ -121,7 +117,6 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
 
         titlePanel.add(closeButtonPanel, BorderLayout.EAST);
 
-        // Panel de información resumida
         JPanel summaryPanel = new JPanel(new GridLayout(1, 4, 10, 0));
         summaryPanel.setOpaque(false);
 
@@ -158,14 +153,11 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
         JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
         contentPanel.setBackground(UITheme.getPrimaryColor());
 
-        // Panel principal con dos columnas
         JPanel mainContentPanel = new JPanel(new GridLayout(1, 2, 10, 0));
         mainContentPanel.setOpaque(false);
 
-        // Panel izquierdo con información del cliente y orden
         mainContentPanel.add(createOrderAndCustomerPanel());
 
-        // Panel derecho con los items
         mainContentPanel.add(createItemsPanel());
 
         contentPanel.add(mainContentPanel, BorderLayout.CENTER);
@@ -178,7 +170,7 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
         footerPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 
         JButton exportPDButton = ButtonFactory.createSecondaryButton("Export to PDF", null, this::exportToPDF);
-        exportPDButton.setPreferredSize(new Dimension(150, 40));
+        exportPDButton.setPreferredSize(new Dimension(120, 40));
         footerPanel.add(exportPDButton);
 
         return footerPanel;
@@ -188,10 +180,8 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setOpaque(false);
 
-        // Panel de información de la orden
         panel.add(createSectionPanel("Order Information", createOrderInfoPanel()), BorderLayout.NORTH);
 
-        // Panel de información del cliente
         panel.add(createSectionPanel("Customer Information", createCustomerInfoPanel()), BorderLayout.CENTER);
 
         return panel;
@@ -239,7 +229,6 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
         orderInfoPanel.add(createInfoRow("Total Amount: ", currencyFormat.format(order.getTotal_amount())), gbc);
 
         gbc.gridy++;
-        System.out.println("Payment Method: " + order.getPayment_method());
         orderInfoPanel.add(createInfoRow("Payment Method: ", order.getPayment_method()), gbc);
 
         return orderInfoPanel;
@@ -291,7 +280,6 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
 
-        // Crear tabla de items
         String[] columnNames = {"Product", "Price", "Quantity", "Subtotal"};
 
         orderItemsTable.setModel(new DefaultTableModel(columnNames, 0) {
@@ -317,7 +305,7 @@ public class OrderDetailDialog extends JDialog implements java.awt.print.Printab
                 label.setHorizontalAlignment(SwingConstants.CENTER);
                 label.setBackground(UITheme.getPrimaryColor().darker()); 
                 label.setForeground(UITheme.getTextColor());
-                label.setBorder(new EmptyBorder(8, 0, 8, 0)); // Padding
+                label.setBorder(new EmptyBorder(8, 0, 8, 0)); 
                 return label;
             }
         };

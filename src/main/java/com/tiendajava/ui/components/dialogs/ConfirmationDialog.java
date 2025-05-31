@@ -77,18 +77,3 @@ public class ConfirmationDialog extends JDialog {
         dispose();
     }
 }
-
-// new ConfirmationDialog(
-//     "Logout Confirmation",
-//     "Are you sure you want to logout?",
-//     () -> {
-//         userService.Logout();
-//         parent.showScreen("login");
-//     }
-// ).setVisible(true);
-
-// new ConfirmationDialog(
-//     "Save Changes",
-//     "Do you want to save the changes made?",
-//     this::saveChanges
-// ).setVisible(true);
