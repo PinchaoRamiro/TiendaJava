@@ -128,7 +128,7 @@ public final class MainUI extends JFrame {
             case "order-history" -> contentPanel.add(new OrderHistoryScreen(this), "order-history");
             case "admin-dashboard" -> contentPanel.add(new AdminDashboardScreen(this), "admin-dashboard");
             case "manage-users" -> contentPanel.add(new ManageUsersScreen(this), "manage-users");
-            case "add-user" -> contentPanel.add(new RegisterScreen(this), "add-user"); // Reutilizar RegisterScreen para añadir usuarios
+            case "add-user" -> contentPanel.add(new RegisterScreen(this), "add-user"); 
             case "manage-admins" -> contentPanel.add(new ManageAdminsScreen(this), "manage-admins");
             case "manage-products" -> contentPanel.add(new ProductsAdminScreen(this), "manage-products");
             case "manage-orders" -> contentPanel.add(new PaymentsAdminScreen(this), "manage-orders");
@@ -146,19 +146,17 @@ public final class MainUI extends JFrame {
 
         CardLayout cl = (CardLayout) contentPanel.getLayout();
         cl.show(contentPanel, name);
-        updateUIState(name); 
+        updateUIState(); 
     }
     
-    private void updateUIState(String screenName) {
+    private void updateUIState() {
         boolean isLoggedIn = Session.getInstance().getUser() != null;
         headerPanel.setLoggedInState(isLoggedIn);
         
         updateSidebarVisibility(); 
         if (isLoggedIn) {
             sidebarPanel.clearAndAddButtons(); 
-        } 
-
-        footerPanel.updateForScreen(screenName);
+        }
         revalidate();
         repaint();
     }

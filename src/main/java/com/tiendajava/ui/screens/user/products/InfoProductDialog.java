@@ -152,33 +152,27 @@ public class InfoProductDialog extends JDialog {
         String sectionTitle = "";
         String[] items = {};
 
-        switch (product) {
-            case ClothingProduct clothing -> {
-                sectionTitle = "Details on Clothing";
-                items = new String[] {
-                    "Size: " + clothing.getSize(),
-                    "Color: " + clothing.getColor(),
-                    "Material: " + clothing.getMaterial()
-                };
-            }
-            case ElectronicsProduct electronics -> {
-                sectionTitle = "Especifications of Electronics";
-                items = new String[] {
-                    "Brand: " + electronics.getBrand(),
-                    "Voltage: " + electronics.getVoltage(),
-                    "Warranty: " + electronics.getWarranty()
-                };
-            }
-            case FurnitureProduct furniture -> {
-                sectionTitle = "Details on Furniture";
-                items = new String[] {
-                    "Dimensions: " + furniture.getDimensions(),
-                    "Material: " + furniture.getMaterial(),
-                    "Type of Wood: " + furniture.getWoodType()
-                };
-            }
-            default -> {
-            }
+        if (product instanceof ClothingProduct clothing) {
+            sectionTitle = "Details on Clothing";
+            items = new String[] {
+                "Size: " + clothing.getSize(),
+                "Color: " + clothing.getColor(),
+                "Material: " + clothing.getMaterial()
+            };
+        } else if (product instanceof ElectronicsProduct electronics) {
+            sectionTitle = "Especifications of Electronics";
+            items = new String[] {
+                "Brand: " + electronics.getBrand(),
+                "Voltage: " + electronics.getVoltage(),
+                "Warranty: " + electronics.getWarranty()
+            };
+        } else if (product instanceof FurnitureProduct furniture) {
+            sectionTitle = "Details on Furniture";
+            items = new String[] {
+                "Dimensions: " + furniture.getDimensions(),
+                "Material: " + furniture.getMaterial(),
+                "Type of Wood: " + furniture.getWoodType()
+            };
         }
 
         return createInfoSection(sectionTitle, items);

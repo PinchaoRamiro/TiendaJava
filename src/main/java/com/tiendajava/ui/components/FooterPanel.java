@@ -17,6 +17,7 @@ import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 
 public class FooterPanel extends JPanel {
+    
     public FooterPanel() {
         setLayout(new FlowLayout(FlowLayout.CENTER));
         setBackground(UITheme.getSecondaryColor());
@@ -57,9 +58,5 @@ public class FooterPanel extends JPanel {
             }
         });
         return label;
-    }
-
-    public void updateForScreen(String screenName) {
-        
     }
 }

@@ -105,7 +105,6 @@ public class LoginScreen extends JPanel {
         parent.hideLoading();
 
         if (response.isSuccess()) {
-            System.out.println("Login successful: " + response.getData().toString());
             NotificationHandler.success(
                 this, response.getMessage() != null ? response.getMessage() : "Login successful"
             );
