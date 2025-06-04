@@ -92,8 +92,6 @@ public class CreateElectronicsProductDialog extends IProductDialog {
                 SwingUtilities.invokeLater(() -> {
                     if (response.isSuccess()) {
                         NotificationHandler.success("Product created successfully!");
-                        // imprimir super product
-                        System.out.println("Product + " + super.product);
                         dispose();
                         if (onRunnable != null) onRunnable.run();
                     } else {

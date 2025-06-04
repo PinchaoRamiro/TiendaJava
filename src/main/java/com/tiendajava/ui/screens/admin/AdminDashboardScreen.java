@@ -47,7 +47,6 @@ public class AdminDashboardScreen extends JPanel {
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
 
-        // Mensaje de bienvenida personalizado
         TypingLabel welcomeLabel = new TypingLabel(
             "Welcome, " + Session.getInstance().getUser().getName() + "!",
             80

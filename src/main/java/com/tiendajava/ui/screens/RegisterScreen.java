@@ -69,7 +69,6 @@ public class RegisterScreen extends JPanel {
 
         int y = 0;
 
-        // === Título ===
         JLabel title = new JLabel("Create Account", AppIcons.USER_PLUS_ICON, SwingConstants.CENTER);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
@@ -87,19 +86,17 @@ public class RegisterScreen extends JPanel {
         addField(formPanel, gbc, y++, "Password:", passwordField, "Confirm Password:", passwordConfirmField);
         addField(formPanel, gbc, y++, "Document Type:", typeDocumentField, "Document No.:", numDocumentField);
 
-        // Campo individual (Address, usa solo la mitad izquierda)
         gbc.gridx = 0;
         gbc.gridy = y++;
         formPanel.add(UIUtils.createTextLabel("Address:", Fonts.BOLD_NFONT), gbc);
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         formPanel.add(addressField, gbc);
-        // Label derecha
+
         gbc.gridx = 2;
         gbc.weightx = 0.0;
         formPanel.add(UIUtils.createTextLabel("", Fonts.BOLD_NFONT ), gbc);
 
-        // === Botones de acción ===
         JButton registerBtn = ButtonFactory.createPrimaryButton("Register", AppIcons.USER_CHECK_ICON, this::register);
 
         gbc.gridy = y++;
@@ -118,22 +115,18 @@ public class RegisterScreen extends JPanel {
   private void addField(JPanel panel, GridBagConstraints gbc, int y, String labelLeft, JComponent fieldLeft,
       String labelRight, JComponent fieldRight) {
 
-    // Label izquierda
     gbc.gridx = 0;
     gbc.gridy = y;
     panel.add(UIUtils.createTextLabel(labelLeft, Fonts.BOLD_NFONT), gbc);
 
-    // Campo izquierda
     gbc.gridx = 1;
     gbc.weightx = 1.0;
     panel.add(fieldLeft, gbc);
 
-    // Label derecha
     gbc.gridx = 2;
     gbc.weightx = 0.0;
     panel.add(UIUtils.createTextLabel(labelRight, Fonts.BOLD_NFONT), gbc);
 
-    // Campo derecha
     gbc.gridx = 3;
     gbc.weightx = 1.0;
     panel.add(fieldRight, gbc);

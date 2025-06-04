@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
@@ -30,6 +31,7 @@ import com.tiendajava.service.UserService;
 import com.tiendajava.ui.MainUI;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.NotificationHandler;
+import com.tiendajava.ui.components.SearchBar;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
@@ -38,34 +40,31 @@ import com.tiendajava.utils.ApiResponse;
 public class PaymentsAdminScreen extends JPanel {
 
     private final MainUI parent;
+    private final SearchBar searchBar ;
     private final OrderService orderService = new OrderService();
     private final UserService userService = new UserService();
     private final JPanel paymentsContainer = new JPanel();
+    private JPanel emptyPanel;
 
     private List<Order> orders;
 
-    // Colores para los diferentes estados
-    private static final Color PENDING_COLOR = new Color(255, 215, 0); // Amarillo claro
-    private static final Color APPROVED_COLOR = new Color(144, 238, 144); // Verde claro
-    private static final Color REJECTED_COLOR = new Color(255, 182, 193); // Rojo claro
-    private static final int CARD_WIDTH_PERCENT = 90; // Porcentaje del ancho de la pantalla
-    private static final int CARD_HEIGHT = 120; // Altura fija para las tarjetas
+    private static final int CARD_WIDTH_PERCENT = 90;
+    private static final int CARD_HEIGHT = 120; 
 
     public PaymentsAdminScreen(MainUI parent) {
         this.parent = parent;
+        searchBar = new SearchBar(e -> searchOrders());
+        searchBar.setPreferredSize(new Dimension(300, 30));
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
         setBorder(new EmptyBorder(20, 20, 20, 20));
 
         initializeUI();
-        loadPayments();
+        getOrdersDataBase();
     }
 
     private void initializeUI() {
-
         headerPanel();
-
-        // Panel de contenido con scroll y layout adaptable
         paymentsContainer.setLayout(new BoxLayout(paymentsContainer, BoxLayout.Y_AXIS));
         paymentsContainer.setBackground(UITheme.getPrimaryColor());
 
@@ -79,17 +78,16 @@ public class PaymentsAdminScreen extends JPanel {
     }
 
     private void headerPanel(){
-        // Panel de título
-
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        contentPanel.setOpaque(false);
 
         JPanel titlePanel = createTitlePanel();
-        contentPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // Botón para filtrar por estado
+        JPanel compoHeader = new JPanel(new BorderLayout());
+        compoHeader.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        compoHeader.setBorder(new EmptyBorder(0, 0, 10, 0));
+
         JLabel filterLabel = new JLabel("Filter by status:");
         filterLabel.setFont(Fonts.NORMAL_FONT);
+
         JComboBox<String> statusComboBox = filterButtonActionPerformed();
         statusComboBox.addActionListener(e -> {
             String selectedStatus = (String) statusComboBox.getSelectedItem();
@@ -105,9 +103,15 @@ public class PaymentsAdminScreen extends JPanel {
         filterPanel.add(filterLabel);
         filterPanel.add(statusComboBox);
 
-        contentPanel.add(filterPanel, BorderLayout.SOUTH);
+        compoHeader.add(filterPanel, BorderLayout.WEST);
+        compoHeader.add(searchBar, BorderLayout.CENTER);
 
-        add(contentPanel, BorderLayout.NORTH);
+        JPanel topBarPanel = new JPanel(new BorderLayout());
+        topBarPanel.setOpaque(false); 
+
+        topBarPanel.add(titlePanel, BorderLayout.NORTH);
+        topBarPanel.add(compoHeader, BorderLayout.SOUTH); 
+        add(topBarPanel, BorderLayout.NORTH);
 
     }
 
@@ -124,16 +128,24 @@ public class PaymentsAdminScreen extends JPanel {
         return titlePanel;
     }
 
-    private void loadPayments() {
+    private void getOrdersDataBase(){
+        parent.showLoading("Loading payments...");
+        
+        SwingUtilities.invokeLater(() -> {
+            ApiResponse<List<Order>> response = orderService.getAllOrders();
+            parent.hideLoading();
+            if (!response.isSuccess()) {
+                NotificationHandler.error("Failed to load payments: " + response.getMessage());
+            }else{
+                orders = response.getData();
+                loadPayments(orders);
+            }
+        });
+    }
+
+    private void loadPayments(List<Order> orders) {
         paymentsContainer.removeAll();
 
-        ApiResponse<List<Order>> response = orderService.getAllOrders();
-        if (!response.isSuccess()) {
-            NotificationHandler.error("Failed to load payments: " + response.getMessage());
-            return;
-        }
-
-        orders = response.getData();
         if (orders == null || orders.isEmpty()) {
             paymentsContainer.add(createEmptyStatePanel());
         } else {
@@ -142,13 +154,14 @@ public class PaymentsAdminScreen extends JPanel {
                 paymentsContainer.add(Box.createRigidArea(new Dimension(0, 15)));
             }
         }
-
+        
         paymentsContainer.revalidate();
         paymentsContainer.repaint();
+
     }
 
     private JPanel createEmptyStatePanel() {
-        JPanel emptyPanel = new JPanel(new BorderLayout());
+        emptyPanel = new JPanel(new BorderLayout());
         emptyPanel.setBackground(UITheme.getPrimaryColor());
         emptyPanel.setBorder(new EmptyBorder(40, 0, 40, 0));
 
@@ -161,21 +174,17 @@ public class PaymentsAdminScreen extends JPanel {
     }
 
     private JPanel createPaymentCard(Order order) {
-        // Obtener usuario
         ApiResponse<User> userResponse = userService.findUserById(order.getUser_id());
         User user = userResponse.isSuccess() ? userResponse.getData() : null;
 
-        // Calcular ancho de la tarjeta (90% del ancho del contenedor)
         int cardWidth = (int) (getWidth() * CARD_WIDTH_PERCENT / 100);
 
-        // Panel principal de la tarjeta con layout adaptable
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(UITheme.getSecondaryColor());
         card.setBorder(new MatteBorder(1, 1, 1, 1, getStatusColor(order.getStatus().toString())));
         card.setPreferredSize(new Dimension(cardWidth, CARD_HEIGHT));
         card.setMaximumSize(new Dimension(cardWidth, CARD_HEIGHT));
 
-        // Panel de información con GridBagLayout para mejor adaptación
         JPanel infoPanel = new JPanel(new GridBagLayout());
         infoPanel.setOpaque(false);
         infoPanel.setBorder(new EmptyBorder(10, 15, 10, 15));
@@ -186,25 +195,21 @@ public class PaymentsAdminScreen extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
 
-        // Añadir información básica
         gbc.gridx = 0; gbc.gridy = 0;
         infoPanel.add(createInfoLabel("Order ID: ", String.valueOf(order.getOrder_id())), gbc);
 
         gbc.gridy++;
         infoPanel.add(createInfoLabel("Customer: ", user != null ? user.getName() : "Unknown"), gbc);
 
-        // Panel de acciones
         JPanel actionsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actionsPanel.setOpaque(false);
         actionsPanel.setPreferredSize(new Dimension(120, 50));
 
-        // Botón de detalles
         JButton detailsBtn = ButtonFactory.createSecondaryButton("Details", null, () -> {
             showOrderDetails(order, user);
         });
         detailsBtn.setPreferredSize(new Dimension(100, 30));
 
-        // ComboBox de estado
         JComboBox<String> statusCombo = new JComboBox<>(new String[]{"Pending", "Approved", "Rejected"});
         statusCombo.setSelectedItem(order.getStatus().toString());
         statusCombo.setFont(Fonts.NORMAL_FONT);
@@ -212,7 +217,6 @@ public class PaymentsAdminScreen extends JPanel {
         statusCombo.setForeground(UITheme.getTextColor());
         statusCombo.setPreferredSize(new Dimension(100, 30));
 
-        // Botón de actualización
         JButton updateBtn = ButtonFactory.createPrimaryButton("Update", null, () -> {
             updateOrderStatus(order, statusCombo);
         });
@@ -222,11 +226,9 @@ public class PaymentsAdminScreen extends JPanel {
         actionsPanel.add(statusCombo);
         actionsPanel.add(updateBtn);
 
-        // Añadir componentes al panel principal
         card.add(infoPanel, BorderLayout.CENTER);
         card.add(actionsPanel, BorderLayout.SOUTH);
 
-        // Añadir efecto hover
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -262,9 +264,9 @@ public class PaymentsAdminScreen extends JPanel {
 
     private Color getStatusColor(String status) {
         return switch (status.toLowerCase()) {
-            case "approved" -> APPROVED_COLOR.darker();
-            case "rejected" -> REJECTED_COLOR.darker();
-            case "pending" -> PENDING_COLOR.darker();
+            case "approved" -> UITheme.getSuccessColor();
+            case "rejected" -> UITheme.getErrorColor();
+            case "pending" -> UITheme.getWarningColor();
             default -> UITheme.getTextColor();
         };
     }
@@ -279,14 +281,14 @@ public class PaymentsAdminScreen extends JPanel {
             ApiResponse<Order> response = orderService.updateOrderStatus(order.getOrder_id(), selectedStatus);
             if (response.isSuccess()) {
                 NotificationHandler.success("Payment status updated successfully!");
-                loadPayments();
+                order.setStatus(Order.OrderStatusEnum.valueOf(selectedStatus));
+                loadPayments(orders);
             } else {
                 NotificationHandler.error("Failed to update status: " + response.getMessage());
             }
         }
     }
 
-    // Boton para filtrar por estado
     private JComboBox<String> filterButtonActionPerformed() {
         JComboBox<String> statusComboBox = new JComboBox<>(new String[]{"All", "Pending", "Approved", "Rejected"});
         return statusComboBox;
@@ -296,7 +298,7 @@ public class PaymentsAdminScreen extends JPanel {
         paymentsContainer.removeAll();
 
         if( "All".equals(status) || status == null) {
-            loadPayments();
+            loadPayments(orders);
             return;
         }
 
@@ -310,10 +312,42 @@ public class PaymentsAdminScreen extends JPanel {
         paymentsContainer.repaint();
     }
 
+    private void searchOrders() {
+        paymentsContainer.removeAll();
+
+        String searchTerm = searchBar.getText();
+        if (searchTerm.isEmpty()) {
+            loadPayments(orders);
+            return;
+        }
+
+        for (Order order : orders) {
+            if (order.getStatus().toString().equalsIgnoreCase(searchTerm)) {
+                paymentsContainer.add(createPaymentCard(order));
+            }
+            else if(order.getPayment_method().contains(searchTerm)) {
+                paymentsContainer.add(createPaymentCard(order));
+            }
+            else if (searchTerm.matches("\\d+")) {
+                if (order.getOrder_id() == Integer.parseInt(searchTerm)) {
+                    paymentsContainer.add(createPaymentCard(order));
+                }else{
+                    NotificationHandler.error("Order not found");
+                    loadPayments(orders);
+                }
+            }else{
+                NotificationHandler.error("Order not found");
+                loadPayments(orders);
+            }
+        }
+
+        paymentsContainer.revalidate();
+        paymentsContainer.repaint();
+    }
+
     @Override
     public void setBounds(int x, int y, int width, int height) {
         super.setBounds(x, y, width, height);
-        // Ajustar el ancho de las tarjetas cuando el tamaño del panel cambia
         if (paymentsContainer.getComponentCount() > 0) {
             int cardWidth = (int) (width * CARD_WIDTH_PERCENT / 100);
             for (Component comp : paymentsContainer.getComponents()) {

@@ -42,7 +42,6 @@ public class ShowInfoDialog extends JDialog {
 
         buildInfo(infoData);
 
-        // Botón de Cerrar
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(UITheme.getPrimaryColor());
 
@@ -61,7 +60,6 @@ public class ShowInfoDialog extends JDialog {
 
         int row = 0;
         for (Map.Entry<String, String> entry : infoData.entrySet()) {
-            // Etiqueta
             gbc.gridx = 0;
             gbc.gridy = row;
             JLabel keyLabel = new JLabel(entry.getKey() + ":");

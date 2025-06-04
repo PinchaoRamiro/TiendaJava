@@ -13,7 +13,7 @@ import com.tiendajava.ui.utils.animations.Toast;
 
 public class NotificationHandler {
 
-    private static final int DURATION = 3000; // Duration in milliseconds
+    private static final int DURATION = 3000; 
     private static Toast toast;
 
     public static void success(Component parent, String message) {

@@ -1,23 +1,33 @@
 package com.tiendajava.ui.screens.user;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent; // Para detectar cambios de tamaño
+import java.awt.event.HierarchyEvent;   // Para detectar cambios de tamaño
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 
 import com.tiendajava.model.Product;
 import com.tiendajava.model.Session;
+import com.tiendajava.model.User;
 import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.MainUI;
+import com.tiendajava.ui.components.ButtonFactory;
+import com.tiendajava.ui.components.productComponents.ProductCard;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
@@ -27,248 +37,357 @@ import com.tiendajava.utils.ApiResponse;
 
 public class DashboardUserScreen extends JPanel {
 
-    private MainUI parent;
+    private final MainUI parent;
+    private final ProductService productService = new ProductService();
+    private JScrollPane featuredProductsScrollPane;
+    private JPanel featuredProductsPanel;
+    private JLabel loadingLabel;
+
+    private JPanel scrollableContentPanel;
+    private JPanel statsPanel; 
+    private JPanel contentPanel; 
+
+    private boolean isSmallScreen = false;
+    private static final int SMALL_SCREEN_THRESHOLD = 600; 
 
     public DashboardUserScreen(MainUI parent) {
         this.parent = parent;
         setLayout(new BorderLayout());
         setBackground(UITheme.getPrimaryColor());
-        createHeader();
-        createMainContent();
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        initUI();
+        loadData();
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                checkScreenSizeAndApplyLayout();
+            }
+        });
     }
 
-    private void createHeader() {
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(UITheme.getPrimaryColor());
-        headerPanel.setBorder(UIUtils.getDefaultPadding(20, 20, 10, 20));
+    private void initUI() {
+        add(createHeader(), BorderLayout.NORTH);
 
-        // Título de la tienda
-        JLabel title = new JLabel("RP STORE", AppIcons.HOME_ICON, SwingConstants.CENTER);
+        scrollableContentPanel = new JPanel();
+        scrollableContentPanel.setLayout(new BoxLayout(scrollableContentPanel, BoxLayout.Y_AXIS));
+        scrollableContentPanel.setBackground(UITheme.getPrimaryColor());
+        
+        createMainContentPanels();
+
+        JScrollPane mainScrollPane = new JScrollPane(scrollableContentPanel);
+        mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        mainScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        mainScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        mainScrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar());
+
+        add(mainScrollPane, BorderLayout.CENTER);
+        checkScreenSizeAndApplyLayout();
+    }
+
+    private JPanel createHeader() {
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(UITheme.getPrimaryColor());
+        header.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
+
+        TypingLabel title = new TypingLabel("RP STORE", 30);
         title.setFont(Fonts.TITLE_FONT);
         title.setForeground(UITheme.getTextColor());
+        title.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Mensaje de bienvenida personalizado
-        TypingLabel welcomeLabel = new TypingLabel(
-            "Welcome, " + Session.getInstance().getUser().getName() + "! Enjoy your shopping experience.",
-            80
-        );
+        User user = Session.getInstance().getUser();
+        String welcomeText = String.format("Welcome, %s %s!", user.getName(), user.getLastName());
+        TypingLabel welcomeLabel = new TypingLabel(welcomeText, 50);
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         welcomeLabel.setFont(Fonts.SUBTITLE_FONT);
         welcomeLabel.setForeground(UITheme.getSuccessColor());
-        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        headerPanel.add(title, BorderLayout.NORTH);
-        headerPanel.add(welcomeLabel, BorderLayout.CENTER);
-        welcomeLabel.startTyping();
+        header.add(title, BorderLayout.NORTH);
+        header.add(welcomeLabel, BorderLayout.CENTER);
 
-        add(headerPanel, BorderLayout.NORTH);
+        addHierarchyListener(e -> {
+            if (e.getChangeFlags() == HierarchyEvent.SHOWING_CHANGED && isShowing()) {
+                title.startTyping();
+                welcomeLabel.startTyping();
+            }
+        });
+
+        return header;
     }
 
-    private void createMainContent() {
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBackground(UITheme.getPrimaryColor());
-        mainPanel.setBorder(UIUtils.getDefaultPadding());
+    private void createMainContentPanels() {
+        statsPanel = new JPanel(); 
+        statsPanel.setBackground(UITheme.getPrimaryColor());
+        statsPanel.setBorder(UIUtils.createTitledBorder("Your Statistics"));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        contentPanel = new JPanel();
+        contentPanel.setBackground(UITheme.getPrimaryColor());
 
-        // Panel de estadísticas del usuario
-        JPanel statsPanel = createStatsPanel();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        mainPanel.add(statsPanel, gbc);
+        contentPanel.add(createQuickActionsPanel());
+        contentPanel.add(createFeaturedProductsPanel());
 
-        // Panel de accesos rápidos
-        JPanel quickActionsPanel = createQuickActionsPanel();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        gbc.weightx = 0.5;
-        mainPanel.add(quickActionsPanel, gbc);
-
-        // Panel de productos destacados
-        JPanel featuredPanel = createFeaturedProductsPanel();
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.weightx = 0.5;
-        mainPanel.add(featuredPanel, gbc);
-
-        // Panel de ofertas especiales
-        JPanel offersPanel = createOffersPanel();
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1.0;
-        mainPanel.add(offersPanel, gbc);
-
-        add(mainPanel, BorderLayout.CENTER);
+        scrollableContentPanel.add(statsPanel);
+        scrollableContentPanel.add(Box.createVerticalStrut(20));
+        scrollableContentPanel.add(contentPanel);
+        scrollableContentPanel.add(Box.createVerticalStrut(20));
+        scrollableContentPanel.add(createOffersPanel());
     }
 
-    private JPanel createStatsPanel() {
-        JPanel panel = new JPanel(new GridLayout(1, 3, 15, 0));
-        panel.setBackground(UITheme.getPrimaryColor());
-        panel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(UITheme.getBorderCardsColor(), 2),
-            "Your Statistics",
-            0, 0, Fonts.NORMAL_FONT, UITheme.getTextColor()
-        ));
+    private void checkScreenSizeAndApplyLayout() {
+        boolean newIsSmallScreen = getWidth() < SMALL_SCREEN_THRESHOLD;
 
-        // Estadística: Pedidos realizados
-        JPanel ordersPanel = createStatCard("Orders", "12", "📦");
-        ordersPanel.setPreferredSize(new java.awt.Dimension(200, 100));
-        
-        // Estadística: Productos favoritos
-        JPanel favoritesPanel = createStatCard("Favorites", "8", "❤️");
-        favoritesPanel.setPreferredSize(new java.awt.Dimension(200, 100));
-        
-        // Estadística: Puntos de fidelidad
-        JPanel pointsPanel = createStatCard("Points", "350", "⭐");
-        pointsPanel.setPreferredSize(new java.awt.Dimension(200, 100));
-
-        panel.add(ordersPanel);
-        panel.add(favoritesPanel);
-        panel.add(pointsPanel);
-
-        return panel;
+        if (newIsSmallScreen != isSmallScreen) {
+            isSmallScreen = newIsSmallScreen;
+            updateStatsLayout();    
+            updateMainContentLayout();  
+            
+            scrollableContentPanel.revalidate();
+            scrollableContentPanel.repaint();
+        }
     }
 
-    private JPanel createStatCard(String title, String value, String icon) {
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBackground(UITheme.getSecondaryColor());
-        // empity border
-        card.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        card.setLayout(new BorderLayout());
-
-        JLabel iconLabel = new JLabel(icon, SwingConstants.CENTER);
-        iconLabel.setFont(Fonts.NORMAL_FONT.deriveFont(24f));
-
-        JLabel valueLabel = new JLabel(value, SwingConstants.CENTER);
-        valueLabel.setFont(Fonts.SUBTITLE_FONT);
-        valueLabel.setForeground(UITheme.getSuccessColor());
-
-        JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
-        titleLabel.setFont(Fonts.SMALL_FONT);
-        titleLabel.setForeground(UITheme.getTextColor());
-
-        card.add(iconLabel, BorderLayout.NORTH);
-        card.add(valueLabel, BorderLayout.CENTER);
-        card.add(titleLabel, BorderLayout.SOUTH);
-
-        return card;
+    private void updateStatsLayout() {
+        if (statsPanel != null) {
+            statsPanel.removeAll(); 
+            
+            StatCard ordersCard = new StatCard("Orders", "15", 
+                UITheme.getInfoColor(), "Total orders placed");
+            
+            StatCard favoritesCard = new StatCard("Favorites", "8", 
+                UITheme.getDangerColor(), "Saved favorite items");
+            
+            StatCard pointsCard = new StatCard("Points", "350", 
+                UITheme.getWarningColor(), "Loyalty points available");
+            
+            if (isSmallScreen) {
+                statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
+                ordersCard.setAlignmentX(CENTER_ALIGNMENT);
+                favoritesCard.setAlignmentX(CENTER_ALIGNMENT);
+                pointsCard.setAlignmentX(CENTER_ALIGNMENT);
+                
+                statsPanel.add(ordersCard);
+                statsPanel.add(Box.createVerticalStrut(15));
+                statsPanel.add(favoritesCard);
+                statsPanel.add(Box.createVerticalStrut(15));
+                statsPanel.add(pointsCard);
+            } else {
+                statsPanel.setLayout(new GridLayout(1, 3, 15, 0));
+                statsPanel.add(ordersCard);
+                statsPanel.add(favoritesCard);
+                statsPanel.add(pointsCard);
+            }
+            statsPanel.revalidate();
+            statsPanel.repaint();   
+        }
     }
+    private void updateMainContentLayout() {
+        if (contentPanel != null) {
+
+            JPanel quickActionsPanel = (JPanel) contentPanel.getComponent(0);
+            featuredProductsPanel = (JPanel) contentPanel.getComponent(1);
+
+            if (isSmallScreen) {
+                contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+                quickActionsPanel.setAlignmentX(CENTER_ALIGNMENT); 
+                featuredProductsPanel.setAlignmentX(CENTER_ALIGNMENT); 
+                quickActionsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, quickActionsPanel.getPreferredSize().height));
+                featuredProductsPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, featuredProductsPanel.getPreferredSize().height));
+
+            } else {
+                contentPanel.setLayout(new GridLayout(1, 2, 20, 0));
+                quickActionsPanel.setMaximumSize(null);
+                featuredProductsPanel.setMaximumSize(null); 
+            }
+            contentPanel.revalidate();
+            contentPanel.repaint();
+        }
+    }
+
 
     private JPanel createQuickActionsPanel() {
-        JPanel panel = new JPanel(new GridLayout(3, 1, 0, 10));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBackground(UITheme.getPrimaryColor());
-        panel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(UITheme.getBorderCardsColor(), 1),
-            "Fast Access",
-            0, 0, Fonts.NORMAL_FONT, UITheme.getTextColor()
-        ));
+        panel.setBorder(UIUtils.createTitledBorder("Quick Actions"));
 
-        // Botón para ver categorías
-        JButton categoriesBtn = new JButton("🏷️ Explore Products");
-        categoriesBtn.setFont(Fonts.NORMAL_FONT);
-        categoriesBtn.setBackground(UITheme.getSecondaryColor());
-        categoriesBtn.setForeground(UITheme.getTextColor());
-        categoriesBtn.addActionListener(e -> {
-            parent.showScreen("products-user");
-        });
+        Dimension buttonSize = new Dimension(200, 45); 
+        int buttonSpacing = 10;
 
-        // Botón para ver carrito
-        JButton cartBtn = new JButton("🛒 My Cart");
-        cartBtn.setFont(Fonts.NORMAL_FONT);
-        cartBtn.setBackground(UITheme.getSuccessColor());
-        cartBtn.setForeground(UITheme.getTextColor());
-        cartBtn.addActionListener(e -> {
-            parent.showScreen("cart-p");
-        });
+        ButtonFactory.ActionButton productsBtn = new ButtonFactory.ActionButton(
+                "Explore Products",
+                AppIcons.PRODUCTS_ICON,
+                () -> parent.showScreen("products-user"));
+        productsBtn.setPreferredSize(buttonSize);
+        productsBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonSize.height)); 
 
-        // Botón para ver pedidos
-        JButton ordersBtn = new JButton("📋 My Orders");
-        ordersBtn.setFont(Fonts.NORMAL_FONT);
-        ordersBtn.setBackground(UITheme.getInfoColor());
-        ordersBtn.setForeground(UITheme.getTextColor());
-        ordersBtn.addActionListener(e -> {
-            parent.showScreen("order-history");
-        });
+        ButtonFactory.ActionButton cartBtn = new ButtonFactory.ActionButton(
+                "My Cart",
+                AppIcons.CART_ICON,
+                () -> parent.showScreen("cart-p"));
+        cartBtn.setPreferredSize(buttonSize);
+        cartBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonSize.height));
 
-        panel.add(categoriesBtn);
+        ButtonFactory.ActionButton ordersBtn = new ButtonFactory.ActionButton(
+                "Order History",
+                AppIcons.INFO_ICON,
+                () -> parent.showScreen("order-history"));
+        ordersBtn.setPreferredSize(buttonSize);
+        ordersBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonSize.height));
+
+        ButtonFactory.ActionButton settingsBtn = new ButtonFactory.ActionButton(
+                "Account Settings",
+                AppIcons.SETTINGS_ICON,
+                () -> parent.showScreen("account-settings"));
+        settingsBtn.setPreferredSize(buttonSize);
+        settingsBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, buttonSize.height));
+
+        panel.add(productsBtn);
+        panel.add(Box.createVerticalStrut(buttonSpacing));
         panel.add(cartBtn);
+        panel.add(Box.createVerticalStrut(buttonSpacing));
         panel.add(ordersBtn);
+        panel.add(Box.createVerticalStrut(buttonSpacing));
+        panel.add(settingsBtn);
 
         return panel;
     }
 
     private JPanel createFeaturedProductsPanel() {
-        JPanel panel = new JPanel(new GridLayout(4, 1, 0, 5));
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(UITheme.getPrimaryColor());
-        panel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(UITheme.getBorderCardsColor(), 1),
-            "Featured Products",
-            0, 0, Fonts.NORMAL_FONT, UITheme.getTextColor()
-        ));
+        panel.setBorder(UIUtils.createTitledBorder("Featured Products"));
 
-        // Extraemos algunos productos destacados
-        ProductService productService = new ProductService();
-        ApiResponse<List<Product>> response = productService.getFeaturedProducts();
-        if (!response.isSuccess()) {
-            JLabel errorLabel = new JLabel("Error loading products: " + response.getMessage());
-            errorLabel.setFont(Fonts.SMALL_FONT);
-            errorLabel.setForeground(UITheme.getErrorColor());
-            panel.add(errorLabel);
-            return panel;
-        }
+        featuredProductsPanel = new JPanel();
+        featuredProductsPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10)); 
+        featuredProductsPanel.setBackground(UITheme.getSecondaryColor());
+        featuredProductsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        String[] products = response.getData().stream()
-            .map(product -> product.getName() + " - $" + product.getPrice())
-            .toArray(String[]::new);
+        loadingLabel = new JLabel("Loading...", SwingConstants.CENTER);
+        loadingLabel.setFont(Fonts.NORMAL_FONT);
+        loadingLabel.setForeground(UITheme.getTextColor());
+        featuredProductsPanel.add(loadingLabel);
 
-        for (String product : products) {
-            JLabel productLabel = new JLabel(product);
-            productLabel.setFont(Fonts.SMALL_FONT);
-            productLabel.setForeground(UITheme.getTextColor());
-            productLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-            panel.add(productLabel);
-        }
+        featuredProductsScrollPane = new JScrollPane(featuredProductsPanel);
+        featuredProductsScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        featuredProductsScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        featuredProductsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        featuredProductsScrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+        featuredProductsScrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar());
+        panel.add(featuredProductsScrollPane, BorderLayout.CENTER);
 
         return panel;
     }
 
     private JPanel createOffersPanel() {
-        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panel.setBackground(UITheme.getPrimaryColor());
-        panel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(UITheme.getSuccessColor(), 1),
-            "🔥 Special offers",
-            0, 0, Fonts.NORMAL_FONT, UITheme.getTextColor()
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        panel.setBackground(UITheme.getSecondaryColor());
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 0, UITheme.getAccentColor()),
+                BorderFactory.createEmptyBorder(10, 15, 10, 15)
         ));
 
-        JLabel offer1 = new JLabel("🎯 20% OFF in Electronics");
-        offer1.setFont(Fonts.NORMAL_FONT);
-        offer1.setForeground(UITheme.getWarningColor());
-
-        JLabel separator = new JLabel(" | ");
-        separator.setForeground(UITheme.getTextColor());
-
-        JLabel offer2 = new JLabel("📦 Free shipping on purchases+$50");
-        offer2.setFont(Fonts.NORMAL_FONT);
-        offer2.setForeground(UITheme.getWarningColor());
-
-        JLabel separator2 = new JLabel(" | ");
-        separator2.setForeground(UITheme.getTextColor());
-
-        JLabel offer3 = new JLabel("⭐ Buy 1 Get 1 Free on selected items");
-        offer3.setFont(Fonts.NORMAL_FONT);
-        offer3.setForeground(UITheme.getWarningColor());
+        OfferBadge offer1 = new OfferBadge("20% OFF in Electronics",null);
+        OfferBadge offer2 = new OfferBadge("Free shipping on orders +$50", null);
+        OfferBadge offer3 = new OfferBadge("Buy 1 Get 1 Free", null);
 
         panel.add(offer1);
-        panel.add(separator);
         panel.add(offer2);
-        panel.add(separator2);
         panel.add(offer3);
 
         return panel;
+    }
+
+    private void loadData() {
+        loadingLabel.setVisible(true);
+        featuredProductsPanel.revalidate();
+        featuredProductsPanel.repaint();
+
+        new SwingWorker<List<Product>, Void>() {
+            @Override
+            protected List<Product> doInBackground() throws Exception {
+                ApiResponse<List<Product>> response = productService.getFeaturedProducts();
+                if (response.isSuccess()) {
+                    return response.getData();
+                } else {
+                    System.err.println("Error al cargar productos destacados: " + response.getMessage());
+                    return null;
+                }
+            }
+
+            @Override
+            protected void done() {
+                loadingLabel.setVisible(false);
+                featuredProductsPanel.removeAll();
+
+                try {
+                    List<Product> products = get();
+                    if (products == null || products.isEmpty()) {
+                        JLabel noProducts = new JLabel("No featured products available", SwingConstants.CENTER);
+                        noProducts.setFont(Fonts.NORMAL_FONT);
+                        noProducts.setForeground(UITheme.getTextColor());
+                        featuredProductsPanel.add(noProducts);
+                    } else {
+                        for (Product product : products) {
+                            ProductCard card = new ProductCard(product);
+                            card.setPreferredSize(new Dimension(10, 10));
+                            featuredProductsPanel.add(card);
+                        }
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    JLabel errorLabel = new JLabel("Error loading products.", SwingConstants.CENTER);
+                    errorLabel.setFont(Fonts.NORMAL_FONT);
+                    errorLabel.setForeground(UITheme.getDangerColor());
+                    featuredProductsPanel.add(errorLabel);
+                } finally {
+                    featuredProductsPanel.revalidate();
+                    featuredProductsPanel.repaint();
+                }
+            }
+        }.execute();
+    }
+
+    private static class StatCard extends JPanel {
+        public StatCard(String title, String value, Color color, String tooltip) {
+            setLayout(new BorderLayout(10, 10));
+            setBackground(UITheme.getSecondaryColor());
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(color,  1),
+                    BorderFactory.createEmptyBorder(15, 15, 15, 15)
+            ));
+            setToolTipText(tooltip);
+
+            JLabel valueLabel = new JLabel(value, SwingConstants.CENTER);
+            valueLabel.setFont(Fonts.TITLE_FONT.deriveFont(24f));
+            valueLabel.setForeground(color);
+            add(valueLabel, BorderLayout.CENTER);
+
+            JLabel titleLabel = new JLabel(title, SwingConstants.CENTER);
+            titleLabel.setFont(Fonts.SMALL_FONT);
+            titleLabel.setForeground(UITheme.getTextColor());
+            add(titleLabel, BorderLayout.SOUTH);
+        }
+    }
+
+    private static class OfferBadge extends JPanel {
+        public OfferBadge(String text, ImageIcon icon) {
+            setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
+            setBackground(UITheme.getPrimaryColor());
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(UITheme.getSuccessColor(), 1),
+                    BorderFactory.createEmptyBorder(5, 15, 5, 15)
+            ));
+
+            JLabel iconLabel = new JLabel(icon);
+            add(iconLabel);
+
+            JLabel textLabel = new JLabel(text);
+            textLabel.setFont(Fonts.SMALL_FONT);
+            textLabel.setForeground(UITheme.getSuccessColor());
+            add(textLabel);
+        }
     }
 }

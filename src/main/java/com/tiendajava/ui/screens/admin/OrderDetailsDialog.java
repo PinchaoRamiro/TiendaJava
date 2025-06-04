@@ -1,7 +1,6 @@
 package com.tiendajava.ui.screens.admin;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -13,9 +12,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -31,9 +28,11 @@ import com.tiendajava.model.User;
 import com.tiendajava.model.orders.Order;
 import com.tiendajava.model.orders.OrderItem;
 import com.tiendajava.service.ProductService;
+import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
+import com.tiendajava.ui.utils.UIUtils;
 import com.tiendajava.utils.ApiResponse;
 
 public class OrderDetailsDialog extends JDialog {
@@ -52,12 +51,10 @@ public class OrderDetailsDialog extends JDialog {
         setLocationRelativeTo(parent);
         setResizable(true);
 
-        // Configuración del panel principal
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(UITheme.getPrimaryColor());
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Añadir contenido
         mainPanel.add(createHeaderPanel(), BorderLayout.NORTH);
         mainPanel.add(createContentPanel(), BorderLayout.CENTER);
 
@@ -67,28 +64,21 @@ public class OrderDetailsDialog extends JDialog {
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(UITheme.getSecondaryColor());
-        headerPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        headerPanel.setBorder(new EmptyBorder(20, 20, 40, 20));
 
-        // Logo y título
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         titlePanel.setOpaque(false);
-
-        JLabel logoLabel = new JLabel(AppIcons.BOX_ICON);
-        logoLabel.setFont(Fonts.TITLE_FONT.deriveFont(30f));
 
         JLabel titleLabel = new JLabel("Order Details");
         titleLabel.setFont(Fonts.TITLE_FONT.deriveFont(Font.BOLD, 24));
         titleLabel.setForeground(UITheme.getTextColor());
-
-        titlePanel.add(logoLabel);
         titlePanel.add(titleLabel);
 
-        // Botón de cierre
-        JButton closeButton = new JButton(AppIcons.CANCEL_ICON);
-        closeButton.setContentAreaFilled(false);
-        closeButton.setBorder(BorderFactory.createEmptyBorder());
-        closeButton.setFocusPainted(false);
-        closeButton.addActionListener(e -> dispose());
+        JLabel closeButton = ButtonFactory.createIconButton(
+            AppIcons.CANCEL_ICON,
+            "Close",
+            this::dispose
+        );
 
         headerPanel.add(titlePanel, BorderLayout.WEST);
         headerPanel.add(closeButton, BorderLayout.EAST);
@@ -100,51 +90,21 @@ public class OrderDetailsDialog extends JDialog {
         JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.setBackground(UITheme.getPrimaryColor());
 
-        // Panel de información principal
         JPanel infoPanel = new JPanel(new BorderLayout(0, 20));
         infoPanel.setBackground(UITheme.getPrimaryColor());
-        infoPanel.setBorder(new EmptyBorder(0, 20, 20, 20));
+        infoPanel.setBorder(new EmptyBorder(10, 20, 20, 20));
 
-        // Añadir secciones
         infoPanel.add(createOrderInfoPanel(), BorderLayout.NORTH);
         infoPanel.add(createCustomerInfoPanel(), BorderLayout.CENTER);
         infoPanel.add(createItemsPanel(), BorderLayout.SOUTH);
 
         JScrollPane scrollPane = new JScrollPane(infoPanel);
         scrollPane.setBorder(null);
-        scrollPane.getVerticalScrollBar().setUI(createCustomScrollBarUI());
+        scrollPane.getVerticalScrollBar().setUI(UIUtils.createDarkScrollBar());
         scrollPane.getViewport().setBackground(UITheme.getPrimaryColor());
 
         contentPanel.add(scrollPane, BorderLayout.CENTER);
         return contentPanel;
-    }
-
-    private javax.swing.plaf.basic.BasicScrollBarUI createCustomScrollBarUI() {
-        return new javax.swing.plaf.basic.BasicScrollBarUI() {
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                return createZeroButton();
-            }
-
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                return button;
-            }
-
-            @Override
-            protected void configureScrollBarColors() {
-                thumbColor = UITheme.getTertiaryColor();
-                trackColor = UITheme.getSecondaryColor();
-            }
-        };
     }
 
     private JPanel createOrderInfoPanel() {
@@ -160,7 +120,6 @@ public class OrderDetailsDialog extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Título de la sección
         JLabel sectionTitle = new JLabel("Order Information");
         sectionTitle.setFont(Fonts.SUBTITLE_FONT.deriveFont(Font.BOLD, 18));
         sectionTitle.setForeground(UITheme.getTextColor());
@@ -171,7 +130,6 @@ public class OrderDetailsDialog extends JDialog {
         gbc.gridwidth = 2;
         orderInfoPanel.add(sectionTitle, gbc);
 
-        // Información de la orden
         gbc.gridy++;
         gbc.gridwidth = 1;
         orderInfoPanel.add(createInfoLabel("Order ID: ", String.valueOf(order.getOrder_id())), gbc);
@@ -210,7 +168,6 @@ public class OrderDetailsDialog extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Título de la sección
         JLabel sectionTitle = new JLabel("Customer Information ");
         sectionTitle.setFont(Fonts.SUBTITLE_FONT.deriveFont(Font.BOLD, 18));
         sectionTitle.setForeground(UITheme.getTextColor());
@@ -246,7 +203,6 @@ public class OrderDetailsDialog extends JDialog {
         itemsPanel.setBackground(UITheme.getSecondaryColor());
         itemsPanel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        // Título de la sección
         JLabel sectionTitle = new JLabel("Order Items");
         sectionTitle.setFont(Fonts.SUBTITLE_FONT.deriveFont(Font.BOLD, 18));
         sectionTitle.setForeground(UITheme.getTextColor());
@@ -254,12 +210,10 @@ public class OrderDetailsDialog extends JDialog {
 
         itemsPanel.add(sectionTitle, BorderLayout.NORTH);
 
-        // Panel para los items
         JPanel itemsContentPanel = new JPanel();
         itemsContentPanel.setLayout(new BoxLayout(itemsContentPanel, BoxLayout.Y_AXIS));
         itemsContentPanel.setOpaque(false);
 
-        // Encabezado de la tabla
         JPanel headerPanel = new JPanel(new GridLayout(1, 4));
         headerPanel.setOpaque(false);
         headerPanel.setBorder(new EmptyBorder(0, 0, 10, 0));
@@ -271,7 +225,6 @@ public class OrderDetailsDialog extends JDialog {
 
         itemsContentPanel.add(headerPanel);
 
-        // Items
         double total = 0;
         List<OrderItem> items = order.getOrderItems();
         if (items == null || items.isEmpty()) {
@@ -301,7 +254,6 @@ public class OrderDetailsDialog extends JDialog {
                 itemsContentPanel.add(itemPanel);
             }
 
-            // Total
             JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             totalPanel.setOpaque(false);
             totalPanel.setBorder(new EmptyBorder(15, 0, 0, 0));

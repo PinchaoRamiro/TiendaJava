@@ -29,7 +29,7 @@ public class HeaderPanel extends JPanel {
     private final JPopupMenu settingsMenu = new JPopupMenu();
 
     public HeaderPanel(MainUI parent) {
-        this.parent = parent; // Assigning the constructor parameter to the final field
+        this.parent = parent;
 
         setLayout(new BorderLayout());
         setBackground(UITheme.getSecondaryColor());
@@ -126,5 +126,13 @@ public class HeaderPanel extends JPanel {
         item.setForeground(UITheme.getTextColor());
         item.addActionListener(e -> action.run());
         return item;
+    }
+
+    public void setLoggedInState(boolean loggedIn) {
+        if (loggedIn) {
+            userLogged();
+        } else {
+            deleteWelcomeMessage();
+        }
     }
 }

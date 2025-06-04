@@ -24,14 +24,12 @@ public class Toast extends JWindow {
         getContentPane().add(label);
         pack();
 
-        // Try to position the toast near the parent component, otherwise center it
         int x, y;
         try {
             Point parentLocation = parent.getLocationOnScreen();
             x = parentLocation.x + (parent.getWidth() - getWidth()) / 2;
             y = parentLocation.y + parent.getHeight() - getHeight() - 50;
         } catch (IllegalComponentStateException e) {
-            // If parent isn't visible or not available, fallback to center of screen
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             x = (screenSize.width - getWidth()) / 2;
             y = (screenSize.height - getHeight()) / 2;
@@ -43,7 +41,6 @@ public class Toast extends JWindow {
 
         setVisible(true);
 
-        // Close after timeout
         new Timer(durationMillis, e -> dispose()).start();
     }
 }

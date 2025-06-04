@@ -37,7 +37,6 @@ public class AccountSettingsScreen extends JPanel {
     private final MainUI parent;
     private final UserService userService = new UserService();
 
-    // Campos del formulario
     private final JTextField nameField = new JTextField();
     private final JTextField lastNameField = new JTextField();
     private final JTextField emailField = new JTextField();
@@ -58,11 +57,9 @@ public class AccountSettingsScreen extends JPanel {
     }
 
     private void initializeUI() {
-        // Panel de título
         JPanel titlePanel = createTitlePanel();
         add(titlePanel, BorderLayout.NORTH);
 
-        // Panel de formulario con dos columnas
         JPanel formPanel = createTwoColumnFormPanel();
         JScrollPane scrollPane = new JScrollPane(formPanel);
         scrollPane.setBorder(null);
@@ -130,7 +127,6 @@ public class AccountSettingsScreen extends JPanel {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
 
-        // Primera columna
         gbc.gridx = 0;
         gbc.gridy = 0;
         formPanel.add(createFormField("Name:", nameField), gbc);
@@ -144,7 +140,6 @@ public class AccountSettingsScreen extends JPanel {
         gbc.gridy++;
         formPanel.add(createFormField("Address:", addressField), gbc);
 
-        // Segunda columna
         gbc.gridx = 1;
         gbc.gridy = 0;
         formPanel.add(createFormField("Last Name:", lastNameField), gbc);
@@ -155,7 +150,6 @@ public class AccountSettingsScreen extends JPanel {
         gbc.gridy++;
         formPanel.add(createFormField("Document No.:", documentField), gbc);
 
-        // Panel para el estado (ocupa ambas columnas)
         gbc.gridx = 0;
         gbc.gridy += 2;
         gbc.gridwidth = 2;
@@ -163,7 +157,6 @@ public class AccountSettingsScreen extends JPanel {
         statusFieldPanel.setPreferredSize(new Dimension(50, 55));
         formPanel.add(statusFieldPanel, gbc);
 
-        // Botón de guardar (centrado y ocupa ambas columnas)
         gbc.gridy++;
         gbc.anchor = GridBagConstraints.CENTER;
         JButton saveButton = ButtonFactory.createPrimaryButton("Save Changes", null, this::saveChanges);
@@ -177,12 +170,10 @@ public class AccountSettingsScreen extends JPanel {
         JPanel fieldPanel = new JPanel(new BorderLayout(5, 5));
         fieldPanel.setOpaque(false);
 
-        // Etiqueta
         JLabel label = new JLabel(labelText);
         label.setFont(Fonts.NORMAL_FONT);
         label.setForeground(UITheme.getTextColor());
 
-        // Campo de texto
         textField.setFont(Fonts.NORMAL_FONT);
         textField.setForeground(UITheme.getTextColor());
         textField.setBackground(UITheme.getBackgroundContrast());
@@ -241,7 +232,6 @@ public class AccountSettingsScreen extends JPanel {
     }
 
     private void saveChanges() {
-        // Validar campos obligatorios
         if (nameField.getText().trim().isEmpty() ||
             lastNameField.getText().trim().isEmpty() ||
             emailField.getText().trim().isEmpty()) {
@@ -249,7 +239,6 @@ public class AccountSettingsScreen extends JPanel {
             return;
         }
 
-        // Crear usuario actualizado
         User updatedUser = new User();
         updatedUser.setId(Session.getInstance().getUser().getId());
         updatedUser.setName(nameField.getText().trim());
@@ -261,7 +250,6 @@ public class AccountSettingsScreen extends JPanel {
         updatedUser.setAddress(addressField.getText().trim());
         updatedUser.setStatus(statusComboBox.getSelectedItem().equals("Active"));
 
-        // Guardar cambios
         ApiResponse<User> response = userService.UpdateUser(updatedUser);
 
         if (response.isSuccess()) {

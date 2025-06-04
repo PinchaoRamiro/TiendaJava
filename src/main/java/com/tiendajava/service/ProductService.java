@@ -92,17 +92,25 @@ public class ProductService {
     }
 
     public ApiResponse<List<Product>> getFeaturedProducts() {
-        // obener los productos recien agregados solo 5
         ApiResponse<List<Product>> response = productRepository.getAllProducts();
         if (response.isSuccess() && response.getData() != null) {
             List<Product> products = response.getData();
-            // Limitar a los primeros 5 productos
             if (products.size() > 5) {
-                products = products.subList(0, 6);
+                products = products.subList(0, 5);
             }
             return new ApiResponse<>(true, products, "Productos destacados obtenidos correctamente");
         } else {
             return new ApiResponse<>(false, null, "Error al obtener productos destacados");
+        }
+    }
+
+    public ApiResponse<List<Product>> getUserProducts() {
+        ApiResponse<List<Product>> response = productRepository.getAllProducts();
+        if (response.isSuccess() && response.getData() != null) {
+            List<Product> products = response.getData().stream().filter(p -> p.getStock() > 0).toList();
+            return new ApiResponse<>(true, products, "Productos obtenidos correctamente");
+        } else {
+            return new ApiResponse<>(false, null, "Error al obtener productos");
         }
     }
 }

@@ -73,4 +73,8 @@ public class UITheme {
     public static Color getSuccessColor() {
         return new Color(40, 167, 69); // Verde confiable para éxito
     }
+
+    public static Color getAccentColor() {
+        return new Color(255, 87, 34); // Naranja vibrante para acentos
+    }
 }

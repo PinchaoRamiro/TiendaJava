@@ -72,6 +72,10 @@ public class Order {
         this.status = status;
     }
 
+    public void setStatus(String status) {
+        this.status = OrderStatusEnum.valueOf(status);
+    }
+
     public void setTotal_amount(BigDecimal total_amount) {
         this.total_amount = total_amount;
     }

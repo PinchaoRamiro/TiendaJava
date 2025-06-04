@@ -39,14 +39,12 @@ public class UIUtils {
         UIManager.put("JTextArea.background", UITheme.getSecondaryColor());
         UIManager.put("JTextArea.foreground", UITheme.getTextColor());
 
-        // a tablas
         UIManager.put("Table.background", UITheme.getSecondaryColor());
         UIManager.put("Table.foreground", UITheme.getTextColor());
         UIManager.put("Table.gridColor", UITheme.getBorderColor());
         UIManager.put("Table.selectionBackground", UITheme.getPrimaryButtonColor());
         UIManager.put("Table.selectionForeground", UITheme.getTextColor());
 
-        // scrollPanel
         UIManager.put("ScrollPane.background", UITheme.getPrimaryColor());
         UIManager.put("ScrollPane.foreground", UITheme.getTextColor());
 
@@ -95,12 +93,9 @@ public class UIUtils {
         };
     }
 
-    // Padding alrededor del scroll
     public static Border getScrollPaneBorder() {
         return BorderFactory.createEmptyBorder(10, 10, 10, 10); // Espaciado alrededor del scroll
     }
-
-    // create Style form field beautiful
 
     public static void styleFormFields(JPanel panel) {
         for (Component component : panel.getComponents()) {
@@ -173,6 +168,16 @@ public class UIUtils {
     public static String toHex(Color infoColor) {
         return String.format("#%02x%02x%02x", infoColor.getRed(), infoColor.getGreen(), infoColor.getBlue());
     }
-    
 
+    public static Border createTitledBorder(String your_Statistics) {
+        return BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(UITheme.getBorderColor()),
+            your_Statistics,
+            javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION,
+            javax.swing.border.TitledBorder.DEFAULT_POSITION,
+            Fonts.NORMAL_FONT,
+            UITheme.getTextColor()
+            
+        );
+    }
 }

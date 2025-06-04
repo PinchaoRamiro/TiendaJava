@@ -112,7 +112,6 @@ public class RegisterAdminDialog extends JDialog {
         this.onAdminRegistered = callback;
     }
 
-    // Call this method after a new admin is registered
     private void notifyAdminRegistered(User newAdmin) {
         if (onAdminRegistered != null) {
             onAdminRegistered.accept(newAdmin);

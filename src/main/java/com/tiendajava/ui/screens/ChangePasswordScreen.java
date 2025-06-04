@@ -47,11 +47,8 @@ public class ChangePasswordScreen extends JPanel {
     }
 
     private void initializeUI() {
-        // Panel de título
         JPanel titlePanel = createTitlePanel();
         add(titlePanel, BorderLayout.NORTH);
-
-        // Panel de formulario
         JPanel formPanel = createFormPanel();
         add(formPanel, BorderLayout.CENTER);
     }
@@ -83,19 +80,15 @@ public class ChangePasswordScreen extends JPanel {
         gbc.weightx = 1.0;
         gbc.gridwidth = 2;
 
-        // Campo de contraseña actual
         gbc.gridy = 0;
         formPanel.add(createPasswordField("Current Password", currentPasswordField), gbc);
 
-        // Campo de nueva contraseña
         gbc.gridy++;
         formPanel.add(createPasswordField("New Password", newPasswordField), gbc);
 
-        // Campo de confirmación de contraseña
         gbc.gridy++;
         formPanel.add(createPasswordField("Confirm New Password", confirmPasswordField), gbc);
 
-        // Botón de guardar
         gbc.gridy++;
         gbc.insets = new Insets(25, 0, 0, 0);
         JButton saveButton = ButtonFactory.createPrimaryButton("Save Changes",null, this::changePassword);
@@ -109,12 +102,10 @@ public class ChangePasswordScreen extends JPanel {
         JPanel fieldPanel = new JPanel(new BorderLayout(5, 5));
         fieldPanel.setOpaque(false);
 
-        // Etiqueta
         JLabel label = new JLabel(labelText);
         label.setFont(Fonts.NORMAL_FONT);
         label.setForeground(UITheme.getTextColor());
 
-        // Campo de contraseña
         passwordField.setFont(Fonts.NORMAL_FONT);
         passwordField.setForeground(UITheme.getTextColor());
         passwordField.setBackground(UITheme.getBackgroundContrast());
@@ -122,7 +113,6 @@ public class ChangePasswordScreen extends JPanel {
         passwordField.setPreferredSize(new Dimension(300, 40));
         passwordField.setCaretColor(UITheme.getTextColor());
 
-        // Añadir efecto de enfoque
         passwordField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -146,7 +136,6 @@ public class ChangePasswordScreen extends JPanel {
         String newPassword = new String(newPasswordField.getPassword()).trim();
         String confirmPassword = new String(confirmPasswordField.getPassword()).trim();
 
-        // Validaciones
         if (currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
             NotificationHandler.warning("Please fill all fields.");
             return;
@@ -162,7 +151,6 @@ public class ChangePasswordScreen extends JPanel {
             return;
         }
 
-        // Cambiar contraseña
         ApiResponse<User> response = userService.changePassword(
             Session.getInstance().getUser(),
             currentPassword,

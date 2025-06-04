@@ -16,17 +16,15 @@ import com.tiendajava.ui.screens.admin.products.IProductDialog;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.utils.ApiResponse;
 
-// Eliminado 'final' de la declaración de la clase si IProductDialog no es final.
-// Si IProductDialog fuera final, esta clase no podría extenderla.
 public class CreateClothingProductDialog extends IProductDialog {
 
-    private Product productCreated; // Producto creado
+    private Product productCreated;
 
     private final JTextField sizeField = new JTextField(20);
     private final JTextField colorField = new JTextField(20);
     private final JTextField materialField = new JTextField(20);
 
-    private JPanel actionButtonPanel; // Panel para los botones de acción
+    private JPanel actionButtonPanel;
 
     public CreateClothingProductDialog(String category) {
         super(null, category, null);
@@ -54,12 +52,12 @@ public class CreateClothingProductDialog extends IProductDialog {
             JButton cancelBtn = ButtonFactory.createSecondaryButton("Cancel",null, this::dispose);
             actionButtonPanel.add(cancelBtn, BorderLayout.WEST);
             actionButtonPanel.add(createBtn, BorderLayout.CENTER);
-            add(actionButtonPanel, BorderLayout.SOUTH); // Añadir al diálogo
+            add(actionButtonPanel, BorderLayout.SOUTH); 
         }
     }
 
     @Override
-    protected void onSave() { // Renombrado de createProduct() a onSave()
+    protected void onSave() { 
         String name = nameField.getText().trim();
         String priceStr = priceField.getText().trim();
         String stockStr = stockField.getText().trim();
@@ -95,21 +93,20 @@ public class CreateClothingProductDialog extends IProductDialog {
                 description,
                 priceValue,
                 stockValue,
-                categoryId, // Usar categoryId
+                categoryId, 
                 size,
                 color,
                 material
         );
 
-        // Ejecutar la operación de creación en un hilo secundario para no bloquear el EDT
         new Thread(() -> {
             ApiResponse<Product> resp = productService.createProductWithImage(productCreated, imageFile, "clothing");
-            SwingUtilities.invokeLater(() -> { // Volver al EDT para actualizar la UI
+            SwingUtilities.invokeLater(() -> { 
                 if (resp.isSuccess()) {
                     NotificationHandler.success("Product created successfully!");
-                    dispose(); // Cerrar el diálogo
+                    dispose(); 
                     if (onRunnable != null) {
-                        onRunnable.run(); // Ejecutar la acción de refresco
+                        onRunnable.run();
                     }
                 } else {
                     NotificationHandler.error("Failed to create product: " + resp.getMessage());

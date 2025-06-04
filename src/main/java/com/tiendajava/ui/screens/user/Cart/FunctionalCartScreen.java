@@ -88,7 +88,6 @@ public class FunctionalCartScreen extends JPanel {
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         bottomPanel.setBackground(UITheme.getPrimaryColor());
 
-        // Panel de total
         JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         totalPanel.setBackground(UITheme.getPrimaryColor());
         
@@ -102,8 +101,7 @@ public class FunctionalCartScreen extends JPanel {
         totalPanel.add(totalLabel);
         
         bottomPanel.add(totalPanel, BorderLayout.WEST);
-        
-        // Panel de botones
+   
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
         buttonsPanel.setBackground(UITheme.getPrimaryColor());
         
@@ -204,10 +202,8 @@ public class FunctionalCartScreen extends JPanel {
         
         itemPanel.add(imagePanel, BorderLayout.WEST);
         
-        // Información del producto
         itemPanel.add(createProductInfoPanel(product), BorderLayout.CENTER);
         
-        // Acciones
         itemPanel.add(createProductActionsPanel(product), BorderLayout.EAST);
         
         itemsPanel.add(itemPanel);
@@ -243,7 +239,6 @@ public class FunctionalCartScreen extends JPanel {
         actionsPanel.setLayout(new BoxLayout(actionsPanel, BoxLayout.Y_AXIS));
         actionsPanel.setBackground(UITheme.getSecondaryColor().brighter());
         
-        // Panel de cantidad
         JPanel qtyPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         qtyPanel.setBackground(UITheme.getSecondaryColor().brighter());
         
@@ -261,7 +256,6 @@ public class FunctionalCartScreen extends JPanel {
         actionsPanel.add(qtyPanel);
         actionsPanel.add(Box.createVerticalStrut(10));
         
-        // Panel de botones
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 5));
         btnPanel.setBackground(UITheme.getSecondaryColor().brighter());
         
@@ -314,7 +308,7 @@ public class FunctionalCartScreen extends JPanel {
             return maxStock;
         } else {
             NotificationHandler.warning("No stock available for " + product.getName());
-            return 0; // Default to 1 if no stock available
+            return 0; 
         }
     }
 }
