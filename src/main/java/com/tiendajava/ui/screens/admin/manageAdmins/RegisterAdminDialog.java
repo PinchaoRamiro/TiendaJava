@@ -12,7 +12,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
 import com.tiendajava.service.AdminService;
 import com.tiendajava.ui.components.ButtonFactory;
@@ -21,6 +20,7 @@ import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
+import com.tiendajava.utils.ApiResponse;
 
 public class RegisterAdminDialog extends JDialog {
 

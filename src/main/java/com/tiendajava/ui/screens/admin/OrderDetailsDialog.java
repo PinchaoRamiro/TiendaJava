@@ -26,7 +26,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
 import com.tiendajava.model.User;
 import com.tiendajava.model.orders.Order;
@@ -35,6 +34,7 @@ import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
+import com.tiendajava.utils.ApiResponse;
 
 public class OrderDetailsDialog extends JDialog {
 

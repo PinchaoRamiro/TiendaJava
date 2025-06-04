@@ -3,9 +3,9 @@ package com.tiendajava.service;
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.orders.Order;
 import com.tiendajava.repository.OrderRepository;
+import com.tiendajava.utils.ApiResponse;
 
 public class OrderService {
 

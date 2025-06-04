@@ -88,23 +88,21 @@ public class ProductItemCard extends JPanel {
         infoRight.setLayout(new BoxLayout(infoRight, BoxLayout.Y_AXIS));
         infoRight.setBackground(UITheme.getSecondaryColor());
 
-        switch (product) {
-            case ClothingProduct clothing -> {
-                infoRight.add(createLabel("Size: " + clothing.getSize(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                infoRight.add(createLabel("Color: " + clothing.getColor(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                infoRight.add(createLabel("Material: " + clothing.getMaterial(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-            }
-            case ElectronicsProduct electronics -> {
-                infoRight.add(createLabel("Voltage: " + electronics.getVoltage(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                infoRight.add(createLabel("Warranty: " + electronics.getWarranty(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                infoRight.add(createLabel("Brand: " + electronics.getBrand(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-            }
-            case FurnitureProduct furniture -> {
-                infoRight.add(createLabel("Dimensions: " + furniture.getDimensions(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                infoRight.add(createLabel("Material: " + furniture.getMaterial(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-                infoRight.add(createLabel("Wood Type: " + furniture.getWoodType(), Fonts.SMALL_FONT, UITheme.getTextColor()));
-            }
-            default -> {}
+        if (product instanceof ClothingProduct) {
+            ClothingProduct clothing = (ClothingProduct) product;
+            infoRight.add(createLabel("Size: " + clothing.getSize(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+            infoRight.add(createLabel("Color: " + clothing.getColor(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+            infoRight.add(createLabel("Material: " + clothing.getMaterial(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+        } else if (product instanceof ElectronicsProduct) {
+            ElectronicsProduct electronics = (ElectronicsProduct) product;
+            infoRight.add(createLabel("Voltage: " + electronics.getVoltage(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+            infoRight.add(createLabel("Warranty: " + electronics.getWarranty(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+            infoRight.add(createLabel("Brand: " + electronics.getBrand(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+        } else if (product instanceof FurnitureProduct) {
+            FurnitureProduct furniture = (FurnitureProduct) product;
+            infoRight.add(createLabel("Dimensions: " + furniture.getDimensions(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+            infoRight.add(createLabel("Material: " + furniture.getMaterial(), Fonts.SMALL_FONT, UITheme.getTextColor()));
+            infoRight.add(createLabel("Wood Type: " + furniture.getWoodType(), Fonts.SMALL_FONT, UITheme.getTextColor()));
         }
 
         infoContainer.add(infoLeft);

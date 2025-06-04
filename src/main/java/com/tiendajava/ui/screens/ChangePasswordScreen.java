@@ -18,7 +18,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Session;
 import com.tiendajava.model.User;
 import com.tiendajava.service.UserService;
@@ -28,6 +27,7 @@ import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
+import com.tiendajava.utils.ApiResponse;
 
 public class ChangePasswordScreen extends JPanel {
 

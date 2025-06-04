@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
 import com.tiendajava.service.AdminService;
 import com.tiendajava.ui.MainUI;
@@ -31,6 +30,8 @@ import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
+import com.tiendajava.utils.ApiResponse;
+
 import static com.tiendajava.ui.utils.UIUtils.getRoundedBorder;
 
 public class ManageAdminsScreen extends JPanel {

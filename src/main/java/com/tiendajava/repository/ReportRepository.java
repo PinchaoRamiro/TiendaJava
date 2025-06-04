@@ -6,11 +6,11 @@ import java.net.http.HttpRequest;
 import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
-import com.tiendajava.model.ApiResponse;
-import com.tiendajava.model.DashboardSummary;
 import com.tiendajava.model.Product;
 import com.tiendajava.model.Session;
 import com.tiendajava.model.orders.OrderStatusReport;
+import com.tiendajava.utils.ApiResponse;
+import com.tiendajava.utils.DashboardSummary;
 
 public class ReportRepository extends BaseRepository {
 

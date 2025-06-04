@@ -6,9 +6,9 @@ import java.net.http.HttpRequest;
 import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Session;
 import com.tiendajava.model.User;
+import com.tiendajava.utils.ApiResponse;
 
 public class AdminRepository extends BaseRepository {
 

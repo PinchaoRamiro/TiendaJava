@@ -8,13 +8,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities; // Necesario para SwingUtilities.invokeLater
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
 import com.tiendajava.model.ProductsModels.ClothingProduct;
 import com.tiendajava.ui.components.ButtonFactory;
 import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.screens.admin.products.IProductDialog;
 import com.tiendajava.ui.utils.UITheme;
+import com.tiendajava.utils.ApiResponse;
 
 // Eliminado 'final' de la declaración de la clase si IProductDialog no es final.
 // Si IProductDialog fuera final, esta clase no podría extenderla.

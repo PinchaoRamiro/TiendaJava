@@ -10,10 +10,10 @@ import java.net.http.HttpResponse;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import com.tiendajava.model.ApiResponse;
-import com.tiendajava.model.LoginResponse;
 import com.tiendajava.model.Session;
 import com.tiendajava.model.User;
+import com.tiendajava.utils.ApiResponse;
+import com.tiendajava.utils.LoginResponse;
 
 public class UserRepository extends BaseRepository {
 

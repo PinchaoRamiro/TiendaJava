@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
 import com.tiendajava.service.AdminService;
 import com.tiendajava.ui.MainUI;
@@ -32,6 +31,7 @@ import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 import static com.tiendajava.ui.utils.UIUtils.getRoundedBorder;
+import com.tiendajava.utils.ApiResponse;
 
 public class ManageUsersScreen extends JPanel {
 

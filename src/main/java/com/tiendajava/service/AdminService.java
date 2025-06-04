@@ -3,9 +3,9 @@ package com.tiendajava.service;
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
 import com.tiendajava.repository.AdminRepository;
+import com.tiendajava.utils.ApiResponse;
 
 public class AdminService {
 

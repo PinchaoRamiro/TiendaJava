@@ -68,24 +68,18 @@ public class InfoProductDialog extends JDialog {
     }
 
     private void loadCategorySpecificAttributes(JPanel panel, Product product) {
-        switch (product) {
-            case ClothingProduct clothing -> {
-                panel.add(createLabel("Size: " + clothing.getSize()));
-                panel.add(createLabel("Color: " + clothing.getColor()));
-                panel.add(createLabel("Material: " + clothing.getMaterial()));
-            }
-            case ElectronicsProduct electronics -> {
-                panel.add(createLabel("Brand: " + electronics.getBrand()));
-                panel.add(createLabel("Voltage: " + electronics.getVoltage()));
-                panel.add(createLabel("Warranty: " + electronics.getWarranty()));
-            }
-            case FurnitureProduct furniture -> {
-                panel.add(createLabel("Dimensions: " + furniture.getDimensions()));
-                panel.add(createLabel("Material: " + furniture.getMaterial()));
-                panel.add(createLabel("Wood Type: " + furniture.getWoodType()));
-            }
-            default -> {
-            }
+        if (product instanceof ClothingProduct clothing) {
+            panel.add(createLabel("Size: " + clothing.getSize()));
+            panel.add(createLabel("Color: " + clothing.getColor()));
+            panel.add(createLabel("Material: " + clothing.getMaterial()));
+        } else if (product instanceof ElectronicsProduct electronics) {
+            panel.add(createLabel("Brand: " + electronics.getBrand()));
+            panel.add(createLabel("Voltage: " + electronics.getVoltage()));
+            panel.add(createLabel("Warranty: " + electronics.getWarranty()));
+        } else if (product instanceof FurnitureProduct furniture) {
+            panel.add(createLabel("Dimensions: " + furniture.getDimensions()));
+            panel.add(createLabel("Material: " + furniture.getMaterial()));
+            panel.add(createLabel("Wood Type: " + furniture.getWoodType()));
         }
     }
 }

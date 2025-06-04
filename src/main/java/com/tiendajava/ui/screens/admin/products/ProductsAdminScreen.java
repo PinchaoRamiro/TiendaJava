@@ -12,9 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities; 
+import javax.swing.SwingUtilities;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
 import com.tiendajava.service.ProductService;
 import com.tiendajava.ui.MainUI;
@@ -31,6 +30,7 @@ import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
+import com.tiendajava.utils.ApiResponse;
 
 
 public class ProductsAdminScreen extends JPanel {

@@ -1,9 +1,12 @@
-package com.tiendajava.model.ProductsModels;
+package com.tiendajava.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tiendajava.model.Category;
 import com.tiendajava.model.Product;
+import com.tiendajava.model.ProductsModels.ClothingProduct;
+import com.tiendajava.model.ProductsModels.ElectronicsProduct;
+import com.tiendajava.model.ProductsModels.FurnitureProduct;
 
 public class ProductFactory {
     public static Product createProduct(JsonObject json) {

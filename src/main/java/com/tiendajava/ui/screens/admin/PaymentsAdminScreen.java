@@ -23,7 +23,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
 import com.tiendajava.model.orders.Order;
 import com.tiendajava.service.OrderService;
@@ -35,6 +34,7 @@ import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
+import com.tiendajava.utils.ApiResponse;
 public class PaymentsAdminScreen extends JPanel {
 
     private final MainUI parent;

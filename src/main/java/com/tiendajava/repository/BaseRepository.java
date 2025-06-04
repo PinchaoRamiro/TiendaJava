@@ -8,7 +8,7 @@ import java.net.http.HttpResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.tiendajava.model.ApiResponse;
+import com.tiendajava.utils.ApiResponse;
 
 public abstract class BaseRepository {
     protected static final String URL_BASE = "http://localhost:5000/api/";
@@ -19,20 +19,19 @@ public abstract class BaseRepository {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            ApiResponse<T> apiResponse = gson.fromJson(response.body(), responseType);
+
             if(response.statusCode() == 404)
                 return new ApiResponse<>(false, null, "Resource not found");
             if (response.statusCode() >= 300) {
                 return new ApiResponse<>(false, null,
-                        "Error: " + response.statusCode() + " - " + response.body());
+                        "Error: " + response.statusCode() + " - " + apiResponse.getMessage());
             }
-            ApiResponse<T> apiResponse = gson.fromJson(response.body(), responseType);
 
-            System.out.println("Http response " + response);
-            System.out.println("Response: " + apiResponse);
+            System.out.println(apiResponse.toString());
             String body = response.body().trim();
     
             if (body.startsWith("\"") && body.endsWith("\"")) {
-                // String msg = gson.fromJson(body, String.class);
                 apiResponse.setStatusCode(response.statusCode());
                 return apiResponse;
             }

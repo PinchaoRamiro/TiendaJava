@@ -15,7 +15,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Session;
 import com.tiendajava.model.User;
 import com.tiendajava.service.UserService;
@@ -25,6 +24,7 @@ import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.AppIcons;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UIUtils;
+import com.tiendajava.utils.ApiResponse;
 
 public class LoginScreen extends JPanel {
   private final MainUI parent;

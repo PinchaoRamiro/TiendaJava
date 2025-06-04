@@ -7,12 +7,12 @@ import javax.swing.JButton; // No tan necesario si se usa solo super.buildForm()
 import javax.swing.JPanel; // No tan necesario si se usa solo super.buildForm() y sus addLabelAndField
 import javax.swing.SwingUtilities;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
 import com.tiendajava.ui.components.ButtonFactory; // Importar SwingUtilities para EDT
 import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.components.dialogs.ConfirmationDialog;
 import com.tiendajava.ui.utils.UITheme;
+import com.tiendajava.utils.ApiResponse;
 
 public class EditProductDialog extends IProductDialog {
 

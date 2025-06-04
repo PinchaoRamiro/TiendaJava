@@ -15,8 +15,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
-import com.tiendajava.model.ApiResponse;
-import com.tiendajava.model.DashboardSummary;
 import com.tiendajava.model.Product;
 import com.tiendajava.model.Session;
 import com.tiendajava.model.orders.OrderStatusReport;
@@ -28,6 +26,8 @@ import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 import com.tiendajava.ui.utils.animations.TypingLabel;
+import com.tiendajava.utils.ApiResponse;
+import com.tiendajava.utils.DashboardSummary;
 
 public class AdminDashboardScreen extends JPanel {
 

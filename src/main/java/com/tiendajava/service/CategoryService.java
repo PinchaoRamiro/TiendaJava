@@ -3,9 +3,9 @@ package com.tiendajava.service;
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Category;
 import com.tiendajava.repository.CategoryRepository;
+import com.tiendajava.utils.ApiResponse;
 
 public class CategoryService {
 

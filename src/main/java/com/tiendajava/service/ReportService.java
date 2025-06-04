@@ -2,11 +2,11 @@ package com.tiendajava.service;
 
 import java.util.List;
 
-import com.tiendajava.model.ApiResponse;
-import com.tiendajava.model.DashboardSummary;
 import com.tiendajava.model.Product;
 import com.tiendajava.model.orders.OrderStatusReport;
 import com.tiendajava.repository.ReportRepository;
+import com.tiendajava.utils.ApiResponse;
+import com.tiendajava.utils.DashboardSummary;
 
 public class ReportService {
 

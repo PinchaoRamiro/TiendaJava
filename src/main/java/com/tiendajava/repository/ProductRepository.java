@@ -17,10 +17,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
 import com.tiendajava.model.Session;
-import com.tiendajava.model.ProductsModels.ProductFactory;
+import com.tiendajava.utils.ApiResponse;
+import com.tiendajava.utils.ProductFactory;
 
 public class ProductRepository extends BaseRepository {
 

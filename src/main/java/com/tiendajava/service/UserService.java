@@ -1,9 +1,9 @@
 package com.tiendajava.service;
 
 import com.google.gson.Gson;
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.User;
 import com.tiendajava.repository.UserRepository;
+import com.tiendajava.utils.ApiResponse;
 
 public class UserService {
 	private final UserRepository userRepository;

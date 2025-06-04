@@ -17,7 +17,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Category;
 import com.tiendajava.model.Product;
 import com.tiendajava.service.CategoryService;
@@ -26,6 +25,7 @@ import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
+import com.tiendajava.utils.ApiResponse;
 
 // Eliminamos 'final' de la declaración de la clase
 public abstract class IProductDialog extends JDialog {

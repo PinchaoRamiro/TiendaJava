@@ -14,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
 import com.tiendajava.model.Session;
 import com.tiendajava.service.ProductService;
@@ -24,6 +23,7 @@ import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
 import com.tiendajava.ui.utils.animations.TypingLabel;
+import com.tiendajava.utils.ApiResponse;
 
 public class DashboardUserScreen extends JPanel {
 

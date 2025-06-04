@@ -1,4 +1,4 @@
-package com.tiendajava.model;
+package com.tiendajava.utils;
 
 public class ApiResponse<T> {
     private boolean success;
@@ -35,11 +35,12 @@ public class ApiResponse<T> {
 
     @Override
     public String toString() {
-        return "ApiResponse{" +
-                "success=" + success +
-                ", data=" + data +
-                ", message='" + message + '\'' +
-                '}'
+        return """
+               ApiResponse{
+               success=""" + success +
+                ",\n data=" + data +
+                ",\n message='" + message + '\'' +
+                "} \n"
                 + ", statusCode: " + statusCode;
     }
 

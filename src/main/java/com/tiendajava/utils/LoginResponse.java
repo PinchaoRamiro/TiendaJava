@@ -1,5 +1,6 @@
-package com.tiendajava.model;
+package com.tiendajava.utils;
 
+import com.tiendajava.model.User;
 
 public class LoginResponse {
     private String token;

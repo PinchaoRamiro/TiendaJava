@@ -7,9 +7,9 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Session;
 import com.tiendajava.model.orders.Order;
+import com.tiendajava.utils.ApiResponse;
 
 public class OrderRepository extends BaseRepository {
 

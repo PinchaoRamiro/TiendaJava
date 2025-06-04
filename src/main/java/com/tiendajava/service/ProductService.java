@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.List;
 
 import com.google.gson.Gson;
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Product;
 import com.tiendajava.repository.ProductRepository;
+import com.tiendajava.utils.ApiResponse;
 
 public class ProductService {
 

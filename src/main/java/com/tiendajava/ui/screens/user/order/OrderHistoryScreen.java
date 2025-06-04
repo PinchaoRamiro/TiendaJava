@@ -26,7 +26,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import com.tiendajava.model.ApiResponse;
 import com.tiendajava.model.Session;
 import com.tiendajava.model.orders.Order;
 import com.tiendajava.service.OrderService;
@@ -36,6 +35,7 @@ import com.tiendajava.ui.components.NotificationHandler;
 import com.tiendajava.ui.utils.Fonts;
 import com.tiendajava.ui.utils.UITheme;
 import com.tiendajava.ui.utils.UIUtils;
+import com.tiendajava.utils.ApiResponse;
 
 public class OrderHistoryScreen extends JPanel {
 
